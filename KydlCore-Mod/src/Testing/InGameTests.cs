@@ -86,9 +86,10 @@ internal static class InGameTests
         foreach (string mod in model.ModGuids())
             if (model.TabIds(mod).Length == 0) return "FAIL: " + mod + " has no tab in row 2";
         var core = new List<string>(model.TabIds(Plugin.ModGuid));
-        bool hasItems = core.Contains(KyItemsTab.ItemsId), wantItems = KyItems.All.Count > 0;
+        // HasTab, not a list lookup: since 1.1.1 the Settings tab is shown as one tab per config category, so TabIds holds part ids, not "settings" itself
+        bool hasItems = model.HasTab(Plugin.ModGuid, KyItemsTab.ItemsId), wantItems = KyItems.All.Count > 0;
         ModLog.Verbose("InGameTests: KC-03 KydlCore tabs " + string.Join(", ", core.ToArray()) + ", registry " + KyItems.All.Count);
-        if (!core.Contains(KyItemsTab.SettingsId)) return "FAIL: KydlCore has no 'settings' tab (" + string.Join(", ", core.ToArray()) + ")";
+        if (!model.HasTab(Plugin.ModGuid, KyItemsTab.SettingsId)) return "FAIL: KydlCore has no 'settings' tab (" + string.Join(", ", core.ToArray()) + ")";
         return hasItems == wantItems ? "PASS: all " + model.ModCount + " mod(s) have a tab; KydlCore tabs " + string.Join(", ", core.ToArray())
                                      : "FAIL: ky-items tab " + (hasItems ? "shown" : "missing") + " but the registry has " + KyItems.All.Count + " entr" + (KyItems.All.Count == 1 ? "y" : "ies");
     }

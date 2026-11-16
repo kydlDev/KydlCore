@@ -42,6 +42,14 @@ internal static class TestHooks
     [TestHook("kc.hubTabCount")]
     static int HubTabCount(string mod) { return KyHub.Model.TabIds(mod).Length; }
 
+    /// <summary>The mod has at least min row-2 tabs (a numeric limit has to live in the hook: min on a hook step is ignored by the lab).</summary>
+    [TestHook("kc.hubTabsAtLeast")]
+    static bool HubTabsAtLeast(string mod, int min) { return KyHub.Model.TabIds(mod).Length >= min; }
+
+    /// <summary>The mod has this tab; a tab shown as one tab per config category (1.1.1) still counts.</summary>
+    [TestHook("kc.hubHasTab")]
+    static bool HubHasTab(string mod, string tab) { return KyHub.Model.HasTab(mod, tab); }
+
     [TestHook("kc.hubTabs")]
     static string HubTabs(string mod) { return string.Join(",", KyHub.Model.TabIds(mod)); }
 
@@ -51,6 +59,10 @@ internal static class TestHooks
     {
         return string.IsNullOrEmpty(mod) ? KyItems.All.Count : KyItems.ByMod(mod).Count();
     }
+
+    /// <summary>At least min KY-Items entries of one mod (empty = all mods); a limit in the hook because min on a hook step is ignored by the lab.</summary>
+    [TestHook("kc.itemsAtLeast")]
+    static bool ItemsAtLeast(int min, string mod = null) { return ItemsCount(mod) >= min; }
 
     [TestHook("kc.itemsReady")]
     static bool ItemsReady() { return KyItems.Ready; }

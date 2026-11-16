@@ -43,44 +43,52 @@
     },
     {
       "do": "hook",
-      "name": "kc.hubTabCount",
+      "name": "kc.hubTabsAtLeast",
       "args": {
-        "mod": "com.kydldev.KydlCore"
+        "mod": "com.kydldev.KydlCore",
+        "min": 1
       },
-      "min": 1
+      "expect": true,
+      "label": "at least 1 tab(s): com.kydldev.KydlCore"
     },
     {
       "do": "hook",
-      "name": "kc.hubTabCount",
+      "name": "kc.hubTabsAtLeast",
       "args": {
-        "mod": "com.kydldev.chestdecor"
+        "mod": "com.kydldev.chestdecor",
+        "min": 1
       },
-      "min": 1
+      "expect": true,
+      "label": "at least 1 tab(s): com.kydldev.chestdecor"
     },
     {
       "do": "hook",
-      "name": "kc.hubTabCount",
+      "name": "kc.hubTabsAtLeast",
       "args": {
-        "mod": "com.kydldev.WhipItUp"
+        "mod": "com.kydldev.WhipItUp",
+        "min": 2
       },
-      "min": 2,
+      "expect": true,
       "label": "viewer + details"
     },
     {
       "do": "hook",
-      "name": "kc.hubTabCount",
+      "name": "kc.hubTabsAtLeast",
       "args": {
-        "mod": "com.kydldev.SteveTheTroll"
+        "mod": "com.kydldev.SteveTheTroll",
+        "min": 3
       },
-      "min": 3
+      "expect": true,
+      "label": "at least 3 tab(s): com.kydldev.SteveTheTroll"
     },
     {
       "do": "hook",
-      "name": "kc.hubTabs",
+      "name": "kc.hubHasTab",
       "args": {
-        "mod": "com.kydldev.KydlCore"
+        "mod": "com.kydldev.KydlCore",
+        "tab": "settings"
       },
-      "contains": "settings",
+      "expect": true,
       "label": "KydlCore has Settings"
     },
     {

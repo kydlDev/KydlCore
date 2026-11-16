@@ -21,18 +21,22 @@
     },
     {
       "do": "hook",
-      "name": "kc.itemsCount",
+      "name": "kc.itemsAtLeast",
       "args": {
+        "min": 21,
         "mod": "com.kydldev.WhipItUp"
       },
-      "min": 21,
-      "label": "21 weapons"
+      "label": "21 weapons",
+      "expect": true
     },
     {
       "do": "hook",
-      "name": "kc.itemsCount",
-      "min": 21,
-      "label": "all mods"
+      "name": "kc.itemsAtLeast",
+      "label": "all mods",
+      "args": {
+        "min": 21
+      },
+      "expect": true
     }
   ],
   "asserts": [
