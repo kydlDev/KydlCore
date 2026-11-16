@@ -95,3 +95,7 @@ CLAUDE.md
 # SonarQube scanner work files (H30/H31)
 .sonarqube/
 **/tests/_quality/sonar-coverage/
+
+# BenchmarkDotNet output (PROJECT_RULES 30): numbers that matter go to tests/_quality/benchmarks.md
+**/BenchmarkDotNet.Artifacts/
+**/Benchmarks/bench*.log

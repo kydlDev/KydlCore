@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Benchmarks of KydlCore's game-free rules (PROJECT_RULES 30, skill microbenchmarking in .claude\skills). The pure files are linked like in the
+       unit-test project, so the benchmarks measure the very code the mod ships. Run from this folder, Release only:
+       dotnet run -c Release, then the BenchmarkDotNet flags filter and job after a double dash (always a filter: the switcher asks interactively otherwise); output into a file.
+       Report: BenchmarkDotNet.Artifacts\results\*-report-github.md; keep the numbers in ..\_quality\benchmarks.md. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>KydlCore.Benchmarks</AssemblyName>
+    <RootNamespace>KydlCore.Benchmarks</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- the mod's pure layers: everything linked compiles without Unity -->
+    <Compile Include="..\..\src\Shared\Core\**\*.cs" Link="Core\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="..\..\src\Features\*\Domain\**\*.cs" Link="Mod\%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
+  </ItemGroup>
+</Project>
