@@ -99,7 +99,7 @@ public static class KyHub
     public static bool HasTab(string modGuid, string id)
     {
         bool valid = !string.IsNullOrEmpty(modGuid) && !string.IsNullOrEmpty(id);
-        return valid && Array.IndexOf(Model.TabIds(modGuid), id) >= 0;
+        return valid && Model.HasTab(modGuid, id);
     }
 
     /// <summary>Sets the row-1 name of a mod (the default is the plugin's name). `icon` is reserved for later and not shown yet.</summary>

@@ -337,6 +337,20 @@ sealed class KydlCore.Features.Items.Contracts.KyResult
   method System.String KydlCore.Features.Items.Contracts.KyResult::ToString()
   method System.String KydlCore.Features.Items.Contracts.KyResult::get_Id()
   method System.String KydlCore.Features.Items.Contracts.KyResult::get_Reason()
+enum KydlCore.Ui.TextRole
+  field KydlCore.Ui.TextRole::Bad : KydlCore.Ui.TextRole = 10
+  field KydlCore.Ui.TextRole::Body : KydlCore.Ui.TextRole = 0
+  field KydlCore.Ui.TextRole::Button : KydlCore.Ui.TextRole = 8
+  field KydlCore.Ui.TextRole::Chip : KydlCore.Ui.TextRole = 11
+  field KydlCore.Ui.TextRole::Good : KydlCore.Ui.TextRole = 9
+  field KydlCore.Ui.TextRole::Name : KydlCore.Ui.TextRole = 1
+  field KydlCore.Ui.TextRole::Note : KydlCore.Ui.TextRole = 3
+  field KydlCore.Ui.TextRole::Section : KydlCore.Ui.TextRole = 6
+  field KydlCore.Ui.TextRole::SectionMuted : KydlCore.Ui.TextRole = 7
+  field KydlCore.Ui.TextRole::Small : KydlCore.Ui.TextRole = 4
+  field KydlCore.Ui.TextRole::SmallNote : KydlCore.Ui.TextRole = 5
+  field KydlCore.Ui.TextRole::Value : KydlCore.Ui.TextRole = 2
+  field KydlCore.Ui.TextRole::value__ : System.Int32
 sealed class KydlCore.Ui.UiColorPicker
   field KydlCore.Ui.UiColorPicker::Root : UnityEngine.UIElements.VisualElement
   method System.Boolean KydlCore.Ui.UiColorPicker::Set(UnityEngine.Color)
@@ -356,11 +370,14 @@ static class KydlCore.Ui.UiControls
   method UnityEngine.UIElements.VisualElement KydlCore.Ui.UiControls::Slider(System.Single,System.Single,System.Single,System.String,System.Action`1<System.Single>)
   method UnityEngine.UIElements.VisualElement KydlCore.Ui.UiControls::Toggle(System.String,System.Boolean,System.Action`1<System.Boolean>)
 static class KydlCore.Ui.UiKit
+  field KydlCore.Ui.UiKit::Bad : UnityEngine.Color
   field KydlCore.Ui.UiKit::Border : UnityEngine.Color
   field KydlCore.Ui.UiKit::ButtonSize : System.Int32 = 21
+  field KydlCore.Ui.UiKit::ChipClass : System.String = kydl-colour-chip
   field KydlCore.Ui.UiKit::FontSize : System.Int32 = 22
   field KydlCore.Ui.UiKit::Gold : UnityEngine.Color
   field KydlCore.Ui.UiKit::GoldDim : UnityEngine.Color
+  field KydlCore.Ui.UiKit::Good : UnityEngine.Color
   field KydlCore.Ui.UiKit::NameColor : UnityEngine.Color
   field KydlCore.Ui.UiKit::NameSize : System.Int32 = 24
   field KydlCore.Ui.UiKit::OnDark : UnityEngine.Color
@@ -375,11 +392,19 @@ static class KydlCore.Ui.UiKit
   field KydlCore.Ui.UiKit::TextDim : UnityEngine.Color
   field KydlCore.Ui.UiKit::Track : UnityEngine.Color
   field KydlCore.Ui.UiKit::ValueColor : UnityEngine.Color
+  method System.Int32 KydlCore.Ui.UiKit::SizeOf(KydlCore.Ui.TextRole)
   method System.Void KydlCore.Ui.UiKit::Borders(UnityEngine.UIElements.VisualElement,System.Single,UnityEngine.Color)
+  method System.Void KydlCore.Ui.UiKit::ColourChip(UnityEngine.UIElements.VisualElement,UnityEngine.Color)
   method System.Void KydlCore.Ui.UiKit::Fade(UnityEngine.UIElements.VisualElement,System.String[])
   method System.Void KydlCore.Ui.UiKit::Pad(UnityEngine.UIElements.VisualElement,System.Single,System.Single)
   method System.Void KydlCore.Ui.UiKit::Radius(UnityEngine.UIElements.VisualElement,System.Single)
+  method System.Void KydlCore.Ui.UiKit::TabText(UnityEngine.UIElements.VisualElement,System.Boolean,System.Boolean)
+  method T KydlCore.Ui.UiKit::Size(T,KydlCore.Ui.TextRole)
+  method T KydlCore.Ui.UiKit::Style(T,KydlCore.Ui.TextRole)
+  method T KydlCore.Ui.UiKit::Tint(T,KydlCore.Ui.TextRole)
+  method UnityEngine.Color KydlCore.Ui.UiKit::ColorOf(KydlCore.Ui.TextRole)
   method UnityEngine.UIElements.Label KydlCore.Ui.UiKit::Label(System.String,System.Single,UnityEngine.Color,System.Boolean)
+  method UnityEngine.UIElements.Label KydlCore.Ui.UiKit::TextLabel(System.String,KydlCore.Ui.TextRole)
   method UnityEngine.UIElements.PanelSettings KydlCore.Ui.UiKit::get_Settings()
   method UnityEngine.UIElements.VisualElement KydlCore.Ui.UiKit::Window(System.String,System.String,System.Action,KydlCore.Ui.UiScroll&)
   method UnityEngine.UIElements.VisualElement KydlCore.Ui.UiKit::get_Root()

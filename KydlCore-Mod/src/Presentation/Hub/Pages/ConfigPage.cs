@@ -30,6 +30,10 @@ internal sealed class ConfigPage : IDisposable
     readonly VisualElement _root = new VisualElement { name = "kydl-config-page" };
     volatile bool _dirty;
     bool _writing;
+    ConfigEntryBase _writingEntry;            // the entry this page is writing right now
+    // text / number boxes by entry: when a write of the page makes the MOD change another entry (a colour row keeps "Hex" in step with
+    // Red / Green / Blue), that box is updated in place - no redraw, so a slider that is being dragged is never rebuilt (user 2026-11-16)
+    readonly Dictionary<ConfigEntryBase, Action> _followers = new Dictionary<ConfigEntryBase, Action>();
     IVisualElementScheduledItem _poll;
 
     internal ConfigPage(ConfigFile file, string[] sections = null)
@@ -57,7 +61,15 @@ internal sealed class ConfigPage : IDisposable
 
     void OnSettingChanged(object sender, SettingChangedEventArgs e)
     {
-        if (_writing) return;                 // our own write: the control already shows the value
+        if (_writing && ReferenceEquals(e.ChangedSetting, _writingEntry)) return;      // our own write: the control already shows the value
+        if (_writing)
+        {
+            // another entry changed BECAUSE of our write (the mod keeps two entries in step): show its new value
+            Action follow;
+            if (_followers.TryGetValue(e.ChangedSetting, out follow)) follow();
+            else _dirty = true;
+            return;
+        }
         _dirty = true;
     }
 
@@ -93,6 +105,7 @@ internal sealed class ConfigPage : IDisposable
         KeyCapture.Cancel("page redrawn");
         _lockSignature = LockSignature();
         _root.Clear();
+        _followers.Clear();
         var shown = new List<ConfigEntryBase>();
         foreach (ConfigDefinition def in _file.Keys)
         {
@@ -190,6 +203,35 @@ internal sealed class ConfigPage : IDisposable
     // can be repeated - KyHub.KeepScaled does that while the page is shown.
     internal const string ScaledClass = "kydl-font-scaled";
 
+    /// <summary>
+    /// KydlCore's text rules for a page a MOD built itself (user 2026-11-16: "KydlCore displays information at the font sizes / font families
+    /// set in it at all times, it always overrides"): every text is scaled like KydlCore's own pages, and a font a mod set on an element is
+    /// taken off again, so the panel's own font shows. Safe to repeat (see ScaleFonts).
+    /// </summary>
+    internal static void EnforceText(VisualElement root)
+    {
+        if (root == null) return;
+        ScaleFonts(root);
+        root.Query<VisualElement>().ForEach(e =>
+        {
+            if (e.style.unityFontDefinition.keyword == StyleKeyword.Undefined) e.style.unityFontDefinition = StyleKeyword.Null;
+            if (e.style.unityFont.keyword == StyleKeyword.Undefined) e.style.unityFont = StyleKeyword.Null;
+            // text colours (user 2026-11-16: the colours of setting names and options are KydlCore's, never a mod's): a text colour that is
+            // not one of KydlCore's own is replaced - the value colour inside an input box, the name colour everywhere else
+            StyleColor colour = e.style.color;
+            bool text = e is TextElement || e is TextField;
+            if (text && colour.keyword == StyleKeyword.Undefined && !e.ClassListContains(UiKit.ChipClass) && !ThemeColours.IsOwn(colour.value))
+                e.style.color = InsideInput(e) ? UiKit.ValueColor : UiKit.NameColor;
+        });
+    }
+
+    static bool InsideInput(VisualElement e)
+    {
+        for (VisualElement at = e; at != null; at = at.parent)
+            if (at is TextField) return true;
+        return false;
+    }
+
     internal static void ScaleFonts(VisualElement root)
     {
         root.Query<VisualElement>().ForEach(e =>
@@ -221,14 +263,21 @@ internal sealed class ConfigPage : IDisposable
         {
             case ControlKind.Toggle: return Toggle(entry, key);
             case ControlKind.Slider: return Slider(entry, min, max);
-            case ControlKind.Number: return Sized(UiControls.TextField(ConfigControlMap.Format(type, entry.BoxedValue), TextMax, t => Write(entry, ConfigControlMap.Parse(type, t))), 160f, "kydl-text");
-            case ControlKind.Text: return Sized(UiControls.TextField((string)entry.BoxedValue, TextMax, t => Write(entry, t)), 360f, "kydl-text");
+            case ControlKind.Number: return Sized(Follow(entry, UiControls.TextField(ConfigControlMap.Format(type, entry.BoxedValue), TextMax, t => Write(entry, ConfigControlMap.Parse(type, t))), () => ConfigControlMap.Format(type, entry.BoxedValue)), 160f, "kydl-text");
+            case ControlKind.Text: return Sized(Follow(entry, UiControls.TextField((string)entry.BoxedValue, TextMax, t => Write(entry, t)), () => (string)entry.BoxedValue), 360f, "kydl-text");
             case ControlKind.Dropdown: return Dropdown(entry, list);
             case ControlKind.Color: return ColorEditor(entry);
             case ControlKind.Key: return RebindButton(entry, false);
             case ControlKind.Shortcut: return RebindButton(entry, true);
             default: return UiControls.Note(entry.GetSerializedValue());
         }
+    }
+
+    // Registers a text box as the follower of its entry: the box shows the entry's value again when the mod changed it during a write of this page.
+    TextField Follow(ConfigEntryBase entry, TextField field, Func<string> shown)
+    {
+        _followers[entry] = () => field.SetValueWithoutNotify(shown() ?? "");
+        return field;
     }
 
     static VisualElement Sized(VisualElement box, float width, string name)
@@ -315,8 +364,9 @@ internal sealed class ConfigPage : IDisposable
     {
         if (value == null || Equals(entry.BoxedValue, value)) return;
         _writing = true;
+        _writingEntry = entry;
         try { entry.BoxedValue = value; }
-        finally { _writing = false; }
+        finally { _writing = false; _writingEntry = null; }
         ModLog.Verbose("ConfigPage: " + entry.Definition.Section + " / " + entry.Definition.Key + " = " + entry.GetSerializedValue());
     }
 

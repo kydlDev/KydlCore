@@ -26,7 +26,12 @@ internal sealed class HubModel
     /// <summary>The title of that automatic tab.</summary>
     public const string AutoTabTitle = "Settings";
 
+    /// <summary>Between a tab id and the name of one of its parts in the id of a part tab (see SplitTab).</summary>
+    public const char PartSeparator = '\u001f';
+
     sealed class Tab { public string Id; public string Title; public int Order; public int Seq; }
+
+    readonly Dictionary<string, string[]> _parts = new Dictionary<string, string[]>();        // guid + "\n" + tab id -> the parts the tab is shown as
 
     readonly Dictionary<string, string> _mods = new Dictionary<string, string>();             // guid -> row-1 title
     readonly Dictionary<string, List<Tab>> _tabs = new Dictionary<string, List<Tab>>();      // guid -> registered tabs (registration order)
@@ -111,18 +116,82 @@ internal sealed class HubModel
         return list.All(t => t.Id != id);
     }
 
-    /// <summary>The row-2 tab ids of a mod in display order; just { AutoTabId } when the mod registered none (also for a mod not in row 1).</summary>
+    /// <summary>
+    /// The row-2 tab ids of a mod in display order; just { AutoTabId } when the mod registered none (also for a mod not in row 1).
+    /// A tab that is shown as parts (SplitTab) is replaced by its part tabs, at its place.
+    /// </summary>
     public string[] TabIds(string modGuid)
+    {
+        var ids = new List<string>();
+        foreach (string id in OwnTabIds(modGuid))
+        {
+            string[] parts = PartsOf(modGuid, id);
+            if (parts == null) ids.Add(id);
+            else foreach (string part in parts) ids.Add(PartId(id, part));
+        }
+        return ids.ToArray();
+    }
+
+    // The tabs of a mod before any is replaced by its parts.
+    string[] OwnTabIds(string modGuid)
     {
         List<Tab> list = Registered(modGuid);
         if (list.Count == 0) return new[] { AutoTabId };
         return list.OrderBy(t => t.Order).ThenBy(t => t.Seq).Select(t => t.Id).ToArray();
     }
 
-    /// <summary>The title of a row-2 tab, or null when the mod has no such tab.</summary>
+    /// <summary>The id of the part tab that shows one part of a tab.</summary>
+    public static string PartId(string tabId, string part) { return tabId + PartSeparator + part; }
+
+    /// <summary>The part a part-tab id names, or null for the id of a whole tab.</summary>
+    public static string PartOf(string id)
+    {
+        int cut = string.IsNullOrEmpty(id) ? -1 : id.IndexOf(PartSeparator);
+        return cut < 0 ? null : id.Substring(cut + 1);
+    }
+
+    /// <summary>
+    /// Shows one tab of a mod as several: one row-2 tab per part, titled with the part (KydlCore shows a mod's "Settings" tab as one tab
+    /// per config category, user 2026-11-16). Fewer than two parts (or null) = the tab is shown whole again. The tab itself stays
+    /// registered: HasTab still knows it, and selecting it selects its first part. False for a blank guid or tab id.
+    /// </summary>
+    public bool SplitTab(string modGuid, string tabId, IList<string> parts)
+    {
+        if (string.IsNullOrEmpty(modGuid) || string.IsNullOrEmpty(tabId)) return false;
+        string key = modGuid + "\n" + tabId;
+        string[] now = parts == null ? new string[0] : parts.Where(p => !string.IsNullOrEmpty(p)).Distinct().ToArray();
+        string[] old;
+        bool had = _parts.TryGetValue(key, out old);
+        if (now.Length < 2)
+        {
+            if (had) { _parts.Remove(key); _dirty = true; }
+        }
+        else if (!had || !old.SequenceEqual(now)) { _parts[key] = now; _dirty = true; }
+        Settle();
+        return true;
+    }
+
+    // The parts a tab is shown as, or null when it is shown whole.
+    string[] PartsOf(string modGuid, string tabId)
+    {
+        string[] parts = null;
+        if (!string.IsNullOrEmpty(modGuid) && !string.IsNullOrEmpty(tabId)) _parts.TryGetValue(modGuid + "\n" + tabId, out parts);
+        return parts;
+    }
+
+    /// <summary>Does the mod have this tab: one it registered (also while it is shown as parts), its automatic tab, or a part tab on screen?</summary>
+    public bool HasTab(string modGuid, string id)
+    {
+        if (string.IsNullOrEmpty(modGuid) || string.IsNullOrEmpty(id)) return false;
+        return OwnTabIds(modGuid).Contains(id) || TabIds(modGuid).Contains(id);
+    }
+
+    /// <summary>The title of a row-2 tab, or null when the mod has no such tab. A part tab is titled with its part.</summary>
     public string TabTitle(string modGuid, string id)
     {
         if (string.IsNullOrEmpty(id)) return null;
+        string part = PartOf(id);
+        if (part != null) return TabIds(modGuid).Contains(id) ? part : null;
         List<Tab> list = Registered(modGuid);
         if (list.Count == 0) return id == AutoTabId ? AutoTabTitle : null;
         var tab = list.FirstOrDefault(t => t.Id == id);
@@ -150,7 +219,13 @@ internal sealed class HubModel
         if (string.IsNullOrEmpty(guid) || !_mods.ContainsKey(guid)) return false;
         string tab = tabId;
         if (tab == null) tab = Pick(guid);
-        else if (!TabIds(guid).Contains(tab)) return false;
+        else if (!TabIds(guid).Contains(tab))
+        {
+            // a tab that is shown as parts: its first part is what "open that tab" means
+            string[] parts = PartsOf(guid, tab);
+            if (parts == null || !OwnTabIds(guid).Contains(tab)) return false;
+            tab = PartId(tab, parts[0]);
+        }
         if (SelectedMod != guid || SelectedTab != tab) { SelectedMod = guid; SelectedTab = tab; _dirty = true; }
         _lastTab[guid] = tab;
         Settle();

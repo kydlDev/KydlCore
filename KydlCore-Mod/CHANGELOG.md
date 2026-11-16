@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.1
+- New: in the KY hub (F6) every settings category of a mod has its own tab, for every mod. Categories that belong together share one tab (for example all "Staff of Protection - ..." sections of ComfortMagicBubbles). "General" comes first and "DebugLog" last. A mod with a single category keeps its one "Settings" tab.
+- Changed: every page in the KY hub is now shown with KydlCore's own text sizes, font and text colours, also a page a mod builds itself (for example the Bubbles tab of ComfortMagicBubbles, which was shown with bigger text than the Settings pages). A size, font or text colour a mod sets is replaced.
+- Fixed: on a Settings page, a value that a mod keeps in step with another one now follows at once. Example: the `Hex` box of a colour row did not change while the Red / Green / Blue sliders were moved.
+
 ## 1.1.0
 - New for mod authors: the flight recorder. `FlightRecorder.Track(component, label, facts)` keeps the last two minutes of a creature or object (position, speed, health, AI target, network owner, whether its zone is loaded, the mod's own facts); `FlightRecorder.Dump(reason)`, `Note`, `Untrack`, `LastDumpPath` and `TrackedCount` complete it. It is always on, in memory only.
 - It writes a report file to `BepInEx/cache/KydlCore/flight/` only when something goes wrong: a failed DrakesTestLab test, a CHECK OFF, an error of a KydlDev mod, or a mod's own `FlightRecorder.Dump`. At most 30 files per game start; files older than 3 days and everything beyond the newest 100 are removed at game start. Attach such a file to a bug report.

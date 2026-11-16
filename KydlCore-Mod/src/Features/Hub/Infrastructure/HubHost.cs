@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using BepInEx;
 using BepInEx.Bootstrap;
 using KydlCore.Common;
@@ -95,6 +96,53 @@ internal static class HubHost
             KyHub.Model.AddMod(guid, KyHub.TitleOf(guid) ?? info.Metadata.Name);
         }
         ModLog.Verbose("HubHost: mods listed " + before + " -> " + KyHub.Model.ModCount);
+        SplitSettings();
+    }
+
+    // User 2026-11-16: every config category of a mod is its own row-2 tab, for every mod (sections that belong together are one tab, see
+    // ConfigGroups). The mods register ONE "Settings" tab (or none: the automatic one) that shows all their config entries; the hub shows
+    // that tab as one tab per group. Worked out every time the hub opens: a mod may have made new sections since (a row for a new player).
+    static readonly Dictionary<string, List<ConfigGroups.Group>> Groups = new Dictionary<string, List<ConfigGroups.Group>>();
+
+    static void SplitSettings()
+    {
+        foreach (PluginInfo info in Chainloader.PluginInfos.Values)
+        {
+            string guid = info.Metadata.GUID;
+            if (!HubModel.IsHubGuid(guid) || info.Instance == null || info.Instance.Config == null) continue;
+            var sections = new List<string>();
+            foreach (BepInEx.Configuration.ConfigDefinition def in info.Instance.Config.Keys)
+                if (!sections.Contains(def.Section)) sections.Add(def.Section);
+            List<ConfigGroups.Group> groups = ConfigGroups.Of(sections);
+            Groups[guid] = groups;
+            var names = new List<string>();
+            foreach (ConfigGroups.Group g in groups) names.Add(g.Name);
+            KyHub.Model.SplitTab(guid, HubModel.AutoTabId, names);
+            ModLog.Verbose("HubHost: Settings of " + guid + " shown as " + (names.Count < 2 ? "one tab" : names.Count + " tabs (" + string.Join(", ", names.ToArray()) + ")"));
+        }
+    }
+
+    // The page of one part of a mod's Settings tab: the config entries of that group's sections.
+    static VisualElement GroupPage(string mod, string part)
+    {
+        PluginInfo info;
+        List<ConfigGroups.Group> groups;
+        if (!Chainloader.PluginInfos.TryGetValue(mod, out info) || info.Instance == null || !Groups.TryGetValue(mod, out groups)) return null;
+        ConfigGroups.Group group = groups.Find(g => g.Name == part);
+        if (group == null) return null;
+        // sections made since the hub was opened (a new player's colour row) still belong to their tab
+        foreach (BepInEx.Configuration.ConfigDefinition def in info.Instance.Config.Keys)
+            if (ConfigGroups.NameOf(def.Section) == part && !group.Sections.Contains(def.Section)) group.Sections.Add(def.Section);
+        try
+        {
+            _config = new ConfigPage(info.Instance.Config, group.Sections.ToArray());
+            return _config.Root;
+        }
+        catch (Exception e)
+        {
+            ModLog.Error("HubHost: the '" + part + "' settings page of " + mod + " failed: " + e);
+            return null;
+        }
     }
 
     // The page factory of HubView: the mod's own page, or the auto Settings page (all config entries) of a mod without tabs.
@@ -102,11 +150,23 @@ internal static class HubHost
     {
         DisposeConfig();
         VisualElement page = null;
-        if (KyHub.Model.IsAutoTab(mod)) page = global::KydlCore.Ui.UiLog.Within(mod, () => AutoPage(mod));
+        string part = HubModel.PartOf(tab);
+        if (part != null) page = global::KydlCore.Ui.UiLog.Within(mod, () => GroupPage(mod, part));
+        else if (KyHub.Model.IsAutoTab(mod)) page = global::KydlCore.Ui.UiLog.Within(mod, () => AutoPage(mod));
         else page = KyHub.BuildPage(mod, tab);
+        if (page != null)
+        {
+            // every page, also one a mod built itself, is shown with KydlCore's text sizes and font; repeated while it is on screen,
+            // because a page may add rows later (a colour editor that opens, another bubble kind chosen)
+            VisualElement shown = page;
+            global::KydlCore.Presentation.Hub.Pages.ConfigPage.EnforceText(shown);
+            shown.schedule.Execute(() => global::KydlCore.Presentation.Hub.Pages.ConfigPage.EnforceText(shown)).Every(EnforceTextMs);
+        }
         KyHub.RaiseTabShown(mod, tab);
         return page;
     }
+
+    const long EnforceTextMs = 200;
 
     static VisualElement AutoPage(string mod)
     {
