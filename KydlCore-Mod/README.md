@@ -41,3 +41,11 @@ Diagnostics: `FlightRecorder.Track(component, label, () => facts)` for every cre
 
 ## Bug reports
 Turn on `[DebugLog] Enable`, reproduce the problem, and attach `BepInEx/LogOutput.log`. If `BepInEx/cache/KydlCore/flight/` holds a newer report file, attach that too.
+
+---
+
+![KydlDev](https://raw.githubusercontent.com/kydlDev/.github/main/branding/KydlDev-banner-960x240.png)
+
+## Get help and stay in touch
+Questions, bug reports, ideas or mod requests? Come say hi in the **KydlDev Discord**: **https://discord.gg/tX2CcTNC4W**
+Everyone is welcome, and it is the quickest way to reach me. Source code and issues: https://github.com/kydlDev
