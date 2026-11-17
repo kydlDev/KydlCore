@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using BepInEx;
 using BepInEx.Bootstrap;
@@ -135,8 +135,20 @@ internal static class HubHost
             if (ConfigGroups.NameOf(def.Section) == part && !group.Sections.Contains(def.Section)) group.Sections.Add(def.Section);
         try
         {
-            _config = new ConfigPage(info.Instance.Config, group.Sections.ToArray());
-            return _config.Root;
+            // a mod's own panel at the end of the tab (KyHub.SetGroupPanel) draws some sections itself: they are not drawn as plain entries
+            KyHub.GroupPanel panel = KyHub.PanelOf(mod, part);
+            List<string> plain = ConfigGroups.Shown(group.Sections, panel == null ? null : panel.Replaces);
+            // never ConfigPage with no sections: that means "every section of the mod"
+            if (plain.Count > 0) _config = new ConfigPage(info.Instance.Config, plain.ToArray());
+            if (panel == null) return _config.Root;
+            var page = new VisualElement { name = "kydl-group-page" };
+            page.style.flexShrink = 0;
+            // the panel goes above the entries (KyHub.SetGroupPanel atTop / SetGroupPage) or after them
+            VisualElement extra = panel.Build();
+            if (panel.AtTop && extra != null) page.Add(extra);
+            if (_config != null) page.Add(_config.Root);
+            if (!panel.AtTop && extra != null) page.Add(extra);
+            return page;
         }
         catch (Exception e)
         {

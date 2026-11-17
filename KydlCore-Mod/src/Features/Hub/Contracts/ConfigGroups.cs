@@ -51,6 +51,19 @@ internal static class ConfigGroups
         return groups;
     }
 
+    /// <summary>
+    /// The sections a tab draws as plain entries when a mod's own panel replaces some of them (KyHub.SetGroupPanel). Expected outcome: the given
+    /// sections in their order without the ones `replaced` says yes to; all of them when `replaced` is null; an empty list for no sections.
+    /// </summary>
+    internal static List<string> Shown(IEnumerable<string> sections, Func<string, bool> replaced)
+    {
+        var shown = new List<string>();
+        if (sections == null) return shown;
+        foreach (string section in sections)
+            if (replaced == null || !replaced(section)) shown.Add(section);
+        return shown;
+    }
+
     static void Move(List<Group> groups, string name, int to)
     {
         Group group = groups.Find(g => g.Name == name);

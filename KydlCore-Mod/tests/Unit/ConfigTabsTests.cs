@@ -87,6 +87,28 @@ public class ConfigTabsTests
         Assert.That((ICollection)Groups.GetMethod("Of", Any).Invoke(null, new object[] { null }), Is.Empty);
     }
 
+    static string[] Shown(string[] sections, Func<string, bool> replaced)
+    {
+        var shown = (List<string>)Groups.GetMethod("Shown", Any).Invoke(null, new object[] { sections, replaced });
+        return shown.ToArray();
+    }
+
+    [Test]
+    public void Shown_LeavesOutTheSectionsAPanelReplaces_KeepsTheOrder()
+    {
+        string[] sections = { "Staff - Appearance", "Staff - Yourself", "Staff - Player: Bjorn" };
+        Assert.That(Shown(sections, s => !s.EndsWith("Appearance")), Is.EqualTo(new[] { "Staff - Appearance" }));
+        Assert.That(Shown(sections, s => false), Is.EqualTo(sections));
+        Assert.That(Shown(sections, s => true), Is.Empty, "everything replaced: nothing is drawn as a plain entry");
+    }
+
+    [Test]
+    public void Shown_WithoutAPanel_IsEveryoneOfTheSections()
+    {
+        Assert.That(Shown(new[] { "A", "B" }, null), Is.EqualTo(new[] { "A", "B" }));
+        Assert.That(Shown(null, s => true), Is.Empty);
+    }
+
     // ---- HubModel.SplitTab -------------------------------------------------------------------------------------------------
     sealed class Hub
     {
@@ -136,11 +158,56 @@ public class ConfigTabsTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(hub.TabIds(A), Is.EqualTo(new[] { "bubbles", Part("settings", "General"), Part("settings", "Auto-fade"), Part("settings", "DebugLog"), "extra" }));
+            // user 2026-11-17: "General" first and "DebugLog" last in row 2, whatever tabs the mod registered around the settings tab
+            Assert.That(hub.TabIds(A), Is.EqualTo(new[] { Part("settings", "General"), "bubbles", Part("settings", "Auto-fade"), "extra", Part("settings", "DebugLog") }));
             Assert.That(hub.TabTitle(A, Part("settings", "Auto-fade")), Is.EqualTo("Auto-fade"));
             Assert.That(hub.TabTitle(A, Part("settings", "Nothing")), Is.Null, "a part the tab does not have");
             Assert.That(hub.TabTitle(A, "bubbles"), Is.EqualTo("Bubbles"));
             Assert.That(hub.Changes, Is.EqualTo(before + 1), "one Changed for the split");
+        });
+    }
+
+    [Test]
+    public void TabIds_GeneralIsFirst_DebugLogIsLast_AlsoForTabsTheModRegisteredWithThoseTitles()
+    {
+        var hub = new Hub();
+        hub.AddMod(A);
+        hub.AddTab(A, "log", "DebugLog", 0);              // registered first, still last
+        hub.AddTab(A, "stats", "Stats", 10);
+        hub.AddTab(A, "main", "General", 20);             // registered late, still first
+        hub.AddTab(A, "more", "More", 30);
+
+        Assert.That(hub.TabIds(A), Is.EqualTo(new[] { "main", "stats", "more", "log" }));
+    }
+
+    [Test]
+    public void TabIds_WithoutGeneralOrDebugLog_KeepTheirOrder_AndTheOrderFollowsAChange()
+    {
+        var hub = new Hub();
+        hub.AddMod(A);
+        hub.AddTab(A, "b", "Bravo", 20);
+        hub.AddTab(A, "a", "Alpha", 10);
+        Assert.That(hub.TabIds(A), Is.EqualTo(new[] { "a", "b" }));
+
+        hub.AddTab(A, "a", "DebugLog", 10);               // the same tab gets the title: it moves to the end
+        Assert.That(hub.TabIds(A), Is.EqualTo(new[] { "b", "a" }));
+    }
+
+    [Test]
+    public void TabIds_ATabOfTheModBeforeTheSettingsTab_NoLongerComesBeforeGeneral()
+    {
+        var hub = new Hub();
+        hub.AddMod(A);
+        hub.AddTab(A, "bubbles", "Bubbles", 0);
+        hub.AddTab(A, "settings", "Settings", 100);
+        hub.Split(A, "settings", "Staff", "General", "DebugLog");
+
+        string[] ids = hub.TabIds(A);
+        Assert.Multiple(() =>
+        {
+            Assert.That(ids.First(), Is.EqualTo(Part("settings", "General")));
+            Assert.That(ids.Last(), Is.EqualTo(Part("settings", "DebugLog")));
+            Assert.That(ids, Is.EqualTo(new[] { Part("settings", "General"), "bubbles", Part("settings", "Staff"), Part("settings", "DebugLog") }));
         });
     }
 

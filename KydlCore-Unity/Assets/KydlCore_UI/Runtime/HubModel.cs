@@ -129,7 +129,40 @@ internal sealed class HubModel
             if (parts == null) ids.Add(id);
             else foreach (string part in parts) ids.Add(PartId(id, part));
         }
-        return ids.ToArray();
+        return GeneralFirstDebugLogLast(modGuid, ids);
+    }
+
+    /// <summary>The title of the tab "General", which is always the first tab of a mod (user, 2026-11-17).</summary>
+    public const string FirstTitle = "General";
+    /// <summary>The title of the tab "DebugLog", which is always the last tab of a mod (user, 2026-11-17).</summary>
+    public const string LastTitle = "DebugLog";
+
+    // User 2026-11-17: in every mod "General" is the first tab and "DebugLog" the last, whatever else the mod registered (a tab of its own
+    // used to sit in front of the settings tabs). The other tabs keep their order. A tab counts by its title, a part tab by its part.
+    string[] GeneralFirstDebugLogLast(string modGuid, List<string> ids)
+    {
+        var first = new List<string>();
+        var middle = new List<string>();
+        var last = new List<string>();
+        foreach (string id in ids)
+        {
+            string title = TitleForOrder(modGuid, id);
+            if (title == FirstTitle) first.Add(id);
+            else if (title == LastTitle) last.Add(id);
+            else middle.Add(id);
+        }
+        first.AddRange(middle);
+        first.AddRange(last);
+        return first.ToArray();
+    }
+
+    // The title a tab is ordered by: its part for a part tab, its registered title, or "Settings" for the automatic tab.
+    string TitleForOrder(string modGuid, string id)
+    {
+        string part = PartOf(id);
+        if (part != null) return part;
+        Tab tab = Registered(modGuid).FirstOrDefault(t => t.Id == id);
+        return tab != null ? tab.Title : AutoTabTitle;
     }
 
     // The tabs of a mod before any is replaced by its parts.

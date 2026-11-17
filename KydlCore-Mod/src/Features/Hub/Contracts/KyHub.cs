@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using KydlCore.Common;
 using KydlCore.Features.Hub.Infrastructure;
@@ -82,6 +82,72 @@ public static class KyHub
     {
         if (build == null) { ModLog.Warn("KyHub.AddPage: needs a page builder (mod '" + modGuid + "', tab '" + id + "')"); return null; }
         return AddTab(modGuid, id, title, () => KyPageView.Host(build, refreshSeconds * 1000), order);
+    }
+
+    /// <summary>A panel a mod put into one settings tab (at its end, or at its top), and which config sections of that tab it draws instead of the plain entries.</summary>
+    internal sealed class GroupPanel
+    {
+        internal Func<VisualElement> Build;
+        internal Func<string, bool> Replaces;
+        internal bool AtTop;
+    }
+
+    static readonly Dictionary<string, GroupPanel> GroupPanels = new Dictionary<string, GroupPanel>();
+
+    /// <summary>
+    /// Puts a panel of the mod's own at the END of one settings tab of the F6 hub (the tab is named like the config category: "Staff of
+    /// Protection" for the sections "Staff of Protection - Appearance", "Staff of Protection - Yourself", ...). `build` is called every time
+    /// the tab is shown. `replaces` says which config sections of that tab the panel draws itself: their plain entries are left out of the
+    /// F6 page (the F1 menu and the .cfg file still hold them); null = none. A second call for the same tab replaces the first. Returns false
+    /// for a blank GUID or tab name or a null `build` (a warning is logged).
+    /// </summary>
+    public static bool SetGroupPanel(string modGuid, string group, Func<VisualElement> build, Func<string, bool> replaces = null)
+    {
+        return SetGroupPanel(modGuid, group, build, replaces, false);
+    }
+
+    /// <summary>
+    /// Like <see cref="SetGroupPanel(string, string, Func{VisualElement}, Func{string, bool})"/>, with the place of the panel: `atTop` true puts
+    /// it ABOVE the tab's config entries (an action that belongs to the category, like "take a screenshot now" over the screenshot settings),
+    /// false at the end.
+    /// </summary>
+    public static bool SetGroupPanel(string modGuid, string group, Func<VisualElement> build, Func<string, bool> replaces, bool atTop)
+    {
+        if (string.IsNullOrEmpty(modGuid) || string.IsNullOrEmpty(group) || build == null)
+        {
+            ModLog.Warn("KyHub.SetGroupPanel: needs a mod GUID, a tab name and a panel builder (got '" + modGuid + "', '" + group + "', " + (build == null ? "no builder" : "a builder") + ")");
+            return false;
+        }
+        GroupPanels[Key(modGuid, group)] = new GroupPanel { Build = build, Replaces = replaces, AtTop = atTop };
+        ModLog.Verbose("KyHub: panel at the " + (atTop ? "top" : "end") + " of the '" + group + "' tab of " + modGuid);
+        return true;
+    }
+
+    /// <summary>
+    /// A declarative page (<see cref="KyPage"/>, the same as <see cref="AddPage"/> draws) as the panel of one settings tab, so a mod's own
+    /// buttons and notes share the tab with the category's config entries instead of getting a second tab of the same name. `atTop` true
+    /// (default) draws it above the entries. The page is rebuilt every `refreshSeconds` while shown, like AddPage. Returns false for a
+    /// blank GUID or tab name or a null `build` (a warning is logged).
+    /// </summary>
+    public static bool SetGroupPage(string modGuid, string group, Func<KyPage> build, bool atTop = true, int refreshSeconds = 2)
+    {
+        if (build == null) { ModLog.Warn("KyHub.SetGroupPage: needs a page builder (mod '" + modGuid + "', tab '" + group + "')"); return false; }
+        return SetGroupPanel(modGuid, group, () => KyPageView.Host(build, refreshSeconds * 1000), null, atTop);
+    }
+
+    /// <summary>Takes a panel of <see cref="SetGroupPanel"/> away again: the tab draws all its entries as before. False when there was none.</summary>
+    public static bool RemoveGroupPanel(string modGuid, string group)
+    {
+        bool removed = !string.IsNullOrEmpty(modGuid) && !string.IsNullOrEmpty(group) && GroupPanels.Remove(Key(modGuid, group));
+        ModLog.Verbose("KyHub: RemoveGroupPanel " + modGuid + " / " + group + (removed ? "" : " (was not there)"));
+        return removed;
+    }
+
+    /// <summary>The panel of a settings tab, or null.</summary>
+    internal static GroupPanel PanelOf(string modGuid, string group)
+    {
+        GroupPanel panel;
+        return GroupPanels.TryGetValue(Key(modGuid, group), out panel) ? panel : null;
     }
 
     /// <summary>Removes a tab of a mod. False when it was not there. A mod left with no tab shows the automatic "Settings" tab again.</summary>

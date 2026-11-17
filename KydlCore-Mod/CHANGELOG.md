@@ -1,12 +1,13 @@
 # Changelog
 
 ## 1.1.1
-- New: in the KY hub (F6) every settings category of a mod has its own tab, for every mod. Categories that belong together share one tab (for example all "Staff of Protection - ..." sections of ComfortMagicBubbles). "General" comes first and "DebugLog" last. A mod with a single category keeps its one "Settings" tab.
-- Changed: every page in the KY hub is now shown with KydlCore's own text sizes, font and text colours, also a page a mod builds itself (for example the Bubbles tab of ComfortMagicBubbles, which was shown with bigger text than the Settings pages). A size, font or text colour a mod sets is replaced.
+- New: in the KY hub (F6) every settings category of a mod has its own tab, for every mod. Categories that belong together share one tab (for example all "Staff of Protection - ..." sections of ComfortMagicBubbles). "General" comes first and "DebugLog" last, also when a mod has tabs of its own (they sit in between). A mod with a single category keeps its one "Settings" tab.
+- New for mod authors: `KyHub.SetGroupPanel` puts a panel of the mod's own at the end of one settings tab and can leave out the plain entries of the sections that panel draws itself (they stay in the F1 menu and the cfg file); `KyHub.RemoveGroupPanel` takes it away again. An overload with `atTop` puts the panel above the entries instead, and `KyHub.SetGroupPage` does the same with a declarative page (buttons and notes, like `AddPage`), so a mod's own actions share the tab of their config category instead of a second tab with the same name.
+- Changed: every page in the KY hub is now shown with KydlCore's own text sizes, font and text colours, also a page a mod builds itself (before, such a page could be shown with bigger text than the Settings pages). A size, font or text colour a mod sets is replaced.
 - Fixed: on a Settings page, a value that a mod keeps in step with another one now follows at once. Example: the `Hex` box of a colour row did not change while the Red / Green / Blue sliders were moved.
 
 ### Testing
-- Unit tests: 538 passed. Integration tests: 36 passed.
+- Unit tests: 543 passed. Integration tests: 36 passed.
 - Property-based tests (FsCheck, included in the unit tests above): 23 property checks with generated inputs.
 - Coverage of the testable code: 98.3%. Mutation testing (Stryker): 96.3% of the mutants are caught by the tests.
 - Performance benchmarks (BenchmarkDotNet): 13.
