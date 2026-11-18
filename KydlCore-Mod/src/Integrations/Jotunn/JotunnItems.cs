@@ -75,7 +75,9 @@ internal sealed class JotunnItems : IKyGameSide
     {
         try
         {
-            if (c.Kind == KyKind.Item)
+            bool materialWithoutItem = c.Kind == KyKind.Material && c.Prefab.GetComponent<ItemDrop>() == null;
+            if (materialWithoutItem) return KyResult.Rejected(id, "a material added to the game by KydlCore must be an item (ItemDrop); a deposit is added by its mod (RegisterInGame = false)");
+            if (c.Kind == KyKind.Item || c.Kind == KyKind.Material)
             {
                 var cfg = new ItemConfig { Amount = c.Recipe != null ? Math.Max(1, c.Recipe.Amount) : 1 };
                 if (c.Recipe != null)

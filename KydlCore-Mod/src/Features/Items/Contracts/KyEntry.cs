@@ -3,8 +3,12 @@ using UnityEngine;
 
 namespace KydlCore.Features.Items.Contracts;
 
-/// <summary>Whether a <see cref="KyEntry"/> is an inventory item or a build piece.</summary>
-public enum KyKind { Item, Piece }
+/// <summary>
+/// What a <see cref="KyEntry"/> is: an inventory item, a build piece, or a material (user, 2026-11-18): an ingredient (saltpeter, gunpowder, water) or a
+/// gatherable / world deposit (bat guano deposit, sulfurous mud). Materials get their own "Materials" tab in the item viewer. Appended last so the
+/// numbers of Item and Piece never change.
+/// </summary>
+public enum KyKind { Item, Piece, Material }
 
 /// <summary>
 /// One of the user's prefabs in the <see cref="KyItems"/> registry (DESIGN 3 / 6): where it comes from (mod GUID and name), what it is and how it is
@@ -46,7 +50,17 @@ public sealed class KyEntry
             return icons != null && icons.Length > 0 ? icons[0] : null;
         }
         Piece piece = PrefabObject.GetComponent<Piece>();
-        return piece != null ? piece.m_icon : null;
+        if (piece != null) return piece.m_icon;
+        return DepositIcon(PrefabObject);
+    }
+
+    /// <summary>A deposit (Pickable) has no icon of its own: it shows the icon of what it yields. Null when there is none.</summary>
+    internal static Sprite DepositIcon(GameObject go)
+    {
+        Pickable pick = go != null ? go.GetComponent<Pickable>() : null;
+        ItemDrop yields = pick != null && pick.m_itemPrefab != null ? pick.m_itemPrefab.GetComponent<ItemDrop>() : null;
+        Sprite[] icons = yields != null ? yields.m_itemData.m_shared.m_icons : null;
+        return icons != null && icons.Length > 0 ? icons[0] : null;
     }
     /// <summary>Free tags the registering mod gave (may be empty).</summary>
     public IReadOnlyList<string> Tags = new string[0];

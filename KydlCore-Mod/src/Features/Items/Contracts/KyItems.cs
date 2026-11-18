@@ -173,6 +173,7 @@ public static class KyItems
             Piece piece = go.GetComponent<Piece>();
             if (drop != null) { var shared = drop.m_itemData.m_shared; token = shared.m_name; icon = shared.m_icons != null && shared.m_icons.Length > 0 ? shared.m_icons[0] : null; }
             else if (piece != null) { token = piece.m_name; icon = piece.m_icon; }
+            else icon = KyEntry.DepositIcon(go);
         }
         catch (NullReferenceException e) { ModLog.Verbose("KyItems: name / icon of '" + go.name + "' could not be read: " + e.Message); }
         ModLog.Verbose("KyItems: '" + go.name + "' (" + kind + ") from " + modName + " via " + source);

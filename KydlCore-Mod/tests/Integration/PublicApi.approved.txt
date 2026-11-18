@@ -321,6 +321,7 @@ static class KydlCore.Features.Items.Contracts.KyItems
   method System.Void KydlCore.Features.Items.Contracts.KyItems::remove_Changed(System.Action)
 enum KydlCore.Features.Items.Contracts.KyKind
   field KydlCore.Features.Items.Contracts.KyKind::Item : KydlCore.Features.Items.Contracts.KyKind = 0
+  field KydlCore.Features.Items.Contracts.KyKind::Material : KydlCore.Features.Items.Contracts.KyKind = 2
   field KydlCore.Features.Items.Contracts.KyKind::Piece : KydlCore.Features.Items.Contracts.KyKind = 1
   field KydlCore.Features.Items.Contracts.KyKind::value__ : System.Int32
 sealed class KydlCore.Features.Items.Contracts.KyRecipe

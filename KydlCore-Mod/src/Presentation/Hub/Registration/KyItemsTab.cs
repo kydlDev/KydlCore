@@ -17,8 +17,8 @@ namespace KydlCore.Presentation.Hub.Registration;
 /// </summary>
 internal static class KyItemsTab
 {
-    internal const string SettingsId = "settings", ItemsId = "ky-items";
-    const int ItemsOrder = 10;
+    internal const string SettingsId = "settings", ItemsId = "ky-items", MaterialsId = "ky-materials";
+    const int ItemsOrder = 10, MaterialsOrder = 11;
 
     /// <summary>Registers the Settings tab and follows the registry: the KY-Items tab appears and disappears with its entries.</summary>
     /// Expected outcome: true when the Settings tab is registered.
@@ -34,27 +34,37 @@ internal static class KyItemsTab
 
     static void Sync()
     {
-        bool any = KyItems.All.Count > 0;
-        if (any) KyHub.AddTab(Plugin.ModGuid, ItemsId, "KY-Items", Build, ItemsOrder);
-        else KyHub.RemoveTab(Plugin.ModGuid, ItemsId);
-        ModLog.Verbose("KyItemsTab: " + (any ? "KY-Items tab shown (" + KyItems.All.Count + " prefab(s))" : "no entries, KY-Items tab hidden"));
-        if (any) HubHost.Refresh(Plugin.ModGuid, ItemsId);
+        SyncTab(ItemsId, "KY-Items", ItemsOrder, e => e.Kind != KyKind.Material);
+        SyncTab(MaterialsId, "Materials", MaterialsOrder, e => e.Kind == KyKind.Material);
+    }
+
+    // One tab per kind of list: shown only while it has entries (Materials = ingredients, gatherables and world deposits of the user's mods).
+    static void SyncTab(string id, string title, int order, System.Func<KyEntry, bool> wanted)
+    {
+        int count = KyItems.All.Count(wanted);
+        if (count > 0) KyHub.AddTab(Plugin.ModGuid, id, title, () => Build(wanted, id), order);
+        else KyHub.RemoveTab(Plugin.ModGuid, id);
+        ModLog.Verbose("KyItemsTab: " + (count > 0 ? title + " tab shown (" + count + " prefab(s))" : "no entries, " + title + " tab hidden"));
+        if (count > 0) HubHost.Refresh(Plugin.ModGuid, id);
     }
 
     // The page: the user's prefabs grouped by mod, text at the settings page size (D-061).
-    static VisualElement Build()
+    static VisualElement Build(System.Func<KyEntry, bool> wanted, string id)
     {
         var page = new VisualElement { name = "kydl-kyitems-page" };
         page.style.flexShrink = 0;
-        var groups = KyItems.All.GroupBy(e => string.IsNullOrEmpty(e.ModName) ? e.ModGuid : e.ModName).ToList();
-        page.Add(UiControls.Note(KyItems.All.Count + " prefab(s) of " + groups.Count + " source(s). Items and pieces the KydlDev mods contribute; pieces in the '" + KyItems.CategoryName + "' build category are included."));
+        var shown = KyItems.All.Where(wanted).ToList();
+        var groups = shown.GroupBy(e => string.IsNullOrEmpty(e.ModName) ? e.ModGuid : e.ModName).ToList();
+        page.Add(UiControls.Note(shown.Count + " prefab(s) of " + groups.Count + " source(s). " + (id == MaterialsId
+            ? "Ingredients, gatherables and world deposits the KydlDev mods contribute."
+            : "Items and pieces the KydlDev mods contribute; pieces in the '" + KyItems.CategoryName + "' build category are included.")));
         foreach (var group in groups)
         {
             page.Add(UiControls.Heading(group.Key));
             foreach (KyEntry entry in group) page.Add(Row(entry));
         }
         ConfigPage.ScaleFonts(page);
-        ModLog.Verbose("KyItemsTab: page built, " + KyItems.All.Count + " prefab(s) in " + groups.Count + " group(s)");
+        ModLog.Verbose("KyItemsTab: " + id + " page built, " + shown.Count + " prefab(s) in " + groups.Count + " group(s)");
         return page;
     }
 
