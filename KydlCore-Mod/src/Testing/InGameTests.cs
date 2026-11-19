@@ -103,7 +103,7 @@ internal static class InGameTests
         foreach (var cp in Jotunn.Utils.ModRegistry.GetPieces())
             if (cp != null && cp.PiecePrefab != null && cp.SourceMod != null && KyItems.IsUserGuid(cp.SourceMod.GUID)) names.Add(cp.PiecePrefab.name);
         int have = KyItems.All.Count;
-        ModLog.Check("KC-04 KY-Items entries (at least the Jotunn ones)", have, names.Count, 0, "prefabs");
+        ModLog.CheckRange("KC-04 KY-Items entries (at least the Jotunn ones)", have, names.Count, double.PositiveInfinity, "prefabs");
         if (!KyItems.Ready) return "FAIL: the registry is not Ready 5 s after the world loaded";
         foreach (string n in names) if (KyItems.Find(n) == null) return "FAIL: '" + n + "' is registered by Jotunn for a com.kydldev.* mod but is not in the registry";
         return "PASS: " + have + " entr" + (have == 1 ? "y" : "ies") + " (" + names.Count + " from Jotunn); " + CountNoIcon() + " without an icon";
