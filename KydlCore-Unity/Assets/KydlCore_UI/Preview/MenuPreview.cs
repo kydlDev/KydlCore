@@ -15,7 +15,7 @@ namespace KydlCore.Ui
     public sealed class MenuPreview : MonoBehaviour
     {
         /// <summary>What the preview shows: the KY hub (fake mods with 1, 3 and 4 tabs) or the example menu.</summary>
-        public enum PreviewKind { Hub, HubManyTabs, MainMenu }
+        public enum PreviewKind { Hub, HubManyTabs, MainMenu, ItemGrid }
 
         public PreviewKind kind = PreviewKind.Hub;
         HubView _hub;
@@ -30,10 +30,11 @@ namespace KydlCore.Ui
             UiKit.Reset();
             var root = UiKit.Root;
             if (root == null) { Debug.LogError("[MenuPreview] UI Toolkit panel could not be made"); return; }
-            if (kind == PreviewKind.Hub || kind == PreviewKind.HubManyTabs)
+            if (kind == PreviewKind.Hub || kind == PreviewKind.HubManyTabs || kind == PreviewKind.ItemGrid)
             {
-                var model = kind == PreviewKind.Hub ? FakeHub() : FakeHubMany();
-                _hub = new HubView(model, UiText.English, (mod, tab) => FakePage(), () => Debug.Log("[MenuPreview] close pressed"));
+                var model = kind == PreviewKind.HubManyTabs ? FakeHubMany() : FakeHub();
+                bool grid = kind == PreviewKind.ItemGrid;
+                _hub = new HubView(model, UiText.English, (mod, tab) => grid ? FakeGridPage() : FakePage(), () => Debug.Log("[MenuPreview] close pressed"));
                 root.Add(_hub.Root);
                 Debug.Log("[MenuPreview] KY hub shown (fake mods)");
                 return;
@@ -79,6 +80,33 @@ namespace KydlCore.Ui
             m.AddTab("com.kydldev.RearViewCamera", "keys", "Keys", 2);
             m.Select("com.kydldev.ChestDecor", "placement");
             return m;
+        }
+
+        // The KY-Items grid (D-096): 6 fake prefabs, two rows of the 4-per-row grid, round coloured icons on a transparent background
+        static VisualElement FakeGridPage()
+        {
+            var page = new VisualElement();
+            page.Add(UiControls.Note("6 prefab(s) of 1 source(s). Items and pieces the KydlDev mods contribute."));
+            page.Add(UiControls.Heading("com.kydldev.GunPowdered"));
+            var cards = new System.Collections.Generic.List<ItemCard>();
+            string[] names = { "Bucket", "Bucket (full)", "Iron Musket", "Cartridge", "Spiked Grenade", "A name long enough to wrap onto a second line" };
+            Color[] colours = { new Color(0.6f, 0.4f, 0.2f), new Color(0.3f, 0.5f, 0.8f), new Color(0.3f, 0.3f, 0.3f), new Color(0.9f, 0.85f, 0.7f), new Color(0.35f, 0.33f, 0.3f), new Color(0.8f, 0.2f, 0.2f) };
+            for (int i = 0; i < names.Length; i++) cards.Add(new ItemCard { Title = names[i], Subtitle = "GP_Example" + i, Icon = FakeIcon(colours[i]) });
+            page.Add(ItemGridView.Build(cards));
+            return page;
+        }
+
+        static Sprite FakeIcon(Color c)
+        {
+            const int s = 64;
+            var tex = new Texture2D(s, s, TextureFormat.RGBA32, false);
+            for (int y = 0; y < s; y++) for (int x = 0; x < s; x++)
+            {
+                float d = Vector2.Distance(new Vector2(x, y), new Vector2(s / 2f, s / 2f));
+                tex.SetPixel(x, y, d < s * 0.4f ? c : new Color(0, 0, 0, 0));
+            }
+            tex.Apply();
+            return Sprite.Create(tex, new Rect(0, 0, s, s), new Vector2(0.5f, 0.5f));
         }
 
         static VisualElement FakePage()

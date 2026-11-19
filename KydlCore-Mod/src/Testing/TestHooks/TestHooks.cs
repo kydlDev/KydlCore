@@ -5,6 +5,7 @@ using KydlCore.Common;
 using KydlCore.Features.Diagnostics.Contracts;
 using KydlCore.Features.Hub.Contracts;
 using KydlCore.Features.Items.Contracts;
+using UnityEngine.UIElements;
 
 namespace KydlCore.Testing.TestHooks;
 
@@ -26,6 +27,22 @@ internal static class TestHooks
     {
         KyHub.Open(string.IsNullOrEmpty(mod) ? null : mod, string.IsNullOrEmpty(tab) ? null : tab);
         return KyHub.IsOpen;
+    }
+
+    /// <summary>
+    /// KydlCore D-096: sets the KY-Items view (grid = true) and builds the KY-Items page as the hub does. Returns "grid|list, cards C, rows R,
+    /// button B": C = icon cards of the grid, R = entries, B = the view button's text.
+    /// </summary>
+    [TestHook("kc.kyItemsView")]
+    static string KyItemsView(bool grid)
+    {
+        if (KydlCore.Configuration.ModSettings.KyItemsView == null) return "no setting";
+        KydlCore.Configuration.ModSettings.KyItemsView.Value = grid ? KydlCore.Configuration.ItemsView.Grid : KydlCore.Configuration.ItemsView.List;
+        var page = KydlCore.Presentation.Hub.Registration.KyItemsTab.BuildPage(KydlCore.Presentation.Hub.Registration.KyItemsTab.ItemsId);
+        int cards = page.Query(name: "kydl-item-card").ToList().Count;
+        var button = page.Q<Button>("kydl-kyitems-view");
+        int entries = KyItems.All.Count(e => e.Kind != KyKind.Material);
+        return (KydlCore.Presentation.Hub.Registration.KyItemsTab.Grid ? "grid" : "list") + ", cards " + cards + ", entries " + entries + ", one card each " + (cards == entries) + ", button " + (button != null ? button.text : "none");
     }
 
     [TestHook("kc.hubIsOpen")]

@@ -1,0 +1,21 @@
+{
+  "name": "ky-items-grid",
+  "description": "D-096 (user 2026-11-19): the KY-Items page has a second view, a grid of big square icons (4 per row) with the name and the prefab name under each; the button at the top right of the page switches between list and grid, and the choice is the [General] KY-Items View setting.",
+  "timeout": 60,
+  "steps": [
+    { "do": "hook", "name": "kc.arena", "contains": "arena at", "label": "start on the arena spot" },
+    { "do": "wait", "until": { "check": "hook", "name": "kc.itemsReady", "args": {}, "expect": true }, "timeout": 15 },
+    { "do": "hook", "name": "kc.kyItemsView", "args": { "grid": true }, "contains": "one card each True, button List view", "label": "grid: one icon card per prefab, the button offers the list" },
+    { "do": "hook", "name": "kc.kyItemsView", "args": { "grid": true }, "contains": "grid, cards", "label": "the grid is on" },
+    { "do": "hook", "name": "kc.hubOpen", "args": { "mod": "com.kydldev.KydlCore", "tab": "ky-items" }, "expect": true, "label": "open the KY-Items page" },
+    { "do": "wait", "seconds": 1.5 },
+    { "do": "invoke", "method": "Kydl.GameProbe.ProbeApi.Screenshot", "label": "GameProbe shot of the grid" },
+    { "do": "wait", "seconds": 1 },
+    { "do": "hook", "name": "kc.kyItemsView", "args": { "grid": false }, "contains": "list, cards 0", "label": "back to the list" },
+    { "do": "hook", "name": "kc.kyItemsView", "args": { "grid": false }, "contains": "button Grid view", "label": "the button offers the grid" },
+    { "do": "hook", "name": "kc.hubClose", "expect": false, "label": "close the hub" },
+    { "do": "console", "command": "killall" },
+    { "do": "console", "command": "removedrops" }
+  ],
+  "asserts": [ { "check": "noErrors", "source": "KydlCore" } ]
+}

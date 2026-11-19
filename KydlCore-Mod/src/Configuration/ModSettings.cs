@@ -19,6 +19,8 @@ internal static class ModSettings
     /// only in ZInput's KeyCode -> InputSystem.Key conversion table, never as a button or a Input.GetKey call (2026-10-30). Read where it is
     /// used (PROJECT_RULES 17), never cached.
     public static ConfigEntry<KeyCode> HubKey;
+    // [General] how the KY-Items / Materials pages show the prefabs (user 2026-11-19, D-096): a list, or a grid of big icons
+    internal static ConfigEntry<ItemsView> KyItemsView;
     // [DebugLog]
     public static ConfigEntry<bool> DebugLog;
 
@@ -45,6 +47,8 @@ internal static class ModSettings
 
         HubKey = c.Bind("General", "HubKey", KeyCode.F6,
             "Opens / closes the KY hub, the one menu of every KydlDev mod. Pick any key from the list; None = the hub has no key. Takes effect at once.");
+        KyItemsView = c.Bind("General", "KY-Items View", ItemsView.List,
+            "How the KY-Items and Materials pages of the hub show the prefabs: List (small icon, name and id per line) or Grid (four big icons per row with the name and the prefab name under each). The button at the top right of those pages switches it too.");
         DebugLog = c.Bind("DebugLog", "Enable", false,
             "Writes detailed lines about everything the mod does to the BepInEx log (for bug reports). Leave off while playing normally.");
 
@@ -53,6 +57,9 @@ internal static class ModSettings
 
         HubKey.SettingChanged += (s, e) => ModLog.Info("Config: HubKey = " + HubKey.Value + " (read on every key check, so the change applies at once)");
         ModLog.Verbose("Config: bound (hub key " + HubKey.Value + ", debug log " + DebugLog.Value + ")");
-        return HubKey != null && DebugLog != null;
+        return HubKey != null && KyItemsView != null && DebugLog != null;
     }
 }
+
+/// <summary>How the KY-Items pages show the prefabs ([General] KY-Items View).</summary>
+internal enum ItemsView { List, Grid }

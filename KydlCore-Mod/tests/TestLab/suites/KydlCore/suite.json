@@ -16,6 +16,12 @@
     },
     {
       "guid": "com.kydldev.KydlCore",
+      "section": "General",
+      "key": "KY-Items View",
+      "value": "List"
+    },
+    {
+      "guid": "com.kydldev.KydlCore",
       "section": "DebugLog",
       "key": "Enable",
       "value": "true"
@@ -60,6 +66,7 @@
     "hub-opens-a-mod-tab",
     "ky-items",
     "ky-items-contribute",
+        "ky-items-grid",
     "flight-recorder"
   ],
   "setup": {

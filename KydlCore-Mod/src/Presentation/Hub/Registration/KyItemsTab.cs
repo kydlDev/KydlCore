@@ -1,6 +1,7 @@
 using System.Linq;
 using KydlCore.Bootstrap;
 using KydlCore.Common;
+using KydlCore.Configuration;
 using KydlCore.Features.Hub.Contracts;
 using KydlCore.Features.Hub.Infrastructure;
 using KydlCore.Features.Items.Contracts;
@@ -55,17 +56,61 @@ internal static class KyItemsTab
         page.style.flexShrink = 0;
         var shown = KyItems.All.Where(wanted).ToList();
         var groups = shown.GroupBy(e => string.IsNullOrEmpty(e.ModName) ? e.ModGuid : e.ModName).ToList();
-        page.Add(UiControls.Note(shown.Count + " prefab(s) of " + groups.Count + " source(s). " + (id == MaterialsId
+        bool grid = Grid;
+        page.Add(Header(UiControls.Note(shown.Count + " prefab(s) of " + groups.Count + " source(s). " + (id == MaterialsId
             ? "Ingredients, gatherables and world deposits the KydlDev mods contribute."
-            : "Items and pieces the KydlDev mods contribute; pieces in the '" + KyItems.CategoryName + "' build category are included.")));
+            : "Items and pieces the KydlDev mods contribute; pieces in the '" + KyItems.CategoryName + "' build category are included.")), grid, id));
         foreach (var group in groups)
         {
             page.Add(UiControls.Heading(group.Key));
-            foreach (KyEntry entry in group) page.Add(Row(entry));
+            if (grid) page.Add(ItemGridView.Build(group.Select(Card).ToList()));
+            else foreach (KyEntry entry in group) page.Add(Row(entry));
         }
         ConfigPage.ScaleFonts(page);
-        ModLog.Verbose("KyItemsTab: " + id + " page built, " + shown.Count + " prefab(s) in " + groups.Count + " group(s)");
+        ModLog.Verbose("KyItemsTab: " + id + " page built (" + (grid ? "grid" : "list") + "), " + shown.Count + " prefab(s) in " + groups.Count + " group(s)");
         return page;
+    }
+
+    /// <summary>Builds the KY-Items (or, for <see cref="MaterialsId"/>, the Materials) page as the hub would (for test hooks).</summary>
+    internal static VisualElement BuildPage(string id)
+    {
+        return id == MaterialsId ? Build(e => e.Kind == KyKind.Material, id) : Build(e => e.Kind != KyKind.Material, id);
+    }
+
+    /// <summary>True when the pages show the grid ([General] KY-Items View).</summary>
+    internal static bool Grid => ModSettings.KyItemsView != null && ModSettings.KyItemsView.Value == ItemsView.Grid;
+
+    /// <summary>
+    /// Switches between the list and the grid (the button at the top right of the page) and rebuilds both pages. Expected outcome: the new view
+    /// (true = grid).
+    /// </summary>
+    internal static bool ToggleView()
+    {
+        if (ModSettings.KyItemsView == null) return false;
+        ModSettings.KyItemsView.Value = Grid ? ItemsView.List : ItemsView.Grid;
+        ModLog.Info("KyItemsTab: view " + ModSettings.KyItemsView.Value);
+        HubHost.Refresh(Plugin.ModGuid, ItemsId);
+        HubHost.Refresh(Plugin.ModGuid, MaterialsId);
+        return Grid;
+    }
+
+    // the note on the left, the view switch on the right (top right of the page, user 2026-11-19)
+    static VisualElement Header(VisualElement note, bool grid, string id)
+    {
+        var row = new VisualElement { name = "kydl-kyitems-header" };
+        row.style.flexDirection = FlexDirection.Row; row.style.alignItems = Align.FlexStart; row.style.flexShrink = 0;
+        note.style.flexGrow = 1; note.style.flexShrink = 1;
+        row.Add(note);
+        var toggle = UiControls.Button(grid ? "List view" : "Grid view", () => ToggleView());
+        toggle.name = "kydl-kyitems-view";
+        toggle.style.flexShrink = 0; toggle.style.marginLeft = 12;
+        row.Add(toggle);
+        return row;
+    }
+
+    static ItemCard Card(KyEntry entry)
+    {
+        return new ItemCard { Title = entry.DisplayName, Subtitle = entry.Prefab, Icon = entry.Icon };
     }
 
     static VisualElement Row(KyEntry entry)
