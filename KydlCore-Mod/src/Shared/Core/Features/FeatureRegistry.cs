@@ -27,14 +27,14 @@ public sealed class FeatureRegistry
     /// Adds a feature (not started yet). Expected outcome: Success with the feature count; Rejected for null or a duplicate id.
     public OperationResponse<int> Add(IFeature feature)
     {
-        if (CoreLog.On) CoreLog.Every("FeatureRegistry.Add", 2d, $"FeatureRegistry.Add(feature={feature})");
-        if (feature == null) { var returnedAt31 = OperationResponse<int>.Rejected("null feature"); if (CoreLog.On) CoreLog.Every("FeatureRegistry.Add:31", 2d, $"FeatureRegistry.Add: returns {returnedAt31} (line 31)"); return returnedAt31; }
-        if (string.IsNullOrEmpty(feature.Id)) { var returnedAt32 = OperationResponse<int>.Rejected("feature without an id"); if (CoreLog.On) CoreLog.Every("FeatureRegistry.Add:32", 2d, $"FeatureRegistry.Add: returns {returnedAt32} (line 32)"); return returnedAt32; }
+        if (CoreLog.On) CoreLog.Every("FeatureRegistry.Add", 2d, $"FeatureRegistry.Add(feature={CoreLog.Shown(feature)})");
+        if (feature == null) { var returnedAt31 = OperationResponse<int>.Rejected("null feature"); if (CoreLog.On) CoreLog.Every("FeatureRegistry.Add:31", 2d, $"FeatureRegistry.Add: returns {CoreLog.Shown(returnedAt31)} (line 31)"); return returnedAt31; }
+        if (string.IsNullOrEmpty(feature.Id)) { var returnedAt32 = OperationResponse<int>.Rejected("feature without an id"); if (CoreLog.On) CoreLog.Every("FeatureRegistry.Add:32", 2d, $"FeatureRegistry.Add: returns {CoreLog.Shown(returnedAt32)} (line 32)"); return returnedAt32; }
         foreach (var f in _features)
-            if (string.Equals(f.Id, feature.Id, StringComparison.OrdinalIgnoreCase)) { var returnedAt34 = OperationResponse<int>.Rejected("duplicate feature id '" + feature.Id + "'"); if (CoreLog.On) CoreLog.Every("FeatureRegistry.Add:34", 2d, $"FeatureRegistry.Add: returns {returnedAt34} (line 34)"); return returnedAt34; }
+            if (string.Equals(f.Id, feature.Id, StringComparison.OrdinalIgnoreCase)) { var returnedAt34 = OperationResponse<int>.Rejected("duplicate feature id '" + feature.Id + "'"); if (CoreLog.On) CoreLog.Every("FeatureRegistry.Add:34", 2d, $"FeatureRegistry.Add: returns {CoreLog.Shown(returnedAt34)} (line 34)"); return returnedAt34; }
         _features.Add(feature);
         Trace("FeatureRegistry: added '" + feature.Id + "' (" + _features.Count + " features)");
-        { var returnedAt37 = OperationResponse<int>.Success(_features.Count); if (CoreLog.On) CoreLog.Every("FeatureRegistry.Add:37", 2d, $"FeatureRegistry.Add: returns {returnedAt37} (line 37)"); return returnedAt37; }
+        { var returnedAt37 = OperationResponse<int>.Success(_features.Count); if (CoreLog.On) CoreLog.Every("FeatureRegistry.Add:37", 2d, $"FeatureRegistry.Add: returns {CoreLog.Shown(returnedAt37)} (line 37)"); return returnedAt37; }
     }
 
     /// Starts / stops features whose gate changed. Expected outcome: Success with the number of features changed (0 = nothing to do),
@@ -55,8 +55,8 @@ public sealed class FeatureRegistry
             changed++;
             Trace("FeatureRegistry: '" + f.Id + "' " + (want ? "started" : "stopped"));
         }
-        if (failed != null) { var returnedAt58 = OperationResponse<int>.Failed("could not switch: " + failed); if (CoreLog.On) CoreLog.Every("FeatureRegistry.Refresh:58", 2d, $"FeatureRegistry.Refresh: returns {returnedAt58} (line 58)"); return returnedAt58; }
-        { var returnedAt59 = OperationResponse<int>.Success(changed, changed == 0 ? "no change" : changed + " feature(s) switched"); if (CoreLog.On) CoreLog.Every("FeatureRegistry.Refresh:59", 2d, $"FeatureRegistry.Refresh: returns {returnedAt59} (line 59)"); return returnedAt59; }
+        if (failed != null) { var returnedAt58 = OperationResponse<int>.Failed("could not switch: " + failed); if (CoreLog.On) CoreLog.Every("FeatureRegistry.Refresh:58", 2d, $"FeatureRegistry.Refresh: returns {CoreLog.Shown(returnedAt58)} (line 58)"); return returnedAt58; }
+        { var returnedAt59 = OperationResponse<int>.Success(changed, changed == 0 ? "no change" : changed + " feature(s) switched"); if (CoreLog.On) CoreLog.Every("FeatureRegistry.Refresh:59", 2d, $"FeatureRegistry.Refresh: returns {CoreLog.Shown(returnedAt59)} (line 59)"); return returnedAt59; }
     }
 
     /// Stops every running feature (mod unload). Expected outcome: Success with the number stopped; Failed when one could not stop.
@@ -72,13 +72,13 @@ public sealed class FeatureRegistry
             _running.Remove(f.Id);
             stopped++;
         }
-        if (failed != null) { var returnedAt75 = OperationResponse<int>.Failed("could not stop: " + failed); if (CoreLog.On) CoreLog.Verbose($"FeatureRegistry.StopAll: returns {returnedAt75} (line 75)"); return returnedAt75; }
-        { var returnedAt76 = OperationResponse<int>.Success(stopped); if (CoreLog.On) CoreLog.Verbose($"FeatureRegistry.StopAll: returns {returnedAt76} (line 76)"); return returnedAt76; }
+        if (failed != null) { var returnedAt75 = OperationResponse<int>.Failed("could not stop: " + failed); if (CoreLog.On) CoreLog.Verbose($"FeatureRegistry.StopAll: returns {CoreLog.Shown(returnedAt75)} (line 75)"); return returnedAt75; }
+        { var returnedAt76 = OperationResponse<int>.Success(stopped); if (CoreLog.On) CoreLog.Verbose($"FeatureRegistry.StopAll: returns {CoreLog.Shown(returnedAt76)} (line 76)"); return returnedAt76; }
     }
 
     bool SafeGate(IFeature f)
     {
-        if (CoreLog.On) CoreLog.Every("FeatureRegistry.SafeGate", 2d, $"FeatureRegistry.SafeGate(f={f})");
+        if (CoreLog.On) CoreLog.Every("FeatureRegistry.SafeGate", 2d, $"FeatureRegistry.SafeGate(f={CoreLog.Shown(f)})");
         bool on;
         try { on = f.IsEnabled(); }
         catch (Exception e)       // last resort: a broken gate counts as "off", never takes the other features down
@@ -86,12 +86,12 @@ public sealed class FeatureRegistry
             Trace("FeatureRegistry: gate of '" + f.Id + "' threw " + e.GetType().Name + ": " + e.Message + " - treated as off");
             on = BrokenGateIsOn;
         }
-        { var returnedAt89 = on; if (CoreLog.On) CoreLog.Every("FeatureRegistry.SafeGate:89", 2d, $"FeatureRegistry.SafeGate: returns {returnedAt89} (line 89)"); return returnedAt89; }
+        { var returnedAt89 = on; if (CoreLog.On) CoreLog.Every("FeatureRegistry.SafeGate:89", 2d, $"FeatureRegistry.SafeGate: returns {CoreLog.Shown(returnedAt89)} (line 89)"); return returnedAt89; }
     }
 
     bool Run(IFeature f, bool start)
     {
-        if (CoreLog.On) CoreLog.Every("FeatureRegistry.Run", 2d, $"FeatureRegistry.Run(f={f}, start={start})");
+        if (CoreLog.On) CoreLog.Every("FeatureRegistry.Run", 2d, $"FeatureRegistry.Run(f={CoreLog.Shown(f)}, start={CoreLog.Shown(start)})");
         bool finished;
         try
         {
@@ -103,7 +103,7 @@ public sealed class FeatureRegistry
             Trace("FeatureRegistry: '" + f.Id + "' " + (start ? "Start" : "Stop") + " threw " + e.GetType().Name + ": " + e.Message);
             finished = ThrownMeansFinished;
         }
-        { var returnedAt106 = finished; if (CoreLog.On) CoreLog.Every("FeatureRegistry.Run:106", 2d, $"FeatureRegistry.Run: returns {returnedAt106} (line 106)"); return returnedAt106; }
+        { var returnedAt106 = finished; if (CoreLog.On) CoreLog.Every("FeatureRegistry.Run:106", 2d, $"FeatureRegistry.Run: returns {CoreLog.Shown(returnedAt106)} (line 106)"); return returnedAt106; }
     }
 
     void Trace(string line) { if (_trace != null) _trace(line); }

@@ -21,7 +21,7 @@ internal static class ThemeColours
     /// <summary>Is this one of KydlCore's text colours? Expected outcome: true for every palette colour (alpha ignored), false for any other.</summary>
     internal static bool IsOwn(Color colour)
     {
-        if (CoreLog.On) ModLog.Verbose($"ThemeColours.IsOwn(colour={colour})");
+        if (CoreLog.On) ModLog.Verbose($"ThemeColours.IsOwn(colour={CoreLog.Shown(colour)})");
         foreach (Color own in Own)
             if (Mathf.Abs(own.r - colour.r) <= Tolerance && Mathf.Abs(own.g - colour.g) <= Tolerance && Mathf.Abs(own.b - colour.b) <= Tolerance) { if (CoreLog.On) ModLog.Verbose("ThemeColours.IsOwn: returns true (line 26)"); return true; }
         { if (CoreLog.On) ModLog.Verbose("ThemeColours.IsOwn: returns false (line 27)"); return false; }

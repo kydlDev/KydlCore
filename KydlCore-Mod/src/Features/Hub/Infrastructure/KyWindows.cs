@@ -97,9 +97,9 @@ internal static class KyWindows
     /// <summary>Plugin shutdown: close every mod window (their `onClosed` run) so no chest stays locked and no input stays blocked.</summary>
     internal static int CloseAll(string why)
     {
-        if (CoreLog.On) ModLog.Every("KyWindows.CloseAll", 2d, $"KyWindows.CloseAll(why={why})");
+        if (CoreLog.On) ModLog.Every("KyWindows.CloseAll", 2d, $"KyWindows.CloseAll(why={CoreLog.Shown(why)})");
         var ids = new List<string>(Windows.Keys);
         foreach (string id in ids) Remove(id, why);
-        { var returnedAt103 = ids.Count; if (CoreLog.On) ModLog.Every("KyWindows.CloseAll:103", 2d, $"KyWindows.CloseAll: returns {returnedAt103} (line 103)"); return returnedAt103; }
+        { var returnedAt103 = ids.Count; if (CoreLog.On) ModLog.Every("KyWindows.CloseAll:103", 2d, $"KyWindows.CloseAll: returns {CoreLog.Shown(returnedAt103)} (line 103)"); return returnedAt103; }
     }
 }

@@ -49,7 +49,7 @@ internal static class KeyCapture
         Clear();
         ModLog.Verbose("KeyCapture: cancelled (" + why + ")");
         if (cancelled != null) cancelled();
-        { var returnedAt52 = !Active; if (CoreLog.On) ModLog.Every("KeyCapture.Cancel:52", 2d, $"KeyCapture.Cancel: returns {returnedAt52} (line 52)"); return returnedAt52; }
+        { var returnedAt52 = !Active; if (CoreLog.On) ModLog.Every("KeyCapture.Cancel:52", 2d, $"KeyCapture.Cancel: returns {CoreLog.Shown(returnedAt52)} (line 52)"); return returnedAt52; }
     }
 
     /// <summary>Every frame (Plugin.Update, first). Expected outcome: true when this frame ended the capture.</summary>

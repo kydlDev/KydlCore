@@ -48,7 +48,7 @@ public sealed class Tunable<T>
     [MethodImpl(MethodImplOptions.NoInlining)]
     public Tunable(string section, string name, T value, T min, T max, string description = "") : this(ModContexts.For(Assembly.GetCallingAssembly()), section, name, value, description)
     {
-        if (CoreLog.On) ModLog.Verbose($"Tunable.Tunable(section={section}, name={name}, value={value}, min={min}, max={max}, description={description})");
+        if (CoreLog.On) ModLog.Verbose($"Tunable.Tunable(section={CoreLog.Shown(section)}, name={CoreLog.Shown(name)}, value={CoreLog.Shown(value)}, min={CoreLog.Shown(min)}, max={CoreLog.Shown(max)}, description={CoreLog.Shown(description)})");
         // Stryker disable once Equality : swapping equal values changes nothing
         if (Comparer<T>.Default.Compare(min, max) > 0) { var t = min; min = max; max = t; }
         Min = min; Max = max;
@@ -57,15 +57,15 @@ public sealed class Tunable<T>
 
     T Clamp(T v)
     {
-        if (CoreLog.On) ModLog.Every("Tunable.Clamp", 2d, $"Tunable.Clamp(v={v})");
+        if (CoreLog.On) ModLog.Every("Tunable.Clamp", 2d, $"Tunable.Clamp(v={CoreLog.Shown(v)})");
         // Stryker disable once Logical : Min and Max are always both set or both unset (constructors)
-        if (Min == null || Max == null) { var returnedAt62 = v; if (CoreLog.On) ModLog.Every("Tunable.Clamp:62", 2d, $"Tunable.Clamp: returns {returnedAt62} (line 62)"); return returnedAt62; }
+        if (Min == null || Max == null) { var returnedAt62 = v; if (CoreLog.On) ModLog.Every("Tunable.Clamp:62", 2d, $"Tunable.Clamp: returns {CoreLog.Shown(returnedAt62)} (line 62)"); return returnedAt62; }
         var c = Comparer<T>.Default;
         // Stryker disable Equality : at v == Min / Max returning the bound IS returning v
-        if (c.Compare(v, (T)Min) < 0) { var returnedAt65 = (T)Min; if (CoreLog.On) ModLog.Every("Tunable.Clamp:65", 2d, $"Tunable.Clamp: returns {returnedAt65} (line 65)"); return returnedAt65; }
-        if (c.Compare(v, (T)Max) > 0) { var returnedAt66 = (T)Max; if (CoreLog.On) ModLog.Every("Tunable.Clamp:66", 2d, $"Tunable.Clamp: returns {returnedAt66} (line 66)"); return returnedAt66; }
+        if (c.Compare(v, (T)Min) < 0) { var returnedAt65 = (T)Min; if (CoreLog.On) ModLog.Every("Tunable.Clamp:65", 2d, $"Tunable.Clamp: returns {CoreLog.Shown(returnedAt65)} (line 65)"); return returnedAt65; }
+        if (c.Compare(v, (T)Max) > 0) { var returnedAt66 = (T)Max; if (CoreLog.On) ModLog.Every("Tunable.Clamp:66", 2d, $"Tunable.Clamp: returns {CoreLog.Shown(returnedAt66)} (line 66)"); return returnedAt66; }
         // Stryker restore Equality
-        { var returnedAt68 = v; if (CoreLog.On) ModLog.Every("Tunable.Clamp:68", 2d, $"Tunable.Clamp: returns {returnedAt68} (line 68)"); return returnedAt68; }
+        { var returnedAt68 = v; if (CoreLog.On) ModLog.Every("Tunable.Clamp:68", 2d, $"Tunable.Clamp: returns {CoreLog.Shown(returnedAt68)} (line 68)"); return returnedAt68; }
     }
 
     /// Marks the value as set from another mod's config (External). Returns this Tunable.

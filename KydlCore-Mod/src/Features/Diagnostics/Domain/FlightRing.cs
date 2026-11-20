@@ -19,7 +19,7 @@ internal sealed class FlightRing<T>
     /// <param name="capacity">How many items it keeps (at least 1).</param>
     internal FlightRing(int capacity)
     {
-        if (CoreLog.On) CoreLog.Verbose($"FlightRing.FlightRing(capacity={capacity})");
+        if (CoreLog.On) CoreLog.Verbose($"FlightRing.FlightRing(capacity={CoreLog.Shown(capacity)})");
         if (capacity < 1)
         {
             throw new ArgumentOutOfRangeException(nameof(capacity), capacity, "a ring keeps at least one item");
@@ -41,7 +41,7 @@ internal sealed class FlightRing<T>
     /// <returns>The count afterwards (never more than <see cref="Capacity"/>).</returns>
     internal int Add(T item)
     {
-        if (CoreLog.On) CoreLog.Every("FlightRing.Add", 2d, $"FlightRing.Add(item={item})");
+        if (CoreLog.On) CoreLog.Every("FlightRing.Add", 2d, $"FlightRing.Add(item={CoreLog.Shown(item)})");
         _items[_next] = item;
         _next = (_next + 1) % _items.Length;
         if (_count < _items.Length)
@@ -49,13 +49,13 @@ internal sealed class FlightRing<T>
             _count++;
         }
 
-        { var returnedAt52 = _count; if (CoreLog.On) CoreLog.Every("FlightRing.Add:52", 2d, $"FlightRing.Add: returns {returnedAt52} (line 52)"); return returnedAt52; }
+        { var returnedAt52 = _count; if (CoreLog.On) CoreLog.Every("FlightRing.Add:52", 2d, $"FlightRing.Add: returns {CoreLog.Shown(returnedAt52)} (line 52)"); return returnedAt52; }
     }
 
     /// <summary>The items, oldest first, that pass <paramref name="keep"/> (null = all). A copy: changing it changes nothing.</summary>
     internal List<T> Items(Func<T, bool> keep = null)
     {
-        if (CoreLog.On) CoreLog.Every("FlightRing.Items", 2d, $"FlightRing.Items(keep={keep})");
+        if (CoreLog.On) CoreLog.Every("FlightRing.Items", 2d, $"FlightRing.Items(keep={CoreLog.Shown(keep)})");
         var list = new List<T>(_count);
         for (int i = 0; i < _count; i++)
         {
@@ -66,6 +66,6 @@ internal sealed class FlightRing<T>
             }
         }
 
-        { var returnedAt69 = list; if (CoreLog.On) CoreLog.Every("FlightRing.Items:69", 2d, $"FlightRing.Items: returns {returnedAt69} (line 69)"); return returnedAt69; }
+        { var returnedAt69 = list; if (CoreLog.On) CoreLog.Every("FlightRing.Items:69", 2d, $"FlightRing.Items: returns {CoreLog.Shown(returnedAt69)} (line 69)"); return returnedAt69; }
     }
 }

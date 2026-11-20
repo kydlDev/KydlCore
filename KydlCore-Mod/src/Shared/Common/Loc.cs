@@ -39,7 +39,7 @@ public static class Loc
 
     static string ToJson(Dictionary<string, string> d)
     {
-        if (CoreLog.On) ModLog.Verbose($"Loc.ToJson(d={d})");
+        if (CoreLog.On) ModLog.Verbose($"Loc.ToJson(d={CoreLog.Shown(d)})");
         var sb = new StringBuilder("{");
         bool first = true;
         foreach (var kv in d)
@@ -48,7 +48,7 @@ public static class Loc
             first = false;
             sb.Append('"').Append(Esc(kv.Key)).Append("\":\"").Append(Esc(kv.Value)).Append('"');
         }
-        { var returnedAt51 = sb.Append('}').ToString(); if (CoreLog.On) ModLog.Verbose($"Loc.ToJson: returns {returnedAt51} (line 51)"); return returnedAt51; }
+        { var returnedAt51 = sb.Append('}').ToString(); if (CoreLog.On) ModLog.Verbose($"Loc.ToJson: returns {CoreLog.Shown(returnedAt51)} (line 51)"); return returnedAt51; }
     }
 
     static string Esc(string s) { return (s ?? "").Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n"); }
@@ -60,13 +60,13 @@ public static class Loc
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static string T(string key, params string[] args)
     {
-        if (CoreLog.On) ModLog.Every("Loc.T", 2d, $"Loc.T(key={key})");
+        if (CoreLog.On) ModLog.Every("Loc.T", 2d, $"Loc.T(key={CoreLog.Shown(key)})");
         var ctx = ModContexts.For(Assembly.GetCallingAssembly());
         var l = Localization.instance;
         string s;
         if (l != null) s = l.Localize("$" + key);
         else if (!ctx.English.TryGetValue(key, out s)) s = key;
         if (args != null) for (int i = 0; i < args.Length; i++) s = s.Replace("{" + i + "}", args[i]);
-        { var returnedAt70 = s; if (CoreLog.On) ModLog.Every("Loc.T:70", 2d, $"Loc.T: returns {returnedAt70} (line 70)"); return returnedAt70; }
+        { var returnedAt70 = s; if (CoreLog.On) ModLog.Every("Loc.T:70", 2d, $"Loc.T: returns {CoreLog.Shown(returnedAt70)} (line 70)"); return returnedAt70; }
     }
 }

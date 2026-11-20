@@ -25,7 +25,7 @@ public sealed class UiScroll
     /// <summary>Makes a scroll area; `name` only labels its log lines.</summary>
     public UiScroll(string name)
     {
-        if (CoreLog.On) UiLog.Verbose($"UiScroll.UiScroll(name={name})");
+        if (CoreLog.On) UiLog.Verbose($"UiScroll.UiScroll(name={CoreLog.Shown(name)})");
         _name = name;
         Root = new VisualElement { name = "kydl-scroll", userData = this };
         Root.style.flexDirection = FlexDirection.Row;

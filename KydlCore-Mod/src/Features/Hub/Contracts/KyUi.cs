@@ -28,8 +28,8 @@ public static class KyUi
     /// </summary>
     public static KyWindow Open(string modGuid, string id, VisualElement window, Action onClosed = null)
     {
-        if (CoreLog.On) ModLog.Every("KyUi.Open", 2d, $"KyUi.Open(modGuid={modGuid}, id={id}, window={window}, onClosed={onClosed})");
-        { var returnedAt32 = KyWindows.Add(modGuid, id, window, onClosed); if (CoreLog.On) ModLog.Every("KyUi.Open:32", 2d, $"KyUi.Open: returns {returnedAt32} (line 32)"); return returnedAt32; }
+        if (CoreLog.On) ModLog.Every("KyUi.Open", 2d, $"KyUi.Open(modGuid={CoreLog.Shown(modGuid)}, id={CoreLog.Shown(id)}, window={CoreLog.Shown(window)}, onClosed={CoreLog.Shown(onClosed)})");
+        { var returnedAt32 = KyWindows.Add(modGuid, id, window, onClosed); if (CoreLog.On) ModLog.Every("KyUi.Open:32", 2d, $"KyUi.Open: returns {CoreLog.Shown(returnedAt32)} (line 32)"); return returnedAt32; }
     }
 
     /// <summary>
@@ -54,9 +54,9 @@ public static class KyUi
     /// <summary>Is the window of this mod and id open?</summary>
     public static bool IsOpen(string modGuid, string id)
     {
-        if (CoreLog.On) ModLog.Every("KyUi.IsOpen", 2d, $"KyUi.IsOpen(modGuid={modGuid}, id={id})");
+        if (CoreLog.On) ModLog.Every("KyUi.IsOpen", 2d, $"KyUi.IsOpen(modGuid={CoreLog.Shown(modGuid)}, id={CoreLog.Shown(id)})");
         string full = KyWindowId.Make(modGuid, id);
-        { var returnedAt59 = full != null && KyWindows.Stack.IsOpen(full); if (CoreLog.On) ModLog.Every("KyUi.IsOpen:59", 2d, $"KyUi.IsOpen: returns {returnedAt59} (line 59)"); return returnedAt59; }
+        { var returnedAt59 = full != null && KyWindows.Stack.IsOpen(full); if (CoreLog.On) ModLog.Every("KyUi.IsOpen:59", 2d, $"KyUi.IsOpen: returns {CoreLog.Shown(returnedAt59)} (line 59)"); return returnedAt59; }
     }
 }
 
@@ -65,7 +65,7 @@ public sealed class KyWindow
 {
     internal KyWindow(string modGuid, string id, string fullId, VisualElement element, Action onClosed)
     {
-        if (CoreLog.On) ModLog.Every("KyWindow.KyWindow", 2d, $"KyWindow.KyWindow(modGuid={modGuid}, id={id}, fullId={fullId}, element={element}, onClosed={onClosed})");
+        if (CoreLog.On) ModLog.Every("KyWindow.KyWindow", 2d, $"KyWindow.KyWindow(modGuid={CoreLog.Shown(modGuid)}, id={CoreLog.Shown(id)}, fullId={CoreLog.Shown(fullId)}, element={CoreLog.Shown(element)}, onClosed={CoreLog.Shown(onClosed)})");
         ModGuid = modGuid; Id = id; FullId = fullId; Element = element; OnClosed = onClosed;
     }
 

@@ -26,14 +26,14 @@ public static class PieceLearning
     /// Is this piece in the character's known recipes? Expected outcome: true once learned.
     public static bool KnowsPiece(Player p, Piece piece)
     {
-        if (CoreLog.On) ModLog.Verbose($"PieceLearning.KnowsPiece(p={p}, piece={piece})");
-        { var returnedAt30 = p != null && piece != null && Recipes(p).Contains(piece.m_name); if (CoreLog.On) ModLog.Verbose($"PieceLearning.KnowsPiece: returns {returnedAt30} (line 30)"); return returnedAt30; }
+        if (CoreLog.On) ModLog.Verbose($"PieceLearning.KnowsPiece(p={CoreLog.Shown(p)}, piece={CoreLog.Shown(piece)})");
+        { var returnedAt30 = p != null && piece != null && Recipes(p).Contains(piece.m_name); if (CoreLog.On) ModLog.Verbose($"PieceLearning.KnowsPiece: returns {CoreLog.Shown(returnedAt30)} (line 30)"); return returnedAt30; }
     }
 
     /// Has the character discovered this item (prefab name, e.g. "Tar", "Iron")? Expected outcome: true after the first pick-up.
     public static bool KnowsMaterial(Player p, string itemPrefab)
     {
-        if (CoreLog.On) ModLog.Verbose($"PieceLearning.KnowsMaterial(p={p}, itemPrefab={itemPrefab})");
+        if (CoreLog.On) ModLog.Verbose($"PieceLearning.KnowsMaterial(p={CoreLog.Shown(p)}, itemPrefab={CoreLog.Shown(itemPrefab)})");
         if (p == null || ObjectDB.instance == null)
         {
             { if (CoreLog.On) ModLog.Verbose("PieceLearning.KnowsMaterial: returns false (line 39)"); return false; }
@@ -41,7 +41,7 @@ public static class PieceLearning
 
         GameObject go = ObjectDB.instance.GetItemPrefab(itemPrefab);
         ItemDrop drop = go != null ? go.GetComponent<ItemDrop>() : null;
-        { var returnedAt44 = drop != null && Materials(p).Contains(drop.m_itemData.m_shared.m_name); if (CoreLog.On) ModLog.Verbose($"PieceLearning.KnowsMaterial: returns {returnedAt44} (line 44)"); return returnedAt44; }
+        { var returnedAt44 = drop != null && Materials(p).Contains(drop.m_itemData.m_shared.m_name); if (CoreLog.On) ModLog.Verbose($"PieceLearning.KnowsMaterial: returns {CoreLog.Shown(returnedAt44)} (line 44)"); return returnedAt44; }
     }
 
     /// Learns the piece with the game's own popup. Expected outcome: true when it was learned NOW (false: unknown prefab, already known, or the game call failed).
@@ -69,7 +69,7 @@ public static class PieceLearning
             if (_addKnownPiece != null)
             {
                 _addKnownPiece.Invoke(p, new object[] { piece });
-                { var returnedAt72 = KnowsPiece(p, piece); if (CoreLog.On) ModLog.Verbose($"PieceLearning.Learn: returns {returnedAt72} (line 72)"); return returnedAt72; }
+                { var returnedAt72 = KnowsPiece(p, piece); if (CoreLog.On) ModLog.Verbose($"PieceLearning.Learn: returns {CoreLog.Shown(returnedAt72)} (line 72)"); return returnedAt72; }
             }
         }
         catch (Exception e)

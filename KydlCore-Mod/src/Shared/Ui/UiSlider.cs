@@ -112,7 +112,7 @@ public sealed class UiSlider
 
     void Set(float v)
     {
-        if (CoreLog.On) UiLog.Verbose($"UiSlider.Set(v={v})");
+        if (CoreLog.On) UiLog.Verbose($"UiSlider.Set(v={CoreLog.Shown(v)})");
         float nv = Mathf.Clamp(v, _min, _max);
         if (Mathf.Approximately(nv, _value)) { Show(); { if (CoreLog.On) UiLog.Verbose("UiSlider.Set: returns (line 117)"); return; } }
         _value = nv; Show();
@@ -132,20 +132,20 @@ public sealed class UiSlider
     /// Puts the handle on `v` (clamped) without calling the change callback. Expected outcome: Value equals the clamped v.
     public bool SetValueWithoutNotify(float v)
     {
-        if (CoreLog.On) UiLog.Verbose($"UiSlider.SetValueWithoutNotify(v={v})");
+        if (CoreLog.On) UiLog.Verbose($"UiSlider.SetValueWithoutNotify(v={CoreLog.Shown(v)})");
         _value = Mathf.Clamp(v, _min, _max);
         Show();
-        { var returnedAt138 = Mathf.Approximately(_value, Mathf.Clamp(v, _min, _max)); if (CoreLog.On) UiLog.Verbose($"UiSlider.SetValueWithoutNotify: returns {returnedAt138} (line 138)"); return returnedAt138; }
+        { var returnedAt138 = Mathf.Approximately(_value, Mathf.Clamp(v, _min, _max)); if (CoreLog.On) UiLog.Verbose($"UiSlider.SetValueWithoutNotify: returns {CoreLog.Shown(returnedAt138)} (line 138)"); return returnedAt138; }
     }
 
     /// New range; the value is clamped into it (no callback). Expected outcome: Min <= Value <= Max.
     public bool SetRange(float min, float max)
     {
-        if (CoreLog.On) UiLog.Verbose($"UiSlider.SetRange(min={min}, max={max})");
+        if (CoreLog.On) UiLog.Verbose($"UiSlider.SetRange(min={CoreLog.Shown(min)}, max={CoreLog.Shown(max)})");
         _min = Mathf.Min(min, max); _max = Mathf.Max(min, max);
         _value = Mathf.Clamp(_value, _min, _max);
         Show();
-        { var returnedAt148 = _value >= _min && _value <= _max; if (CoreLog.On) UiLog.Verbose($"UiSlider.SetRange: returns {returnedAt148} (line 148)"); return returnedAt148; }
+        { var returnedAt148 = _value >= _min && _value <= _max; if (CoreLog.On) UiLog.Verbose($"UiSlider.SetRange: returns {CoreLog.Shown(returnedAt148)} (line 148)"); return returnedAt148; }
     }
 
     /// Greyed out and not draggable while false.

@@ -16,7 +16,7 @@ internal static partial class FlightHost
     /// <summary>DrakesTestLab finished a test: a note, and a dump when it failed.</summary>
     internal static void LabResult(string test, bool failed, string why)
     {
-        if (CoreLog.On) ModLog.Verbose($"FlightHost.LabResult(test={test}, failed={failed}, why={why})");
+        if (CoreLog.On) ModLog.Verbose($"FlightHost.LabResult(test={CoreLog.Shown(test)}, failed={CoreLog.Shown(failed)}, why={CoreLog.Shown(why)})");
         lock (Gate)
         {
             if (_book == null) { if (CoreLog.On) ModLog.Verbose("FlightHost.LabResult: returns (line 22)"); return; }
@@ -45,7 +45,7 @@ internal static partial class FlightHost
     /// <summary>A KydlDev mod wrote an error: a note and a dump (at most one per mod per minute).</summary>
     internal static void ModError(string source, string text)
     {
-        if (CoreLog.On) ModLog.Verbose($"FlightHost.ModError(source={source}, text={text})");
+        if (CoreLog.On) ModLog.Verbose($"FlightHost.ModError(source={CoreLog.Shown(source)}, text={CoreLog.Shown(text)})");
         lock (Gate)
         {
             if (_book == null) { if (CoreLog.On) ModLog.Verbose("FlightHost.ModError: returns (line 51)"); return; }
@@ -56,7 +56,7 @@ internal static partial class FlightHost
 
     static void OnCheckOff(ModContext c, string text)
     {
-        if (CoreLog.On) ModLog.Verbose($"FlightHost.OnCheckOff(c={c}, text={text})");
+        if (CoreLog.On) ModLog.Verbose($"FlightHost.OnCheckOff(c={CoreLog.Shown(c)}, text={CoreLog.Shown(text)})");
         lock (Gate)
         {
             if (_book == null) { if (CoreLog.On) ModLog.Verbose("FlightHost.OnCheckOff: returns (line 62)"); return; }
@@ -67,7 +67,7 @@ internal static partial class FlightHost
 
     static void OnNote(ModContext c, string text)
     {
-        if (CoreLog.On) ModLog.Verbose($"FlightHost.OnNote(c={c}, text={text})");
+        if (CoreLog.On) ModLog.Verbose($"FlightHost.OnNote(c={CoreLog.Shown(c)}, text={CoreLog.Shown(text)})");
         lock (Gate)
         {
             if (_book != null) _book.Note(new FlightNote(Now, c.Name, text));
@@ -80,7 +80,7 @@ internal static partial class FlightHost
     /// <returns>The file's path, or null (queued, refused by the gate, or the recorder is off).</returns>
     internal static string DumpNow(string mod, string reason)
     {
-        if (CoreLog.On) ModLog.Verbose($"FlightHost.DumpNow(mod={mod}, reason={reason})");
+        if (CoreLog.On) ModLog.Verbose($"FlightHost.DumpNow(mod={CoreLog.Shown(mod)}, reason={CoreLog.Shown(reason)})");
         if (!_started)
         {
             { if (CoreLog.On) ModLog.Verbose("FlightHost.DumpNow: returns null (line 86)"); return null; }
@@ -97,12 +97,12 @@ internal static partial class FlightHost
         Sample(now);              // the newest moment is in the dump
         _next = now + Interval();
         Note(mod, "dump asked: " + reason);
-        { var returnedAt100 = WriteDump("manual:" + mod, full, now); if (CoreLog.On) ModLog.Verbose($"FlightHost.DumpNow: returns {returnedAt100} (line 100)"); return returnedAt100; }
+        { var returnedAt100 = WriteDump("manual:" + mod, full, now); if (CoreLog.On) ModLog.Verbose($"FlightHost.DumpNow: returns {CoreLog.Shown(returnedAt100)} (line 100)"); return returnedAt100; }
     }
 
     static void DrainDumps(double now)
     {
-        if (CoreLog.On) ModLog.Every("FlightHost.DrainDumps", 2d, $"FlightHost.DrainDumps(now={now})");
+        if (CoreLog.On) ModLog.Every("FlightHost.DrainDumps", 2d, $"FlightHost.DrainDumps(now={CoreLog.Shown(now)})");
         while (true)
         {
             KeyValuePair<string, string> d;
@@ -138,7 +138,7 @@ internal static partial class FlightHost
             ModLog.Info("FlightRecorder: dump written " + path + " (" + reason + ")");
         }
 
-        { var returnedAt141 = path; if (CoreLog.On) ModLog.Every("FlightHost.WriteDump:141", 2d, $"FlightHost.WriteDump: returns {returnedAt141} (line 141)"); return returnedAt141; }
+        { var returnedAt141 = path; if (CoreLog.On) ModLog.Every("FlightHost.WriteDump:141", 2d, $"FlightHost.WriteDump: returns {CoreLog.Shown(returnedAt141)} (line 141)"); return returnedAt141; }
     }
 
     // a failed test always gets its dump; repeated CHECK OFF / errors of one mod at most one per minute

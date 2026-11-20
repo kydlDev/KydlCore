@@ -104,8 +104,8 @@ public static class KyHub
     /// </summary>
     public static bool SetGroupPanel(string modGuid, string group, Func<VisualElement> build, Func<string, bool> replaces = null)
     {
-        if (CoreLog.On) ModLog.Verbose($"GroupPanel.SetGroupPanel(modGuid={modGuid}, group={group}, build={build}, replaces={replaces})");
-        { var returnedAt108 = SetGroupPanel(modGuid, group, build, replaces, false); if (CoreLog.On) ModLog.Verbose($"GroupPanel.SetGroupPanel: returns {returnedAt108} (line 108)"); return returnedAt108; }
+        if (CoreLog.On) ModLog.Verbose($"GroupPanel.SetGroupPanel(modGuid={CoreLog.Shown(modGuid)}, group={CoreLog.Shown(group)}, build={CoreLog.Shown(build)}, replaces={CoreLog.Shown(replaces)})");
+        { var returnedAt108 = SetGroupPanel(modGuid, group, build, replaces, false); if (CoreLog.On) ModLog.Verbose($"GroupPanel.SetGroupPanel: returns {CoreLog.Shown(returnedAt108)} (line 108)"); return returnedAt108; }
     }
 
     /// <summary>
@@ -148,9 +148,9 @@ public static class KyHub
     /// <summary>The panel of a settings tab, or null.</summary>
     internal static GroupPanel PanelOf(string modGuid, string group)
     {
-        if (CoreLog.On) ModLog.Verbose($"GroupPanel.PanelOf(modGuid={modGuid}, group={group})");
+        if (CoreLog.On) ModLog.Verbose($"GroupPanel.PanelOf(modGuid={CoreLog.Shown(modGuid)}, group={CoreLog.Shown(group)})");
         GroupPanel panel;
-        { var returnedAt153 = GroupPanels.TryGetValue(Key(modGuid, group), out panel) ? panel : null; if (CoreLog.On) ModLog.Verbose($"GroupPanel.PanelOf: returns {returnedAt153} (line 153)"); return returnedAt153; }
+        { var returnedAt153 = GroupPanels.TryGetValue(Key(modGuid, group), out panel) ? panel : null; if (CoreLog.On) ModLog.Verbose($"GroupPanel.PanelOf: returns {CoreLog.Shown(returnedAt153)} (line 153)"); return returnedAt153; }
     }
 
     /// <summary>Removes a tab of a mod. False when it was not there. A mod left with no tab shows the automatic "Settings" tab again.</summary>
@@ -167,9 +167,9 @@ public static class KyHub
     /// <summary>True when the mod has a row-2 tab with this id (a mod checks its own Stop removed its tab: no stale UI registration).</summary>
     public static bool HasTab(string modGuid, string id)
     {
-        if (CoreLog.On) ModLog.Verbose($"GroupPanel.HasTab(modGuid={modGuid}, id={id})");
+        if (CoreLog.On) ModLog.Verbose($"GroupPanel.HasTab(modGuid={CoreLog.Shown(modGuid)}, id={CoreLog.Shown(id)})");
         bool valid = !string.IsNullOrEmpty(modGuid) && !string.IsNullOrEmpty(id);
-        { var returnedAt172 = valid && Model.HasTab(modGuid, id); if (CoreLog.On) ModLog.Verbose($"GroupPanel.HasTab: returns {returnedAt172} (line 172)"); return returnedAt172; }
+        { var returnedAt172 = valid && Model.HasTab(modGuid, id); if (CoreLog.On) ModLog.Verbose($"GroupPanel.HasTab: returns {CoreLog.Shown(returnedAt172)} (line 172)"); return returnedAt172; }
     }
 
     /// <summary>Sets the row-1 name of a mod (the default is the plugin's name). `icon` is reserved for later and not shown yet.</summary>
@@ -210,15 +210,15 @@ public static class KyHub
         // Stryker disable all : needs a real ConfigFile and the UI; tested in game
         var page = new ConfigPage(file, sections);
         page.Root.RegisterCallback<DetachFromPanelEvent>(e => page.Dispose());          // the page stops listening when it leaves the screen
-        { var returnedAt213 = page.Root; if (CoreLog.On) ModLog.Every("GroupPanel.ConfigEntries:213", 2d, $"GroupPanel.ConfigEntries: returns {returnedAt213} (line 213)"); return returnedAt213; }
+        { var returnedAt213 = page.Root; if (CoreLog.On) ModLog.Every("GroupPanel.ConfigEntries:213", 2d, $"GroupPanel.ConfigEntries: returns {CoreLog.Shown(returnedAt213)} (line 213)"); return returnedAt213; }
         // Stryker restore all
     }
 
     internal static string TitleOf(string modGuid)
     {
-        if (CoreLog.On) ModLog.Every("GroupPanel.TitleOf", 2d, $"GroupPanel.TitleOf(modGuid={modGuid})");
+        if (CoreLog.On) ModLog.Every("GroupPanel.TitleOf", 2d, $"GroupPanel.TitleOf(modGuid={CoreLog.Shown(modGuid)})");
         string t;
-        { var returnedAt221 = Titles.TryGetValue(modGuid, out t) ? t : null; if (CoreLog.On) ModLog.Every("GroupPanel.TitleOf:221", 2d, $"GroupPanel.TitleOf: returns {returnedAt221} (line 221)"); return returnedAt221; }
+        { var returnedAt221 = Titles.TryGetValue(modGuid, out t) ? t : null; if (CoreLog.On) ModLog.Every("GroupPanel.TitleOf:221", 2d, $"GroupPanel.TitleOf: returns {CoreLog.Shown(returnedAt221)} (line 221)"); return returnedAt221; }
     }
 
     /// <summary>The page of a registered tab, or null when the mod registered no builder for it. A throwing builder is logged and gives null.</summary>

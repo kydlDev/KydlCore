@@ -105,7 +105,7 @@ public sealed class UiColorPicker
     /// Shows the colour on the sliders, the preview and the hex box. `keepRgb` = the RGB sliders already show it (they are being dragged).
     void Show(bool all, bool fromBrightness = false)
     {
-        if (CoreLog.On) UiLog.Verbose($"UiColorPicker.Show(all={all}, fromBrightness={fromBrightness})");
+        if (CoreLog.On) UiLog.Verbose($"UiColorPicker.Show(all={CoreLog.Shown(all)}, fromBrightness={CoreLog.Shown(fromBrightness)})");
         _preview.style.backgroundColor = _c;
         if (all || fromBrightness) { _r.SetValueWithoutNotify(_c.r * 255f); _g.SetValueWithoutNotify(_c.g * 255f); _b.SetValueWithoutNotify(_c.b * 255f); }
         if (_bright != null && !fromBrightness) { float h, s, v; Color.RGBToHSV(_c, out h, out s, out v); _bright.SetValueWithoutNotify(v * 100f); }
@@ -114,7 +114,7 @@ public sealed class UiColorPicker
 
     void SetColor(Color c, bool updateHex, bool notify)
     {
-        if (CoreLog.On) UiLog.Verbose($"UiColorPicker.SetColor(c={c}, updateHex={updateHex}, notify={notify})");
+        if (CoreLog.On) UiLog.Verbose($"UiColorPicker.SetColor(c={CoreLog.Shown(c)}, updateHex={CoreLog.Shown(updateHex)}, notify={CoreLog.Shown(notify)})");
         c.a = 1f; _c = c;
         float h, s, v; Color.RGBToHSV(_c, out h, out s, out v);
         if (v > 0.001f && s > 0.001f) { _h = h; _s = s; } else if (v > 0.001f) _s = s;
@@ -126,8 +126,8 @@ public sealed class UiColorPicker
     /// Shows another colour (e.g. a different part was selected) without calling `changed`. Expected outcome: Hex equals the given colour.
     public bool Set(Color c)
     {
-        if (CoreLog.On) UiLog.Verbose($"UiColorPicker.Set(c={c})");
+        if (CoreLog.On) UiLog.Verbose($"UiColorPicker.Set(c={CoreLog.Shown(c)})");
         SetColor(c, true, false);
-        { var returnedAt131 = ColorUtility.ToHtmlStringRGB(_c) == ColorUtility.ToHtmlStringRGB(new Color(c.r, c.g, c.b, 1f)); if (CoreLog.On) UiLog.Verbose($"UiColorPicker.Set: returns {returnedAt131} (line 131)"); return returnedAt131; }
+        { var returnedAt131 = ColorUtility.ToHtmlStringRGB(_c) == ColorUtility.ToHtmlStringRGB(new Color(c.r, c.g, c.b, 1f)); if (CoreLog.On) UiLog.Verbose($"UiColorPicker.Set: returns {CoreLog.Shown(returnedAt131)} (line 131)"); return returnedAt131; }
     }
 }

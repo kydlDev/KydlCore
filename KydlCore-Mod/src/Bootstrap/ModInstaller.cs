@@ -42,7 +42,7 @@ internal sealed class ModInstaller
         OperationResponse<int> r = Features.StopAll();
         if (!r.IsSuccess) ModLog.Warn("ModInstaller: " + r.Reason);
         if (Current == this) Current = null;
-        { var returnedAt45 = r.IsSuccess; if (CoreLog.On) ModLog.Verbose($"ModInstaller.Uninstall: returns {returnedAt45} (line 45)"); return returnedAt45; }
+        { var returnedAt45 = r.IsSuccess; if (CoreLog.On) ModLog.Verbose($"ModInstaller.Uninstall: returns {CoreLog.Shown(returnedAt45)} (line 45)"); return returnedAt45; }
     }
 
     void Add(IFeature feature)

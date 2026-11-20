@@ -40,7 +40,7 @@ public static class UiControls
         b.RegisterCallback<PointerLeaveEvent>(e => { hovered = false; pressed = false; show(); });
         b.RegisterCallback<PointerDownEvent>(e => { pressed = true; show(); UiLog.Verbose("Ui: button '" + text + "' down, dimmed " + (PressDim * 100f).ToString("0") + "% for at least " + PressFeedbackMs + " ms"); });
         b.RegisterCallback<PointerUpEvent>(e => b.schedule.Execute(() => { pressed = false; show(); }).StartingIn(PressFeedbackMs));
-        { var returnedAt43 = b; if (CoreLog.On) UiLog.Verbose($"UiControls.Button: returns {returnedAt43} (line 43)"); return returnedAt43; }
+        { var returnedAt43 = b; if (CoreLog.On) UiLog.Verbose($"UiControls.Button: returns {CoreLog.Shown(returnedAt43)} (line 43)"); return returnedAt43; }
     }
 
     /// A button that looks like an input field (dark, text on the left): the closed drop-down.
@@ -54,36 +54,36 @@ public static class UiControls
         UiKit.Fade(b, "border-top-color", "border-bottom-color", "border-left-color", "border-right-color");
         b.RegisterCallback<PointerEnterEvent>(e => UiKit.Borders(b, 1, UiKit.Gold));
         b.RegisterCallback<PointerLeaveEvent>(e => UiKit.Borders(b, 1, UiKit.Border));
-        { var returnedAt57 = b; if (CoreLog.On) UiLog.Verbose($"UiControls.Field: returns {returnedAt57} (line 57)"); return returnedAt57; }
+        { var returnedAt57 = b; if (CoreLog.On) UiLog.Verbose($"UiControls.Field: returns {CoreLog.Shown(returnedAt57)} (line 57)"); return returnedAt57; }
     }
 
     // --- text -------------------------------------------------------------------------------------------------------------
     /// A section title with a line under it (FollowPlayer's Section). Other mods: upper-case, NameColor. KydlCore build: the text as written (PascalCase) in TabColor, because a section is a settings tab (D-049).
     public static VisualElement Heading(string text)
     {
-        if (CoreLog.On) UiLog.Verbose($"UiControls.Heading(text={text})");
+        if (CoreLog.On) UiLog.Verbose($"UiControls.Heading(text={CoreLog.Shown(text)})");
         var s = new VisualElement(); s.style.flexShrink = 0; s.style.marginTop = 16; s.style.marginBottom = 6;
         var head = UiKit.Label(text, UiKit.SectionSize, UiKit.TabColor, true);
         head.style.letterSpacing = 1.5f;
         s.Add(head);
         var line = new VisualElement(); line.style.height = 1; line.style.backgroundColor = UiKit.Border; line.style.marginTop = 4;
         s.Add(line);
-        { var returnedAt71 = s; if (CoreLog.On) UiLog.Verbose($"UiControls.Heading: returns {returnedAt71} (line 71)"); return returnedAt71; }
+        { var returnedAt71 = s; if (CoreLog.On) UiLog.Verbose($"UiControls.Heading: returns {CoreLog.Shown(returnedAt71)} (line 71)"); return returnedAt71; }
     }
 
     /// A small dim wrapping text line (hints, explanations).
     public static Label Note(string text)
     {
-        if (CoreLog.On) UiLog.Verbose($"UiControls.Note(text={text})");
+        if (CoreLog.On) UiLog.Verbose($"UiControls.Note(text={CoreLog.Shown(text)})");
         var l = UiKit.Label(text, UiKit.SmallSize, UiKit.TextDim);
         l.style.whiteSpace = WhiteSpace.Normal; l.style.flexShrink = 0; l.style.marginTop = 2; l.style.marginBottom = 2;
-        { var returnedAt80 = l; if (CoreLog.On) UiLog.Verbose($"UiControls.Note: returns {returnedAt80} (line 80)"); return returnedAt80; }
+        { var returnedAt80 = l; if (CoreLog.On) UiLog.Verbose($"UiControls.Note: returns {CoreLog.Shown(returnedAt80)} (line 80)"); return returnedAt80; }
     }
 
     /// A row: label on the left (fixed width), control on the right.
     public static VisualElement Row(string label, VisualElement control)
     {
-        if (CoreLog.On) UiLog.Verbose($"UiControls.Row(label={label}, control={control})");
+        if (CoreLog.On) UiLog.Verbose($"UiControls.Row(label={CoreLog.Shown(label)}, control={CoreLog.Shown(control)})");
         var r = new VisualElement();
         r.style.flexDirection = FlexDirection.Row; r.style.alignItems = Align.Center; r.style.flexShrink = 0;
         r.style.marginTop = 4; r.style.marginBottom = 4;
@@ -91,7 +91,7 @@ public static class UiControls
         r.Add(l);
         control.style.flexGrow = 1; control.style.flexShrink = 1;
         r.Add(control);
-        { var returnedAt94 = r; if (CoreLog.On) UiLog.Verbose($"UiControls.Row: returns {returnedAt94} (line 94)"); return returnedAt94; }
+        { var returnedAt94 = r; if (CoreLog.On) UiLog.Verbose($"UiControls.Row: returns {CoreLog.Shown(returnedAt94)} (line 94)"); return returnedAt94; }
     }
 
     /// Puts the items side by side in one wrapping line.
@@ -101,7 +101,7 @@ public static class UiControls
         var r = new VisualElement();
         r.style.flexDirection = FlexDirection.Row; r.style.flexWrap = Wrap.Wrap; r.style.alignItems = Align.Center; r.style.flexShrink = 0;
         foreach (var i in items) r.Add(i);
-        { var returnedAt104 = r; if (CoreLog.On) UiLog.Verbose($"UiControls.Line: returns {returnedAt104} (line 104)"); return returnedAt104; }
+        { var returnedAt104 = r; if (CoreLog.On) UiLog.Verbose($"UiControls.Line: returns {CoreLog.Shown(returnedAt104)} (line 104)"); return returnedAt104; }
     }
 
     // --- text field -----------------------------------------------------------------------------------------------------
@@ -113,12 +113,12 @@ public static class UiControls
         f.style.marginLeft = 0; f.style.marginRight = 0; f.style.marginTop = 0; f.style.marginBottom = 0; f.style.flexShrink = 0;
         StyleInput(f, UiKit.FontSize);
         f.RegisterValueChangedCallback(e => changed?.Invoke(e.newValue));
-        { var returnedAt116 = f; if (CoreLog.On) UiLog.Verbose($"UiControls.TextField: returns {returnedAt116} (line 116)"); return returnedAt116; }
+        { var returnedAt116 = f; if (CoreLog.On) UiLog.Verbose($"UiControls.TextField: returns {CoreLog.Shown(returnedAt116)} (line 116)"); return returnedAt116; }
     }
 
     static void StyleInput(TextField f, int size)
     {
-        if (CoreLog.On) UiLog.Verbose($"UiControls.StyleInput(f={f}, size={size})");
+        if (CoreLog.On) UiLog.Verbose($"UiControls.StyleInput(f={CoreLog.Shown(f)}, size={CoreLog.Shown(size)})");
         var input = f.Q(className: UnityEngine.UIElements.TextField.inputUssClassName) ?? f;
         input.style.backgroundColor = UiKit.Track; input.style.color = UiKit.ValueColor; input.style.fontSize = size;
         UiKit.Borders(input, 1, UiKit.Border); UiKit.Radius(input, 4); UiKit.Pad(input, 5, 8);
@@ -174,7 +174,7 @@ public static class UiControls
             changed?.Invoke(state);
         }));
         Show();
-        { var returnedAt177 = row; if (CoreLog.On) UiLog.Verbose($"UiControls.Toggle: returns {returnedAt177} (line 177)"); return returnedAt177; }
+        { var returnedAt177 = row; if (CoreLog.On) UiLog.Verbose($"UiControls.Toggle: returns {CoreLog.Shown(returnedAt177)} (line 177)"); return returnedAt177; }
     }
 
     // --- slider -----------------------------------------------------------------------------------------------------------
@@ -235,7 +235,7 @@ public static class UiControls
             e.StopPropagation(); editing = false; Commit(); input.Blur();
         }));
         Show();
-        { var returnedAt238 = box; if (CoreLog.On) UiLog.Verbose($"UiControls.Slider: returns {returnedAt238} (line 238)"); return returnedAt238; }
+        { var returnedAt238 = box; if (CoreLog.On) UiLog.Verbose($"UiControls.Slider: returns {CoreLog.Shown(returnedAt238)} (line 238)"); return returnedAt238; }
     }
 
     // --- drop-down --------------------------------------------------------------------------------------------------------
@@ -302,7 +302,7 @@ public static class UiControls
             left.RemoveFromHierarchy();
             UiLog.Verbose("Ui: drop-down closed because its field left the panel");
         }));
-        { var returnedAt305 = b; if (CoreLog.On) UiLog.Verbose($"UiControls.Dropdown: returns {returnedAt305} (line 305)"); return returnedAt305; }
+        { var returnedAt305 = b; if (CoreLog.On) UiLog.Verbose($"UiControls.Dropdown: returns {CoreLog.Shown(returnedAt305)} (line 305)"); return returnedAt305; }
     }
 
     // --- colour -----------------------------------------------------------------------------------------------------------
@@ -327,7 +327,7 @@ public static class UiControls
 
         void Apply(bool fromField)
         {
-            if (CoreLog.On) UiLog.Verbose($"UiControls.Apply(fromField={fromField})");
+            if (CoreLog.On) UiLog.Verbose($"UiControls.Apply(fromField={CoreLog.Shown(fromField)})");
             string h = "#" + ColorUtility.ToHtmlStringRGB(c);
             preview.style.backgroundColor = c;
             // T-65 (user: the Red / Green / Blue sliders did not slide like the spacing one): `field.value = h` inside a drag sends its change
@@ -368,6 +368,6 @@ public static class UiControls
         RebuildSliders();
         preview.style.backgroundColor = c;
         set = h => { Color p; if (ColorUtility.TryParseHtmlString(h, out p)) { c = p; RebuildSliders(); field.SetValueWithoutNotify(h); preview.style.backgroundColor = c; } };
-        { var returnedAt371 = box; if (CoreLog.On) UiLog.Verbose($"UiControls.ColorPicker: returns {returnedAt371} (line 371)"); return returnedAt371; }
+        { var returnedAt371 = box; if (CoreLog.On) UiLog.Verbose($"UiControls.ColorPicker: returns {CoreLog.Shown(returnedAt371)} (line 371)"); return returnedAt371; }
     }
 }

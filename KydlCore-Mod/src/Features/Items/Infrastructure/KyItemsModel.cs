@@ -28,7 +28,7 @@ internal sealed class KyItemsModel
     /// </summary>
     internal bool Add(KyEntry entry)
     {
-        if (CoreLog.On) ModLog.Every("KyItemsModel.Add", 2d, $"KyItemsModel.Add(entry={entry})");
+        if (CoreLog.On) ModLog.Every("KyItemsModel.Add", 2d, $"KyItemsModel.Add(entry={CoreLog.Shown(entry)})");
         if (entry == null || string.IsNullOrEmpty(entry.Prefab) || _byPrefab.ContainsKey(entry.Prefab)) { if (CoreLog.On) ModLog.Every("KyItemsModel.Add:32", 2d, "KyItemsModel.Add: returns false (line 32)"); return false; }
         _byPrefab[entry.Prefab] = entry;
         _all.Add(entry);
@@ -38,18 +38,18 @@ internal sealed class KyItemsModel
     /// <summary>The entry of a prefab name (case ignored), or null.</summary>
     internal KyEntry Find(string prefab)
     {
-        if (CoreLog.On) ModLog.Every("KyItemsModel.Find", 2d, $"KyItemsModel.Find(prefab={prefab})");
+        if (CoreLog.On) ModLog.Every("KyItemsModel.Find", 2d, $"KyItemsModel.Find(prefab={CoreLog.Shown(prefab)})");
         if (prefab == null) { if (CoreLog.On) ModLog.Every("KyItemsModel.Find:42", 2d, "KyItemsModel.Find: returns null (line 42)"); return null; }
         KyEntry e;
         _byPrefab.TryGetValue(prefab, out e);                 // e stays null when the name is unknown
-        { var returnedAt45 = e; if (CoreLog.On) ModLog.Every("KyItemsModel.Find:45", 2d, $"KyItemsModel.Find: returns {returnedAt45} (line 45)"); return returnedAt45; }
+        { var returnedAt45 = e; if (CoreLog.On) ModLog.Every("KyItemsModel.Find:45", 2d, $"KyItemsModel.Find: returns {CoreLog.Shown(returnedAt45)} (line 45)"); return returnedAt45; }
     }
 
     /// <summary>The entries of one mod GUID (case ignored), in order; none for null / empty.</summary>
     internal IEnumerable<KyEntry> ByMod(string modGuid)
     {
-        if (CoreLog.On) ModLog.Verbose($"KyItemsModel.ByMod(modGuid={modGuid})");
-        if (string.IsNullOrEmpty(modGuid)) { var returnedAt52 = Enumerable.Empty<KyEntry>(); if (CoreLog.On) ModLog.Verbose($"KyItemsModel.ByMod: returns {returnedAt52} (line 52)"); return returnedAt52; }
+        if (CoreLog.On) ModLog.Verbose($"KyItemsModel.ByMod(modGuid={CoreLog.Shown(modGuid)})");
+        if (string.IsNullOrEmpty(modGuid)) { var returnedAt52 = Enumerable.Empty<KyEntry>(); if (CoreLog.On) ModLog.Verbose($"KyItemsModel.ByMod: returns {CoreLog.Shown(returnedAt52)} (line 52)"); return returnedAt52; }
         return _all.Where(e => string.Equals(e.ModGuid, modGuid, StringComparison.OrdinalIgnoreCase)).ToList();
     }
 
@@ -59,11 +59,11 @@ internal sealed class KyItemsModel
     /// </summary>
     internal bool ReplaceWith(KyItemsModel next)
     {
-        if (CoreLog.On) ModLog.Every("KyItemsModel.ReplaceWith", 2d, $"KyItemsModel.ReplaceWith(next={next})");
+        if (CoreLog.On) ModLog.Every("KyItemsModel.ReplaceWith", 2d, $"KyItemsModel.ReplaceWith(next={CoreLog.Shown(next)})");
         bool changed = !new HashSet<string>(_byPrefab.Keys, StringComparer.OrdinalIgnoreCase).SetEquals(next._byPrefab.Keys);
         _all.Clear(); _byPrefab.Clear();
         foreach (KyEntry e in next._all.ToList()) Add(e);
-        { var returnedAt66 = changed; if (CoreLog.On) ModLog.Every("KyItemsModel.ReplaceWith:66", 2d, $"KyItemsModel.ReplaceWith: returns {returnedAt66} (line 66)"); return returnedAt66; }
+        { var returnedAt66 = changed; if (CoreLog.On) ModLog.Every("KyItemsModel.ReplaceWith:66", 2d, $"KyItemsModel.ReplaceWith: returns {CoreLog.Shown(returnedAt66)} (line 66)"); return returnedAt66; }
     }
 
     /// <summary>The user's mods: "com.kydldev.*" (case ignored) with a name after the prefix. Consumers leave out their own GUID themselves.</summary>

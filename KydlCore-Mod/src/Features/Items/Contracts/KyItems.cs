@@ -46,7 +46,7 @@ public static class KyItems
     /// <summary>The entry of a contribution id ("stevethetroll:slippers", case ignored), or null.</summary>
     public static KyEntry FindById(string id)
     {
-        if (CoreLog.On) ModLog.Verbose($"KyItems.FindById(id={id})");
+        if (CoreLog.On) ModLog.Verbose($"KyItems.FindById(id={CoreLog.Shown(id)})");
         if (string.IsNullOrEmpty(id)) { if (CoreLog.On) ModLog.Verbose("KyItems.FindById: returns null (line 50)"); return null; }
         return Contributed.FirstOrDefault(e => string.Equals(e.Id, id, StringComparison.OrdinalIgnoreCase));
     }
@@ -65,17 +65,17 @@ public static class KyItems
     /// </summary>
     public static KyResult Contribute(KyContribution c)
     {
-        if (c == null) { var returnedAt68 = Refuse("", "no contribution"); if (CoreLog.On) ModLog.Verbose($"KyItems.Contribute: returns {returnedAt68} (line 68)"); return returnedAt68; }
-        if (c.Prefab == null) { var returnedAt69 = Refuse(c.Id, ContributionBook.NoPrefab); if (CoreLog.On) ModLog.Verbose($"KyItems.Contribute: returns {returnedAt69} (line 69)"); return returnedAt69; }
+        if (c == null) { var returnedAt68 = Refuse("", "no contribution"); if (CoreLog.On) ModLog.Verbose($"KyItems.Contribute: returns {CoreLog.Shown(returnedAt68)} (line 68)"); return returnedAt68; }
+        if (c.Prefab == null) { var returnedAt69 = Refuse(c.Id, ContributionBook.NoPrefab); if (CoreLog.On) ModLog.Verbose($"KyItems.Contribute: returns {CoreLog.Shown(returnedAt69)} (line 69)"); return returnedAt69; }
         var valid = KyItemRules.ValidateId(c.Id, c.ModGuid);
-        if (!valid.IsSuccess) { var returnedAt71 = Refuse(c.Id, valid.Reason); if (CoreLog.On) ModLog.Verbose($"KyItems.Contribute: returns {returnedAt71} (line 71)"); return returnedAt71; }
+        if (!valid.IsSuccess) { var returnedAt71 = Refuse(c.Id, valid.Reason); if (CoreLog.On) ModLog.Verbose($"KyItems.Contribute: returns {CoreLog.Shown(returnedAt71)} (line 71)"); return returnedAt71; }
         string id = valid.Value;
         var added = Book.Add(new ContributionRecord(id, c.ModGuid, c.Prefab.name));
-        if (!added.IsSuccess) { var returnedAt74 = Refuse(id, added.Reason); if (CoreLog.On) ModLog.Verbose($"KyItems.Contribute: returns {returnedAt74} (line 74)"); return returnedAt74; }
+        if (!added.IsSuccess) { var returnedAt74 = Refuse(id, added.Reason); if (CoreLog.On) ModLog.Verbose($"KyItems.Contribute: returns {CoreLog.Shown(returnedAt74)} (line 74)"); return returnedAt74; }
         if (c.RegisterInGame)
         {
             KyResult game = Game.Register(c, id);
-            if (!game.Accepted) { Book.Remove(id); { var returnedAt78 = Refuse(id, "the game side refused it: " + game.Reason); if (CoreLog.On) ModLog.Verbose($"KyItems.Contribute: returns {returnedAt78} (line 78)"); return returnedAt78; } }
+            if (!game.Accepted) { Book.Remove(id); { var returnedAt78 = Refuse(id, "the game side refused it: " + game.Reason); if (CoreLog.On) ModLog.Verbose($"KyItems.Contribute: returns {CoreLog.Shown(returnedAt78)} (line 78)"); return returnedAt78; } }
         }
         KyEntry entry = Make(c.Prefab, c.ModGuid, c.ModGuid, c.Kind, c.Tags, "Contribute");
         entry.Id = id;
@@ -86,7 +86,7 @@ public static class KyItems
         try { if (c.OnRegistered != null) c.OnRegistered(c.Prefab); }
         catch (Exception e) { ModLog.Warn("KyItems: the OnRegistered callback of '" + id + "' threw: " + e); }        // last resort: a mod's callback must not break the registry
         if (Ready) RaiseChanged();
-        { var returnedAt89 = KyResult.Ok(id, listed ? "" : "listed already"); if (CoreLog.On) ModLog.Verbose($"KyItems.Contribute: returns {returnedAt89} (line 89)"); return returnedAt89; }
+        { var returnedAt89 = KyResult.Ok(id, listed ? "" : "listed already"); if (CoreLog.On) ModLog.Verbose($"KyItems.Contribute: returns {CoreLog.Shown(returnedAt89)} (line 89)"); return returnedAt89; }
     }
 
     /// <summary>Removes a contribution (a mod's feature was switched off: no stale entry stays). Expected outcome: true when the id is not listed any more.</summary>
@@ -103,7 +103,7 @@ public static class KyItems
             ModLog.Verbose("KyItems: contribution '" + id + "' withdrawn");
             if (Ready) RaiseChanged();
         }
-        { var returnedAt106 = FindById(id) == null && !Book.Contains(id); if (CoreLog.On) ModLog.Verbose($"KyItems.Withdraw: returns {returnedAt106} (line 106)"); return returnedAt106; }
+        { var returnedAt106 = FindById(id) == null && !Book.Contains(id); if (CoreLog.On) ModLog.Verbose($"KyItems.Withdraw: returns {CoreLog.Shown(returnedAt106)} (line 106)"); return returnedAt106; }
     }
 
     /// <summary>
@@ -123,7 +123,7 @@ public static class KyItems
             ModLog.Verbose("KyItems: '" + prefab.name + "' registered by " + modGuid + " (legacy Register)" + (added ? "" : " (already found by another source)"));
             if (added && Ready) RaiseChanged();
         }
-        { var returnedAt126 = added; if (CoreLog.On) ModLog.Verbose($"KyItems.Register: returns {returnedAt126} (line 126)"); return returnedAt126; }
+        { var returnedAt126 = added; if (CoreLog.On) ModLog.Verbose($"KyItems.Register: returns {CoreLog.Shown(returnedAt126)} (line 126)"); return returnedAt126; }
     }
 
     /// <summary>The "KY-Items" build category, or null while no mod has registered it (Core never makes an empty one).</summary>
@@ -132,7 +132,7 @@ public static class KyItems
     /// <summary>Called once by the ItemsFeature: reads the game each time it has registered all items and pieces. Expected outcome: true when hooked.</summary>
     internal static bool Init()
     {
-        if (_hooked) { var returnedAt135 = _hooked; if (CoreLog.On) ModLog.Every("KyItems.Init:135", 2d, $"KyItems.Init: returns {returnedAt135} (line 135)"); return returnedAt135; }
+        if (_hooked) { var returnedAt135 = _hooked; if (CoreLog.On) ModLog.Every("KyItems.Init:135", 2d, $"KyItems.Init: returns {CoreLog.Shown(returnedAt135)} (line 135)"); return returnedAt135; }
         _hooked = Game.Hook(Refresh);
         ModLog.Verbose("KyItems: game side " + Game.GetType().Name + (_hooked ? " hooked" : " NOT hooked"));
         return _hooked;

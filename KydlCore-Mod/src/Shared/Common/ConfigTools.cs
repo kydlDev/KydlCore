@@ -28,7 +28,7 @@ public static class ConfigTools
     public static string[] Capture(ConfigFile c)
     {
         var ctx = ModContexts.For(Assembly.GetCallingAssembly());
-        try { { var returnedAt31 = c != null && !string.IsNullOrEmpty(c.ConfigFilePath) && File.Exists(c.ConfigFilePath) ? File.ReadAllLines(c.ConfigFilePath) : null; if (CoreLog.On) ModLog.Verbose($"ConfigTools.Capture: returns {returnedAt31} (line 31)"); return returnedAt31; } }
+        try { { var returnedAt31 = c != null && !string.IsNullOrEmpty(c.ConfigFilePath) && File.Exists(c.ConfigFilePath) ? File.ReadAllLines(c.ConfigFilePath) : null; if (CoreLog.On) ModLog.Verbose($"ConfigTools.Capture: returns {CoreLog.Shown(returnedAt31)} (line 31)"); return returnedAt31; } }
         catch (IOException e) { ModLog.Warn(ctx, "Config comma check skipped (file not readable): " + e.Message); return null; }
         catch (UnauthorizedAccessException e) { ModLog.Warn(ctx, "Config comma check skipped (no access): " + e.Message); return null; }
     }

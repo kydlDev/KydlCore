@@ -26,10 +26,10 @@ internal static class ConfigGroups
     /// <summary>The tab a section belongs to. Expected outcome: the text before the first " - ", or the whole name when there is none (or nothing before it).</summary>
     internal static string NameOf(string section)
     {
-        if (CoreLog.On) ModLog.Every("Group.NameOf", 2d, $"Group.NameOf(section={section})");
-        if (string.IsNullOrEmpty(section)) { var returnedAt30 = section; if (CoreLog.On) ModLog.Every("Group.NameOf:30", 2d, $"Group.NameOf: returns {returnedAt30} (line 30)"); return returnedAt30; }
+        if (CoreLog.On) ModLog.Every("Group.NameOf", 2d, $"Group.NameOf(section={CoreLog.Shown(section)})");
+        if (string.IsNullOrEmpty(section)) { var returnedAt30 = section; if (CoreLog.On) ModLog.Every("Group.NameOf:30", 2d, $"Group.NameOf: returns {CoreLog.Shown(returnedAt30)} (line 30)"); return returnedAt30; }
         int cut = section.IndexOf(Separator, StringComparison.Ordinal);
-        { var returnedAt32 = cut > 0 ? section.Substring(0, cut) : section; if (CoreLog.On) ModLog.Every("Group.NameOf:32", 2d, $"Group.NameOf: returns {returnedAt32} (line 32)"); return returnedAt32; }
+        { var returnedAt32 = cut > 0 ? section.Substring(0, cut) : section; if (CoreLog.On) ModLog.Every("Group.NameOf:32", 2d, $"Group.NameOf: returns {CoreLog.Shown(returnedAt32)} (line 32)"); return returnedAt32; }
     }
 
     /// <summary>
@@ -38,9 +38,9 @@ internal static class ConfigGroups
     /// </summary>
     internal static List<Group> Of(IEnumerable<string> sections)
     {
-        if (CoreLog.On) ModLog.Every("Group.Of", 2d, $"Group.Of(sections={sections})");
+        if (CoreLog.On) ModLog.Every("Group.Of", 2d, $"Group.Of(sections={CoreLog.Shown(sections)})");
         var groups = new List<Group>();
-        if (sections == null) { var returnedAt43 = groups; if (CoreLog.On) ModLog.Every("Group.Of:43", 2d, $"Group.Of: returns {returnedAt43} (line 43)"); return returnedAt43; }
+        if (sections == null) { var returnedAt43 = groups; if (CoreLog.On) ModLog.Every("Group.Of:43", 2d, $"Group.Of: returns {CoreLog.Shown(returnedAt43)} (line 43)"); return returnedAt43; }
         foreach (string section in sections)
         {
             if (string.IsNullOrEmpty(section)) continue;
@@ -52,7 +52,7 @@ internal static class ConfigGroups
 
         Move(groups, First, 0);
         Move(groups, Last, groups.Count - 1);
-        { var returnedAt55 = groups; if (CoreLog.On) ModLog.Every("Group.Of:55", 2d, $"Group.Of: returns {returnedAt55} (line 55)"); return returnedAt55; }
+        { var returnedAt55 = groups; if (CoreLog.On) ModLog.Every("Group.Of:55", 2d, $"Group.Of: returns {CoreLog.Shown(returnedAt55)} (line 55)"); return returnedAt55; }
     }
 
     /// <summary>
@@ -61,17 +61,17 @@ internal static class ConfigGroups
     /// </summary>
     internal static List<string> Shown(IEnumerable<string> sections, Func<string, bool> replaced)
     {
-        if (CoreLog.On) ModLog.Verbose($"Group.Shown(sections={sections}, replaced={replaced})");
+        if (CoreLog.On) ModLog.Verbose($"Group.Shown(sections={CoreLog.Shown(sections)}, replaced={CoreLog.Shown(replaced)})");
         var shown = new List<string>();
-        if (sections == null) { var returnedAt66 = shown; if (CoreLog.On) ModLog.Verbose($"Group.Shown: returns {returnedAt66} (line 66)"); return returnedAt66; }
+        if (sections == null) { var returnedAt66 = shown; if (CoreLog.On) ModLog.Verbose($"Group.Shown: returns {CoreLog.Shown(returnedAt66)} (line 66)"); return returnedAt66; }
         foreach (string section in sections)
             if (replaced == null || !replaced(section)) shown.Add(section);
-        { var returnedAt69 = shown; if (CoreLog.On) ModLog.Verbose($"Group.Shown: returns {returnedAt69} (line 69)"); return returnedAt69; }
+        { var returnedAt69 = shown; if (CoreLog.On) ModLog.Verbose($"Group.Shown: returns {CoreLog.Shown(returnedAt69)} (line 69)"); return returnedAt69; }
     }
 
     static void Move(List<Group> groups, string name, int to)
     {
-        if (CoreLog.On) ModLog.Every("Group.Move", 2d, $"Group.Move(groups={groups}, name={name}, to={to})");
+        if (CoreLog.On) ModLog.Every("Group.Move", 2d, $"Group.Move(groups={CoreLog.Shown(groups)}, name={CoreLog.Shown(name)}, to={CoreLog.Shown(to)})");
         Group group = groups.Find(g => g.Name == name);
         if (group == null) { if (CoreLog.On) ModLog.Every("Group.Move:76", 2d, "Group.Move: returns (line 76)"); return; }
         groups.Remove(group);
