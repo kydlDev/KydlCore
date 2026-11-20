@@ -30,6 +30,9 @@
     {
       "do": "hook",
       "name": "kc.hubClose"
+    },
+    {
+      "do": "cleanArena"
     }
   ],
   "asserts": [

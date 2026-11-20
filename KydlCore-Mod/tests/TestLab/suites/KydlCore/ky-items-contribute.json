@@ -99,6 +99,9 @@
       },
       "expect": "",
       "label": "no stale entry"
+    },
+    {
+      "do": "cleanArena"
     }
   ],
   "asserts": [

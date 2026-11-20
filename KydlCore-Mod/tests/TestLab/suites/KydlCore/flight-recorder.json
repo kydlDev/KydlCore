@@ -63,6 +63,9 @@
       "name": "kc.flightUntrack",
       "expect": true,
       "label": "untracked"
+    },
+    {
+      "do": "cleanArena"
     }
   ],
   "asserts": [

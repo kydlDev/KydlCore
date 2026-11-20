@@ -31,6 +31,9 @@
       "notContains": "FAIL",
       "contains": "PASS",
       "label": "InGameTests (KC-01 .. KC-05)"
+    },
+    {
+      "do": "cleanArena"
     }
   ],
   "asserts": [
