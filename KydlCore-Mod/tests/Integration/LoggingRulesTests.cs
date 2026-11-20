@@ -27,10 +27,26 @@ public class LoggingRulesTests
     }
 
     static IEnumerable<string> SourceFiles() => Directory.GetFiles(TestPaths.Src, "*.cs", SearchOption.AllDirectories)
-        .Where(f => !f.Replace('\\', '/').Contains("/src/Testing/") && !LoggerFiles.Contains(Path.GetFileName(f)));
+        .Where(f => !IsLogListener(f) && !f.Replace('\\', '/').Contains("/src/Testing/") && !LoggerFiles.Contains(Path.GetFileName(f)));
 
     // the loggers themselves (a logger that logs through itself loops)
     static readonly HashSet<string> LoggerFiles = new HashSet<string> { "CoreLog.cs", "ModLog.cs", "ModLog.Diagnostics.cs", "ModContext.cs", "UiLog.cs", "UiLogSinks.cs" };
+
+    // code that receives every log line (a BepInEx ILogListener, Unity's logMessageReceived) must never log: each of its own lines would come back to it
+    // and loop forever (KydlCore FlightListener, 2026-11-20: the log filled up and Valheim did not start)
+    static bool IsLogListener(string file)
+    {
+        string text = File.ReadAllText(file);
+        return text.Contains("ILogListener") || text.Contains("logMessageReceived");
+    }
+
+    [Test]
+    public void LogListeners_NeverLog()
+    {
+        var looping = Directory.GetFiles(TestPaths.Src, "*.cs", SearchOption.AllDirectories).Where(IsLogListener)
+            .Where(f => File.ReadAllLines(f).Any(l => Logs(Code(l)))).Select(Path.GetFileName).ToList();
+        Assert.That(looping, Is.Empty, "a log listener that logs calls itself again for every line it writes (endless loop)");
+    }
 
     static List<Method> Methods(string file, string[] lines)
     {

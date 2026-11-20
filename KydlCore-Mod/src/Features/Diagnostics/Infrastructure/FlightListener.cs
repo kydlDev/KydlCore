@@ -1,8 +1,6 @@
 using System;
 using BepInEx.Logging;
 using KydlCore.Features.Diagnostics.Domain;
-using KydlCore.Core;
-using KydlCore.Common;
 
 namespace KydlCore.Features.Diagnostics.Infrastructure;
 
@@ -16,10 +14,9 @@ internal sealed class FlightListener : ILogListener
     /// <summary>Called by BepInEx for every log line.</summary>
     public void LogEvent(object sender, LogEventArgs eventArgs)
     {
-        if (CoreLog.On) ModLog.Verbose($"FlightListener.LogEvent(sender={sender}, eventArgs={eventArgs})");
         if (eventArgs == null || eventArgs.Source == null)
         {
-            { if (CoreLog.On) ModLog.Verbose("FlightListener.LogEvent: returns (line 22)"); return; }
+            return;
         }
 
         try
@@ -38,7 +35,6 @@ internal sealed class FlightListener : ILogListener
 
     static void Handle(string source, LogLevel level, string text)
     {
-        if (CoreLog.On) ModLog.Verbose($"FlightListener.Handle(source={source}, level={level}, text={text})");
         if (source == TriggerRules.LabSource)
         {
             if (TriggerRules.TryLabResult(source, text, out string test, out bool failed, out string why))
@@ -50,7 +46,7 @@ internal sealed class FlightListener : ILogListener
                 FlightHost.LabReset();
             }
 
-            { if (CoreLog.On) ModLog.Verbose("FlightListener.Handle: returns (line 53)"); return; }
+            return;
         }
 
         if ((level & (LogLevel.Error | LogLevel.Fatal)) != 0 && FlightHost.IsKydlMod(source))
@@ -62,7 +58,6 @@ internal sealed class FlightListener : ILogListener
     /// <summary>Nothing to release.</summary>
     public void Dispose()
     {
-        if (CoreLog.On) ModLog.Every("FlightListener.Dispose", 2d, $"FlightListener.Dispose()");
         // the listener holds no resources
     }
 }
