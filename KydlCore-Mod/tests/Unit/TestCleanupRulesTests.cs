@@ -46,4 +46,19 @@ public class TestCleanupRulesTests
             Assert.That(TestCleanupRules.ShouldRemove(kind, false, TestCleanupRules.RangeMetres + 0.1f), Is.False, "beyond it");
         }
     }
+
+    [Test]
+    public void TerrainChanged_SameBytes_IsFalse_AnyDifferenceIsTrue()
+    {
+        var copy = new byte[] { 1, 2, 3 };
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(TestCleanupRules.TerrainChanged(copy, new byte[] { 1, 2, 3 }), Is.False, "same");
+            Assert.That(TestCleanupRules.TerrainChanged(copy, new byte[] { 1, 2, 4 }), Is.True, "last byte differs");
+            Assert.That(TestCleanupRules.TerrainChanged(copy, new byte[] { 1, 2 }), Is.True, "shorter");
+            Assert.That(TestCleanupRules.TerrainChanged(copy, null), Is.True, "data gone");
+            Assert.That(TestCleanupRules.TerrainChanged(null, copy), Is.True, "data appeared");
+            Assert.That(TestCleanupRules.TerrainChanged(null, null), Is.False, "never any data");
+        }
+    }
 }

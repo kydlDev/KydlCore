@@ -64,6 +64,9 @@ sealed class KydlCore.Common.TestHookAttribute
   method System.Void KydlCore.Common.TestHookAttribute::.ctor(System.String)
 static class KydlCore.Common.TestLabSupport
   method System.String KydlCore.Common.TestLabSupport::RunInGameTests(System.Type,System.Boolean)
+static class KydlCore.Common.TestTerrainRestore
+  field KydlCore.Common.TestTerrainRestore::SnapshotKey : System.String = Kydl.TestCleanup.Terrain
+  method System.Int32 KydlCore.Common.TestTerrainRestore::Run(KydlCore.Common.ModContext,UnityEngine.Vector3)
 static class KydlCore.Common.TestWorldCleanup
   field KydlCore.Common.TestWorldCleanup::TemplateKey : System.String = Kydl.TestCleanup.Template
   method System.String KydlCore.Common.TestWorldCleanup::Run(KydlCore.Common.ModContext,UnityEngine.Vector3)
@@ -166,7 +169,9 @@ enum KydlCore.Core.ResponseStatus
   field KydlCore.Core.ResponseStatus::value__ : System.Int32
 static class KydlCore.Core.TestCleanupRules
   field KydlCore.Core.TestCleanupRules::RangeMetres : System.Single = 90
+  field KydlCore.Core.TestCleanupRules::ZoneMetres : System.Single = 32
   method System.Boolean KydlCore.Core.TestCleanupRules::ShouldRemove(KydlCore.Core.CleanupKind,System.Boolean,System.Single)
+  method System.Boolean KydlCore.Core.TestCleanupRules::TerrainChanged(System.Byte[],System.Byte[])
 struct KydlCore.Core.ValidationResult
   field KydlCore.Core.ValidationResult::Valid : KydlCore.Core.ValidationResult
   method KydlCore.Core.ResponseStatus KydlCore.Core.ValidationResult::get_Status()

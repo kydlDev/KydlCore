@@ -44,8 +44,9 @@ public static class TestWorldCleanup
         int total = removed[1] + removed[2] + removed[3] + removed[4] + removed[5];
         string text = "cleanup: removed " + total + " (drops " + removed[(int)CleanupKind.Drop] + ", creatures " + removed[(int)CleanupKind.Creature] + ", logs " + removed[(int)CleanupKind.Log]
             + ", stumps " + removed[(int)CleanupKind.Stump] + ", pieces " + removed[(int)CleanupKind.Piece] + ")";
+        text += ", terrain " + TestTerrainRestore.Run(ctx, spot) + " restored";
         if (total > 0) ModLog.Info(ctx, "TestWorldCleanup: " + text);
-        { var returnedAt48 = text; if (CoreLog.On) ModLog.Verbose(ctx, $"TestWorldCleanup.Run: returns {CoreLog.Shown(returnedAt48)} (line 48)"); return returnedAt48; }
+        { var returnedAt49 = text; if (CoreLog.On) ModLog.Verbose(ctx, $"TestWorldCleanup.Run: returns {CoreLog.Shown(returnedAt49)} (line 49)"); return returnedAt49; }
     }
 
     /// What a world object is (the local player and everything the cleanup never touches are Other).
@@ -57,7 +58,7 @@ public static class TestWorldCleanup
         else if (go.GetComponent<ItemDrop>() != null) kind = CleanupKind.Drop;
         else if (go.GetComponent<Character>() != null) kind = CleanupKind.Creature;
         else if (go.GetComponent<TreeLog>() != null) kind = CleanupKind.Log;
-        else if (go.GetComponent<Piece>() != null) kind = CleanupKind.Piece;
+        else if (go.GetComponent<Piece>() != null || go.GetComponent<TerrainModifier>() != null) kind = CleanupKind.Piece;      // a TerrainModifier keeps levelling the ground for as long as it exists
         else if (go.GetComponent<Destructible>() != null && go.name.IndexOf("_stub", System.StringComparison.OrdinalIgnoreCase) >= 0) kind = CleanupKind.Stump;
         { var returnedAt62 = kind; if (CoreLog.On) CoreLog.Verbose($"TestWorldCleanup.KindOf: returns {CoreLog.Shown(returnedAt62)} (line 62)"); return returnedAt62; }
     }
