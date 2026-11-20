@@ -64,6 +64,9 @@ sealed class KydlCore.Common.TestHookAttribute
   method System.Void KydlCore.Common.TestHookAttribute::.ctor(System.String)
 static class KydlCore.Common.TestLabSupport
   method System.String KydlCore.Common.TestLabSupport::RunInGameTests(System.Type,System.Boolean)
+static class KydlCore.Common.TestWorldCleanup
+  field KydlCore.Common.TestWorldCleanup::TemplateKey : System.String = Kydl.TestCleanup.Template
+  method System.String KydlCore.Common.TestWorldCleanup::Run(KydlCore.Common.ModContext,UnityEngine.Vector3)
 sealed class KydlCore.Common.Tunable`1
   event KydlCore.Common.Tunable`1::SettingChanged : System.EventHandler
   method KydlCore.Common.Tunable`1<T> KydlCore.Common.Tunable`1::SetFromConfigOf(System.String)
@@ -87,6 +90,14 @@ static class KydlCore.Common.UiInputLock
   method System.Boolean KydlCore.Common.UiInputLock::Install(System.String)
   method System.Boolean KydlCore.Common.UiInputLock::Release(System.String)
   method System.Int32 KydlCore.Common.UiInputLock::get_Count()
+enum KydlCore.Core.CleanupKind
+  field KydlCore.Core.CleanupKind::Creature : KydlCore.Core.CleanupKind = 2
+  field KydlCore.Core.CleanupKind::Drop : KydlCore.Core.CleanupKind = 1
+  field KydlCore.Core.CleanupKind::Log : KydlCore.Core.CleanupKind = 3
+  field KydlCore.Core.CleanupKind::Other : KydlCore.Core.CleanupKind = 0
+  field KydlCore.Core.CleanupKind::Piece : KydlCore.Core.CleanupKind = 5
+  field KydlCore.Core.CleanupKind::Stump : KydlCore.Core.CleanupKind = 4
+  field KydlCore.Core.CleanupKind::value__ : System.Int32
 sealed class KydlCore.Core.CommandDispatcher
   method KydlCore.Core.OperationResponse`1<TResult> KydlCore.Core.CommandDispatcher::Dispatch(KydlCore.Core.ICommand`1<TResult>)
   method System.Boolean KydlCore.Core.CommandDispatcher::Handles(System.Type)
@@ -153,6 +164,9 @@ enum KydlCore.Core.ResponseStatus
   field KydlCore.Core.ResponseStatus::Rejected : KydlCore.Core.ResponseStatus = 1
   field KydlCore.Core.ResponseStatus::Success : KydlCore.Core.ResponseStatus = 0
   field KydlCore.Core.ResponseStatus::value__ : System.Int32
+static class KydlCore.Core.TestCleanupRules
+  field KydlCore.Core.TestCleanupRules::RangeMetres : System.Single = 90
+  method System.Boolean KydlCore.Core.TestCleanupRules::ShouldRemove(KydlCore.Core.CleanupKind,System.Boolean,System.Single)
 struct KydlCore.Core.ValidationResult
   field KydlCore.Core.ValidationResult::Valid : KydlCore.Core.ValidationResult
   method KydlCore.Core.ResponseStatus KydlCore.Core.ValidationResult::get_Status()

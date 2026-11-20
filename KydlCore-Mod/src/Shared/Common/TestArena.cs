@@ -62,11 +62,12 @@ public static class TestArena
             Spots[ctx.Name] = spot;
             ModLog.Info(ctx, "TestArena: lab start " + _start.ToString("F0") + " -> test spot of " + ctx.Name + " " + spot.ToString("F0") + " (" + Flat(spot - _start).ToString("F0") + " m away)");
         }
+        string cleaned = TestWorldCleanup.Run(ctx, spot);
         Place(p, spot, Quaternion.identity);
         if (!p.InGodMode()) p.SetGodMode(true);
         float away = Flat(p.transform.position - _start);
         ModLog.Check(ctx, "TestArena: distance from the lab start", away, ArenaMetres, 1f, "m");
-        return "arena at " + spot.ToString("F0") + ", " + away.ToString("F0") + " m from the lab start, god mode " + p.InGodMode();
+        return "arena at " + spot.ToString("F0") + ", " + away.ToString("F0") + " m from the lab start, god mode " + p.InGodMode() + ", " + cleaned;
     }
 
     /// A point `dx`, `dz` metres from the player AS IT STANDS NOW, pushed out to at least <see cref="MinSpawnMetres"/> and set on the ground. Throws when the
