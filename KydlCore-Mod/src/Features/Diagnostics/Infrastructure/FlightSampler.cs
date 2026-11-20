@@ -3,6 +3,8 @@ using System.Globalization;
 using System.Text;
 using HarmonyLib;
 using UnityEngine;
+using KydlCore.Core;
+using KydlCore.Common;
 
 namespace KydlCore.Features.Diagnostics.Infrastructure;
 
@@ -22,6 +24,7 @@ internal static class FlightSampler
     /// <summary>One environment line: "fps 78 | sim near 2 total 4 | quality 3 High | player (-21, 51, 69)".</summary>
     internal static string Environment(double fps, int tracked)
     {
+        if (CoreLog.On) ModLog.Every("FlightSampler.Environment", 2d, $"FlightSampler.Environment(fps={fps}, tracked={tracked})");
         var sb = new StringBuilder();
         sb.Append("fps ").Append(fps.ToString("0", CultureInfo.InvariantCulture));
         sb.Append(" | sim ").Append(Simulation());
@@ -31,24 +34,26 @@ internal static class FlightSampler
         Player p = Player.m_localPlayer;
         sb.Append(" | player ").Append(p != null ? Pos(p.transform.position) : "none");
         sb.Append(" | tracked ").Append(tracked);
-        return sb.ToString();
+        { var returnedAt37 = sb.ToString(); if (CoreLog.On) ModLog.Every("FlightSampler.Environment:37", 2d, $"FlightSampler.Environment: returns {returnedAt37} (line 37)"); return returnedAt37; }
     }
 
     /// <summary>The game's simulation area in zones ("near 2 total 4"), or "-" before the network is up.</summary>
     internal static string Simulation()
     {
+        if (CoreLog.On) ModLog.Every("FlightSampler.Simulation", 2d, $"FlightSampler.Simulation()");
         if (ZNet.instance == null)
         {
-            return "-";
+            { if (CoreLog.On) ModLog.Every("FlightSampler.Simulation:46", 2d, "FlightSampler.Simulation: returns \"-\" (line 46)"); return "-"; }
         }
 
         SimulationDistance sim = ZNet.instance.GetSyncedSimulationDistance();
-        return "near " + sim.NearSimulationDistance + " total " + sim.TotalSimulationDistance + (sim.IsClassic ? " classic" : "");
+        { var returnedAt50 = "near " + sim.NearSimulationDistance + " total " + sim.TotalSimulationDistance + (sim.IsClassic ? " classic" : ""); if (CoreLog.On) ModLog.Every("FlightSampler.Simulation:50", 2d, $"FlightSampler.Simulation: returns {returnedAt50} (line 50)"); return returnedAt50; }
     }
 
     /// <summary>The generic facts of a loaded object: health, AI target, alerted, network owner, zone loaded, distance to the player.</summary>
     internal static string Facts(Character character, MonsterAI ai, ZNetView view, Vector3 position)
     {
+        if (CoreLog.On) ModLog.Every("FlightSampler.Facts", 2d, $"FlightSampler.Facts(character={character}, ai={ai}, view={view}, position={position})");
         var sb = new StringBuilder();
         if (character != null)
         {
@@ -75,19 +80,21 @@ internal static class FlightSampler
             Sep(sb).Append("owner ").Append(view.IsOwner() ? "me" : view.GetZDO().GetOwner().ToString(CultureInfo.InvariantCulture));
         }
 
-        return AppendWhere(sb, position).ToString();
+        { var returnedAt83 = AppendWhere(sb, position).ToString(); if (CoreLog.On) ModLog.Every("FlightSampler.Facts:83", 2d, $"FlightSampler.Facts: returns {returnedAt83} (line 83)"); return returnedAt83; }
     }
 
     /// <summary>The facts of an object that is not loaded: only its saved data (ZDO) is left.</summary>
     internal static string UnloadedFacts(ZDO zdo, Vector3 position)
     {
+        if (CoreLog.On) ModLog.Every("FlightSampler.UnloadedFacts", 2d, $"FlightSampler.UnloadedFacts(zdo={zdo}, position={position})");
         var sb = new StringBuilder("NOT LOADED (saved data only)");
         sb.Append(", owner ").Append(zdo.GetOwner() == 0L ? "nobody" : zdo.GetOwner().ToString(CultureInfo.InvariantCulture));
-        return AppendWhere(sb, position).ToString();
+        { var returnedAt92 = AppendWhere(sb, position).ToString(); if (CoreLog.On) ModLog.Every("FlightSampler.UnloadedFacts:92", 2d, $"FlightSampler.UnloadedFacts: returns {returnedAt92} (line 92)"); return returnedAt92; }
     }
 
     static StringBuilder AppendWhere(StringBuilder sb, Vector3 position)
     {
+        if (CoreLog.On) ModLog.Every("FlightSampler.AppendWhere", 2d, $"FlightSampler.AppendWhere(sb={sb}, position={position})");
         if (ZoneSystem.instance != null && !ZoneSystem.instance.IsZoneLoaded(position))
         {
             Sep(sb).Append("zone NOT loaded");
@@ -99,7 +106,7 @@ internal static class FlightSampler
             Sep(sb).Append(Vector3.Distance(p.transform.position, position).ToString("0", CultureInfo.InvariantCulture)).Append(" m from the player");
         }
 
-        return sb;
+        { var returnedAt109 = sb; if (CoreLog.On) ModLog.Every("FlightSampler.AppendWhere:109", 2d, $"FlightSampler.AppendWhere: returns {returnedAt109} (line 109)"); return returnedAt109; }
     }
 
     static StringBuilder Sep(StringBuilder sb) => sb.Length > 0 ? sb.Append(", ") : sb;
@@ -110,23 +117,24 @@ internal static class FlightSampler
     /// <summary>A mod's own facts (its function may throw: that is written into the sample, never thrown on).</summary>
     internal static string ModFacts(Func<string> facts)
     {
+        if (CoreLog.On) ModLog.Every("FlightSampler.ModFacts", 2d, $"FlightSampler.ModFacts(facts={facts})");
         if (facts == null)
         {
-            return "";
+            { if (CoreLog.On) ModLog.Every("FlightSampler.ModFacts:123", 2d, "FlightSampler.ModFacts: returns \"\" (line 123)"); return ""; }
         }
 
         try
         {
             string s = facts();
-            return string.IsNullOrEmpty(s) ? "" : " | " + s;
+            { var returnedAt129 = string.IsNullOrEmpty(s) ? "" : " | " + s; if (CoreLog.On) ModLog.Every("FlightSampler.ModFacts:129", 2d, $"FlightSampler.ModFacts: returns {returnedAt129} (line 129)"); return returnedAt129; }
         }
         catch (NullReferenceException e)
         {
-            return " | (the mod's facts failed: " + e.Message + ")";
+            { var returnedAt133 = " | (the mod's facts failed: " + e.Message + ")"; if (CoreLog.On) ModLog.Every("FlightSampler.ModFacts:133", 2d, $"FlightSampler.ModFacts: returns {returnedAt133} (line 133)"); return returnedAt133; }
         }
         catch (Exception e)          // last resort: foreign code
         {
-            return " | (the mod's facts failed: " + e.GetType().Name + ": " + e.Message + ")";
+            { var returnedAt137 = " | (the mod's facts failed: " + e.GetType().Name + ": " + e.Message + ")"; if (CoreLog.On) ModLog.Every("FlightSampler.ModFacts:137", 2d, $"FlightSampler.ModFacts: returns {returnedAt137} (line 137)"); return returnedAt137; }
         }
     }
 }

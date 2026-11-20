@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UIElements;
+using KydlCore.Core;
 
 namespace KydlCore.Ui;
 
@@ -24,6 +25,7 @@ public sealed class UiScroll
     /// <summary>Makes a scroll area; `name` only labels its log lines.</summary>
     public UiScroll(string name)
     {
+        if (CoreLog.On) UiLog.Verbose($"UiScroll.UiScroll(name={name})");
         _name = name;
         Root = new VisualElement { name = "kydl-scroll", userData = this };
         Root.style.flexDirection = FlexDirection.Row;
@@ -71,14 +73,15 @@ public sealed class UiScroll
     /// Keeps the offset in range, moves the content, sizes and places the handle; the bar hides when everything fits.
     void Clamp()
     {
+        if (CoreLog.On) UiLog.Verbose($"UiScroll.Clamp()");
         float max = Max;
         _offset = Mathf.Clamp(_offset, 0f, max);
         Content.style.top = -_offset;
         bool needed = max > 0.5f;
         _bar.style.display = needed ? DisplayStyle.Flex : DisplayStyle.None;
-        if (!needed) return;
+        if (!needed) { if (CoreLog.On) UiLog.Verbose("UiScroll.Clamp: returns (line 82)"); return; }
         float track = _bar.layout.height;
-        if (float.IsNaN(track) || track <= 0f) return;
+        if (float.IsNaN(track) || track <= 0f) { if (CoreLog.On) UiLog.Verbose("UiScroll.Clamp: returns (line 84)"); return; }
         float h = Mathf.Max(MinThumb, track * ViewH / Mathf.Max(1f, ContentH));
         _thumb.style.height = h;
         _thumb.style.top = (track - h) * (_offset / max);
@@ -89,26 +92,26 @@ public sealed class UiScroll
         bool dragging = false; float startY = 0f, startOffset = 0f;
         _thumb.RegisterCallback<PointerDownEvent>(e =>
         {
-            if (e.button != 0) return;
+            if (e.button != 0) { if (CoreLog.On) UiLog.Verbose("UiScroll.Drag: returns (line 95)"); return; }
             dragging = true; startY = e.position.y; startOffset = _offset;
             _thumb.CapturePointer(e.pointerId); e.StopPropagation();
         });
         _thumb.RegisterCallback<PointerMoveEvent>(e =>
         {
-            if (!dragging) return;
+            if (!dragging) { if (CoreLog.On) UiLog.Verbose("UiScroll.Drag: returns (line 101)"); return; }
             float track = _bar.layout.height - _thumb.layout.height;
             if (track > 1f) ScrollTo(startOffset + (e.position.y - startY) / track * Max);
         });
         _thumb.RegisterCallback<PointerUpEvent>(e =>
         {
-            if (!dragging) return;
+            if (!dragging) { if (CoreLog.On) UiLog.Verbose("UiScroll.Drag: returns (line 107)"); return; }
             dragging = false; _thumb.ReleasePointer(e.pointerId);
             UiLog.Verbose("UiScroll '" + _name + "': dragged to " + _offset.ToString("0") + " of " + Max.ToString("0"));
         });
         // a click on the track pages up / down
         _bar.RegisterCallback<PointerDownEvent>(e =>
         {
-            if (e.target != _bar) return;
+            if (e.target != _bar) { if (CoreLog.On) UiLog.Verbose("UiScroll.Drag: returns (line 114)"); return; }
             ScrollBy(e.localPosition.y < _thumb.layout.y ? -ViewH * 0.9f : ViewH * 0.9f);
         });
     }

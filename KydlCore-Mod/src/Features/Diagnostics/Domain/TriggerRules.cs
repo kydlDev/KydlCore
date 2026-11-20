@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
+using KydlCore.Core;
 
 namespace KydlCore.Features.Diagnostics.Domain;
 
@@ -24,12 +25,13 @@ internal static class TriggerRules
     /// <summary>Is this the lab's "Test X: Passed / Failed" line? Gives the test name, whether it failed and the reason the lab gave.</summary>
     internal static bool TryLabResult(string source, string text, out string test, out bool failed, out string why)
     {
+        if (CoreLog.On) CoreLog.Verbose($"TriggerRules.TryLabResult(source={source}, text={text})");
         test = null;
         failed = false;
         why = null;
         if (source != LabSource || string.IsNullOrEmpty(text))
         {
-            return test != null;
+            { var returnedAt34 = test != null; if (CoreLog.On) CoreLog.Verbose($"TriggerRules.TryLabResult: returns {returnedAt34} (line 34)"); return returnedAt34; }
         }
 
         Match m;
@@ -39,18 +41,18 @@ internal static class TriggerRules
         }
         catch (RegexMatchTimeoutException)
         {
-            return test != null;
+            { var returnedAt44 = test != null; if (CoreLog.On) CoreLog.Verbose($"TriggerRules.TryLabResult: returns {returnedAt44} (line 44)"); return returnedAt44; }
         }
 
         if (!m.Success)
         {
-            return test != null;
+            { var returnedAt49 = test != null; if (CoreLog.On) CoreLog.Verbose($"TriggerRules.TryLabResult: returns {returnedAt49} (line 49)"); return returnedAt49; }
         }
 
         test = m.Groups["test"].Value;
         failed = m.Groups["result"].Value == "Failed";
         why = m.Groups["why"].Success ? m.Groups["why"].Value : "";
-        return test != null;
+        { var returnedAt55 = test != null; if (CoreLog.On) CoreLog.Verbose($"TriggerRules.TryLabResult: returns {returnedAt55} (line 55)"); return returnedAt55; }
     }
 
     /// <summary>Is this the lab's line after every test ("Test state reset.")?</summary>
@@ -60,6 +62,7 @@ internal static class TriggerRules
     /// <summary>A file-name part made from a reason: letters, digits and '-' only, at most <paramref name="max"/> characters, never empty.</summary>
     internal static string Slug(string reason, int max = 40)
     {
+        if (CoreLog.On) CoreLog.Every("TriggerRules.Slug", 2d, $"TriggerRules.Slug(reason={reason}, max={max})");
         var sb = new StringBuilder();
         bool dash = false;
         foreach (char ch in reason ?? "")
@@ -82,13 +85,14 @@ internal static class TriggerRules
         }
 
         string slug = sb.ToString().Trim('-');
-        return slug.Length == 0 ? "dump" : slug;
+        { var returnedAt88 = slug.Length == 0 ? "dump" : slug; if (CoreLog.On) CoreLog.Every("TriggerRules.Slug:88", 2d, $"TriggerRules.Slug: returns {returnedAt88} (line 88)"); return returnedAt88; }
     }
 
     /// <summary>The text cut to <paramref name="max"/> characters (with "..." when cut), first line only; never null.</summary>
     internal static string Short(string text, int max)
     {
+        if (CoreLog.On) CoreLog.Verbose($"TriggerRules.Short(text={text}, max={max})");
         string first = (text ?? "").Split('\n')[0].TrimEnd('\r');
-        return first.Length <= max ? first : first.Substring(0, Math.Max(0, max)) + "...";
+        { var returnedAt96 = first.Length <= max ? first : first.Substring(0, Math.Max(0, max)) + "..."; if (CoreLog.On) CoreLog.Verbose($"TriggerRules.Short: returns {returnedAt96} (line 96)"); return returnedAt96; }
     }
 }

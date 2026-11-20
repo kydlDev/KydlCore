@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using HarmonyLib;
 using UnityEngine;
+using KydlCore.Core;
 
 namespace KydlCore.Common;
 
@@ -36,7 +37,7 @@ public static class TestArena
     {
         var ctx = ModContexts.For(Assembly.GetCallingAssembly());
         var p = Player.m_localPlayer;
-        if (p == null) return "no player";
+        if (p == null) { if (CoreLog.On) ModLog.Verbose("TestArena.MovePlayer: returns \"no player\" (line 40)"); return "no player"; }
         if (!_known)
         {
             _known = true;
@@ -88,6 +89,7 @@ public static class TestArena
     // Puts the player there AT ONCE (TeleportTo finishes frames later, after the area loads: a later step could run before it); velocity and fall height reset (D-172).
     static void Place(Player p, Vector3 to, Quaternion rot)
     {
+        if (CoreLog.On) ModLog.Verbose($"TestArena.Place(p={p}, to={to}, rot={rot})");
         var body = p.GetComponent<Rigidbody>();
         if (body != null) { body.linearVelocity = Vector3.zero; body.position = to; body.rotation = rot; }
         p.transform.position = to;
@@ -102,6 +104,7 @@ public static class TestArena
     /// The lane of a mod: rank 0 for SteveTheTroll, the next free rank (1, 2, ...) for every other mod, kept for the whole session.
     static Vector3 LaneOf(string mod)
     {
+        if (CoreLog.On) ModLog.Verbose($"TestArena.LaneOf(mod={mod})");
         var domain = System.AppDomain.CurrentDomain;
         var lanes = domain.GetData(LanesKey) as System.Collections.Generic.Dictionary<string, int>;
         if (lanes == null) { lanes = new System.Collections.Generic.Dictionary<string, int>(); domain.SetData(LanesKey, lanes); }
@@ -111,7 +114,7 @@ public static class TestArena
             rank = mod == RankZeroOwner ? 0 : 1 + lanes.Count(kv => kv.Key != RankZeroOwner);
             lanes[mod] = rank;
         }
-        return _ranked[rank % _ranked.Length];
+        { var returnedAt117 = _ranked[rank % _ranked.Length]; if (CoreLog.On) ModLog.Verbose($"TestArena.LaneOf: returns {returnedAt117} (line 117)"); return returnedAt117; }
     }
 
     /// The 16 directions at ArenaMetres from the start, flattest dry 40 x 40 m area first.

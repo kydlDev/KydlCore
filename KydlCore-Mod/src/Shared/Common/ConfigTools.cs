@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using BepInEx.Configuration;
 using UnityEngine;
+using KydlCore.Core;
 
 namespace KydlCore.Common;
 
@@ -27,7 +28,7 @@ public static class ConfigTools
     public static string[] Capture(ConfigFile c)
     {
         var ctx = ModContexts.For(Assembly.GetCallingAssembly());
-        try { return c != null && !string.IsNullOrEmpty(c.ConfigFilePath) && File.Exists(c.ConfigFilePath) ? File.ReadAllLines(c.ConfigFilePath) : null; }
+        try { { var returnedAt31 = c != null && !string.IsNullOrEmpty(c.ConfigFilePath) && File.Exists(c.ConfigFilePath) ? File.ReadAllLines(c.ConfigFilePath) : null; if (CoreLog.On) ModLog.Verbose($"ConfigTools.Capture: returns {returnedAt31} (line 31)"); return returnedAt31; } }
         catch (IOException e) { ModLog.Warn(ctx, "Config comma check skipped (file not readable): " + e.Message); return null; }
         catch (UnauthorizedAccessException e) { ModLog.Warn(ctx, "Config comma check skipped (no access): " + e.Message); return null; }
     }
@@ -108,7 +109,7 @@ public sealed class ConfigReloader : IDisposable
         _config.SettingChanged += (s, e) =>
         {
             var entry = e != null ? e.ChangedSetting : null;
-            if (entry == null) return;
+            if (entry == null) { if (CoreLog.On) ModLog.Verbose("ConfigReloader.ConfigReloader: returns (line 112)"); return; }
             ModLog.Info(_ctx, "Config: [" + entry.Definition.Section + "] " + entry.Definition.Key + " = " + entry.BoxedValue + " (applied live)");
         };
         try
@@ -134,7 +135,7 @@ public sealed class ConfigReloader : IDisposable
     public bool Tick()
     {
         if (_changed) { _changed = false; _reloadAt = Time.realtimeSinceStartup + 0.5f; _retries = 0; }
-        if (_reloadAt <= 0f || Time.realtimeSinceStartup < _reloadAt) return false;
+        if (_reloadAt <= 0f || Time.realtimeSinceStartup < _reloadAt) { if (CoreLog.On) ModLog.Every("ConfigReloader.Tick:138", 2d, "ConfigReloader.Tick: returns false (line 138)"); return false; }
         _reloadAt = 0f;
         try
         {
@@ -153,7 +154,7 @@ public sealed class ConfigReloader : IDisposable
 
     public void Dispose()
     {
-        if (_watcher == null) return;
+        if (_watcher == null) { if (CoreLog.On) ModLog.Every("ConfigReloader.Dispose:157", 2d, "ConfigReloader.Dispose: returns (line 157)"); return; }
         _watcher.EnableRaisingEvents = false;
         _watcher.Dispose();
         _watcher = null;

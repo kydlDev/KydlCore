@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using HarmonyLib;
 using UnityEngine;
+using KydlCore.Core;
 
 namespace KydlCore.Common;
 
@@ -24,7 +25,7 @@ public static class UiInputLock
     /// <summary>Installs the game patches; call it once, from Plugin.Awake. Returns whether at least TextInput.IsVisible is patched.</summary>
     public static bool Install(string modGuid)
     {
-        if (_harmony != null) return _patched > 0;
+        if (_harmony != null) { var returnedAt28 = _patched > 0; if (CoreLog.On) ModLog.Verbose($"UiInputLock.Install: returns {returnedAt28} (line 28)"); return returnedAt28; }
         try
         {
             _harmony = new Harmony(modGuid + ".uilock");

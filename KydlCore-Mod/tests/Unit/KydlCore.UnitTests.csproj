@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <!-- Unit tests: pure logic, no game running. Logic worth testing lives in classes without Unity / Valheim types; link those files here
        (<Compile Include="..\..\src\Features\<F>\Domain\X.cs" Link="Mod\X.cs" />) or reach them in the built DLL through ModAssembly.
        Unity's plain value types (Vector3, Bounds, Mathf, Color) are managed code and work here; anything that calls into the engine
@@ -17,6 +17,7 @@
   <ItemGroup>
     <!-- the mod's pure layers (Domain / Application / Execution): everything linked must compile without Unity (MIGRATION_DECISIONS B10) -->
     <Compile Include="..\..\src\Features\*\Domain\**\*.cs" Link="Mod\%(RecursiveDir)%(Filename)%(Extension)" Condition="'$(KydlQuality)' != 'true'" />
+    <Compile Include="..\..\src\Shared\Core\Logging\CoreLog.cs" Link="Mod\CoreLog.cs" Condition="'$(KydlQuality)' != 'true'" />
     <Compile Include="..\..\src\Features\*\Application\**\*.cs" Link="Mod\%(RecursiveDir)%(Filename)%(Extension)" Condition="'$(KydlQuality)' != 'true'" />
     <Compile Include="..\..\src\Features\*\Execution\**\*.cs" Link="Mod\%(RecursiveDir)%(Filename)%(Extension)" Condition="'$(KydlQuality)' != 'true'" />
   </ItemGroup>

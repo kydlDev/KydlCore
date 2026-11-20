@@ -6,6 +6,7 @@ using KydlCore.Features.Hub.Domain;
 using KydlCore.Ui;
 using UnityEngine;
 using UnityEngine.UIElements;
+using KydlCore.Core;
 
 namespace KydlCore.Presentation.Hub.Pages;
 
@@ -31,7 +32,7 @@ internal static class KyPageView
             try { page = build(); }
             catch (Exception e) { ModLog.Warn("KyPageView: the page builder threw " + e.GetType().Name + ": " + e.Message); return; }
             if (page == null) return;
-            if (!PageRules.NeedsRebuild(shown, page.State)) { UpdateTexts(live, page); return; }
+            if (!PageRules.NeedsRebuild(shown, page.State)) { UpdateTexts(live, page); { if (CoreLog.On) ModLog.Verbose("KyPageView.Host: returns (line 35)"); return; } }
             shown = page.State ?? "";
             host.Clear();
             live = new List<Label>();
@@ -42,7 +43,7 @@ internal static class KyPageView
         var tick = host.schedule.Execute(render).Every(Math.Max(250, refreshMs));
         host.RegisterCallback<DetachFromPanelEvent>(e => tick.Pause());
         host.RegisterCallback<AttachToPanelEvent>(e => tick.Resume());
-        return host;
+        { var returnedAt46 = host; if (CoreLog.On) ModLog.Verbose($"KyPageView.Host: returns {returnedAt46} (line 46)"); return returnedAt46; }
     }
 
     static void Fill(VisualElement host, KyPage page, Action rebuild, List<Label> live)
@@ -72,6 +73,7 @@ internal static class KyPageView
     /// <summary>The text cells of a page, in the order Fill adds them (the order UpdateTexts walks).</summary>
     static IEnumerable<string> TextsOf(KyPage page)
     {
+        if (CoreLog.On) ModLog.Verbose($"KyPageView.TextsOf(page={page})");
         foreach (var s in page.Sections)
             foreach (var row in s.Rows)
             {
@@ -85,11 +87,12 @@ internal static class KyPageView
     /// <summary>Same State: only the texts may differ; set the ones that did (no rebuild, so nothing flickers and an open confirmation stays).</summary>
     static void UpdateTexts(List<Label> live, KyPage page)
     {
-        if (live == null) return;
+        if (CoreLog.On) ModLog.Verbose($"KyPageView.UpdateTexts(live={live}, page={page})");
+        if (live == null) { if (CoreLog.On) ModLog.Verbose("KyPageView.UpdateTexts: returns (line 91)"); return; }
         int i = 0;
         foreach (var text in TextsOf(page))
         {
-            if (i >= live.Count) return;
+            if (i >= live.Count) { if (CoreLog.On) ModLog.Verbose("KyPageView.UpdateTexts: returns (line 95)"); return; }
             if (live[i].text != text) live[i].text = text;
             i++;
         }
@@ -97,6 +100,7 @@ internal static class KyPageView
 
     static void AddTable(VisualElement host, KyTableRow table, Action rebuild, List<Label> live)
     {
+        if (CoreLog.On) ModLog.Every("KyPageView.AddTable", 2d, $"KyPageView.AddTable(host={host}, table={table}, rebuild={rebuild}, live={live})");
         if (table.Headers.Count > 0)
         {
             var head = Line();
@@ -113,10 +117,11 @@ internal static class KyPageView
 
     static VisualElement Line()
     {
+        if (CoreLog.On) ModLog.Every("KyPageView.Line", 2d, $"KyPageView.Line()");
         var r = new VisualElement();
         r.style.flexDirection = FlexDirection.Row; r.style.alignItems = Align.Center; r.style.flexShrink = 0;
         r.style.marginTop = 3; r.style.marginBottom = 3;
-        return r;
+        { var returnedAt124 = r; if (CoreLog.On) ModLog.Every("KyPageView.Line:124", 2d, $"KyPageView.Line: returns {returnedAt124} (line 124)"); return returnedAt124; }
     }
 
     static float ColWidth(int column) { return column == 0 ? 170f : 100f; }
@@ -125,11 +130,12 @@ internal static class KyPageView
 
     static VisualElement CellElement(KyCell c, int column, Action rebuild, List<Label> live)
     {
+        if (CoreLog.On) ModLog.Every("KyPageView.CellElement", 2d, $"KyPageView.CellElement(c={c}, column={column}, rebuild={rebuild}, live={live})");
         if (c.Kind == KyCell.Kinds.Text)
         {
             var label = Cell(c.Text, ColWidth(column), UiKit.Text);
             if (c.IsRich) label.enableRichText = true;
-            return Track(label, live);
+            { var returnedAt138 = Track(label, live); if (CoreLog.On) ModLog.Every("KyPageView.CellElement:138", 2d, $"KyPageView.CellElement: returns {returnedAt138} (line 138)"); return returnedAt138; }
         }
         if (c.Kind == KyCell.Kinds.Drop)
         {
@@ -138,7 +144,7 @@ internal static class KyPageView
             string selected = ids.Contains(c.Selected) ? c.Selected : (ids.Count > 0 ? ids[0] : "");
             var drop = UiControls.Dropdown(ids, selected, id => { string t; return text.TryGetValue(id, out t) ? t : id; }, id => { if (c.Chosen != null) c.Chosen(id); rebuild(); });
             drop.style.width = 180f; drop.style.flexShrink = 0; drop.style.marginRight = 4;
-            return drop;
+            { var returnedAt147 = drop; if (CoreLog.On) ModLog.Every("KyPageView.CellElement:147", 2d, $"KyPageView.CellElement: returns {returnedAt147} (line 147)"); return returnedAt147; }
         }
         var box = new VisualElement();
         box.style.flexDirection = FlexDirection.Row; box.style.alignItems = Align.Center; box.style.flexShrink = 0;
@@ -158,30 +164,33 @@ internal static class KyPageView
             ConfigPage.ScaleFonts(box);
         };
         normal();
-        return box;
+        { var returnedAt167 = box; if (CoreLog.On) ModLog.Every("KyPageView.CellElement:167", 2d, $"KyPageView.CellElement: returns {returnedAt167} (line 167)"); return returnedAt167; }
     }
 
     static Button Sized(Button b) { b.style.width = 90f; b.style.flexShrink = 0; b.style.marginRight = 4; return b; }
 
     static void AddList(VisualElement host, KyListRow list)
     {
+        if (CoreLog.On) ModLog.Every("KyPageView.AddList", 2d, $"KyPageView.AddList(host={host}, list={list})");
         if (list.Label.Length > 0) host.Add(Cell(list.Label, -1f, UiKit.TextDim));
         foreach (var item in list.Items) host.Add(Cell("\u2022 " + item, -1f, UiKit.Text));
     }
 
     static VisualElement ColumnsLine(KyColumnsRow row)
     {
+        if (CoreLog.On) ModLog.Every("KyPageView.ColumnsLine", 2d, $"KyPageView.ColumnsLine(row={row})");
         var r = new VisualElement();
         r.style.flexDirection = FlexDirection.Row; r.style.alignItems = Align.FlexStart; r.style.flexShrink = 0;
         r.style.marginTop = 2; r.style.marginBottom = 2;
         r.Add(Cell("", LabelWidth, UiKit.TextDim));
         r.Add(Cell(row.Value, ValueWidth, UiKit.TextDim));
         r.Add(Cell(row.MaxValue, ValueWidth, UiKit.TextDim));
-        return r;
+        { var returnedAt188 = r; if (CoreLog.On) ModLog.Every("KyPageView.ColumnsLine:188", 2d, $"KyPageView.ColumnsLine: returns {returnedAt188} (line 188)"); return returnedAt188; }
     }
 
     static VisualElement ValueLine(KyValueRow row)
     {
+        if (CoreLog.On) ModLog.Every("KyPageView.ValueLine", 2d, $"KyPageView.ValueLine(row={row})");
         var r = new VisualElement();
         r.style.flexDirection = FlexDirection.Row; r.style.alignItems = Align.FlexStart; r.style.flexShrink = 0;
         r.style.marginTop = 2; r.style.marginBottom = 2;
@@ -189,25 +198,27 @@ internal static class KyPageView
         r.Add(Cell(row.Label, LabelWidth, UiKit.TextDim));
         r.Add(Cell(row.Value, max ? ValueWidth : -1f, UiKit.Text));
         if (max) r.Add(Cell(row.MaxValue, ValueWidth, UiKit.Gold));
-        return r;
+        { var returnedAt201 = r; if (CoreLog.On) ModLog.Every("KyPageView.ValueLine:201", 2d, $"KyPageView.ValueLine: returns {returnedAt201} (line 201)"); return returnedAt201; }
     }
 
     static Label Cell(string text, float width, Color color)
     {
+        if (CoreLog.On) ModLog.Every("KyPageView.Cell", 2d, $"KyPageView.Cell(text={text}, width={width}, color={color})");
         var l = UiKit.Label(text, UiKit.FontSize, color);
         l.style.whiteSpace = WhiteSpace.Normal;
         if (width >= 0f) { l.style.width = width; l.style.flexShrink = 0; }
         else { l.style.flexGrow = 1; l.style.flexShrink = 1; }
-        return l;
+        { var returnedAt211 = l; if (CoreLog.On) ModLog.Every("KyPageView.Cell:211", 2d, $"KyPageView.Cell: returns {returnedAt211} (line 211)"); return returnedAt211; }
     }
 
     static VisualElement ChoiceLine(KyChoiceRow row, Action rebuild)
     {
+        if (CoreLog.On) ModLog.Every("KyPageView.ChoiceLine", 2d, $"KyPageView.ChoiceLine(row={row}, rebuild={rebuild})");
         var ids = new System.Collections.Generic.List<string>();
         var text = new System.Collections.Generic.Dictionary<string, string>();
         foreach (var ch in row.Choices) { ids.Add(ch.Id); text[ch.Id] = ch.Text; }
         string selected = ids.Contains(row.Selected) ? row.Selected : (ids.Count > 0 ? ids[0] : "");
         var drop = UiControls.Dropdown(ids, selected, id => { string t; return text.TryGetValue(id, out t) ? t : id; }, id => { if (row.Chosen != null) row.Chosen(id); rebuild(); });
-        return UiControls.Row(row.Label, drop);
+        { var returnedAt222 = UiControls.Row(row.Label, drop); if (CoreLog.On) ModLog.Every("KyPageView.ChoiceLine:222", 2d, $"KyPageView.ChoiceLine: returns {returnedAt222} (line 222)"); return returnedAt222; }
     }
 }

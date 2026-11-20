@@ -7,6 +7,7 @@ using KydlCore.Common;
 using KydlCore.Configuration;
 using KydlCore.Features.Diagnostics.Domain;
 using UnityEngine;
+using KydlCore.Core;
 
 namespace KydlCore.Features.Diagnostics.Infrastructure;
 
@@ -102,7 +103,7 @@ internal static partial class FlightHost
         ModLog.Verbose("FlightRecorder: started - sample every " + Interval().ToString("0.##", CultureInfo.InvariantCulture) + " s, window " + Window() + " s ("
                        + _capacity + " samples per object), at most " + ModSettings.FlightMaxDumps.Value + " dump(s) per game start, " + pruned
                        + " old dump(s) removed, folder " + FlightFiles.Dir());
-        return _started;
+        { var returnedAt106 = _started; if (CoreLog.On) ModLog.Every("Entry.Start:106", 2d, $"Entry.Start: returns {returnedAt106} (line 106)"); return returnedAt106; }
     }
 
     /// <summary>Stops recording (plugin unload). Expected outcome: true when it is stopped afterwards.</summary>
@@ -127,9 +128,10 @@ internal static partial class FlightHost
     /// <returns>Whether it is tracked afterwards.</returns>
     internal static bool Track(ModContext mod, Component target, string label, Func<string> facts)
     {
+        if (CoreLog.On) ModLog.Every("Entry.Track", 2d, $"Entry.Track(mod={mod}, target={target}, label={label}, facts={facts})");
         if (!_started || target == null)
         {
-            return _started && target != null;
+            { var returnedAt134 = _started && target != null; if (CoreLog.On) ModLog.Every("Entry.Track:134", 2d, $"Entry.Track: returns {returnedAt134} (line 134)"); return returnedAt134; }
         }
 
         ZNetView view = target.GetComponentInParent<ZNetView>();
@@ -143,7 +145,7 @@ internal static partial class FlightHost
                 if (Entries.Count >= MaxTracked)
                 {
                     WarnFullOnce(mod.Name, label);
-                    return Entries.ContainsKey(key);
+                    { var returnedAt148 = Entries.ContainsKey(key); if (CoreLog.On) ModLog.Every("Entry.Track:148", 2d, $"Entry.Track: returns {returnedAt148} (line 148)"); return returnedAt148; }
                 }
 
                 e = new Entry();
@@ -163,16 +165,17 @@ internal static partial class FlightHost
             e.LastTime = -1;
             _book.Start(key, e.Mod, e.Label, Now);
             _book.Note(new FlightNote(Now, e.Mod, "tracking " + e.Label + " (" + key + ")"));
-            return _book.IsTracked(key);
+            { var returnedAt168 = _book.IsTracked(key); if (CoreLog.On) ModLog.Every("Entry.Track:168", 2d, $"Entry.Track: returns {returnedAt168} (line 168)"); return returnedAt168; }
         }
     }
 
     /// <summary>Stops tracking an object. Returns whether it was tracked.</summary>
     internal static bool Untrack(Component target)
     {
+        if (CoreLog.On) ModLog.Verbose($"Entry.Untrack(target={target})");
         if (target == null)
         {
-            return target != null;
+            { var returnedAt178 = target != null; if (CoreLog.On) ModLog.Verbose($"Entry.Untrack: returns {returnedAt178} (line 178)"); return returnedAt178; }
         }
 
         lock (Gate)
@@ -193,16 +196,17 @@ internal static partial class FlightHost
                 _book.Stop(key);
             }
 
-            return removed;
+            { var returnedAt199 = removed; if (CoreLog.On) ModLog.Verbose($"Entry.Untrack: returns {returnedAt199} (line 199)"); return returnedAt199; }
         }
     }
 
     /// <summary>A line on the timeline (any thread). Returns whether it was stored.</summary>
     internal static bool Note(string source, string text)
     {
+        if (CoreLog.On) ModLog.Every("Entry.Note", 2d, $"Entry.Note(source={source}, text={text})");
         lock (Gate)
         {
-            return _book != null && _book.Note(new FlightNote(Now, source, text)) > 0;
+            { var returnedAt209 = _book != null && _book.Note(new FlightNote(Now, source, text)) > 0; if (CoreLog.On) ModLog.Every("Entry.Note:209", 2d, $"Entry.Note: returns {returnedAt209} (line 209)"); return returnedAt209; }
         }
     }
 
@@ -213,7 +217,7 @@ internal static partial class FlightHost
     {
         if (_fullWarned)
         {
-            return;
+            { if (CoreLog.On) ModLog.Every("Entry.WarnFullOnce:220", 2d, "Entry.WarnFullOnce: returns (line 220)"); return; }
         }
 
         _fullWarned = true;
@@ -225,9 +229,10 @@ internal static partial class FlightHost
     /// <summary>Every frame from Plugin.Update: counts the frame, samples when due, writes queued dumps.</summary>
     internal static void Tick()
     {
+        if (CoreLog.On) ModLog.Every("Entry.Tick", 2d, $"Entry.Tick()");
         if (!_started)
         {
-            return;
+            { if (CoreLog.On) ModLog.Every("Entry.Tick:235", 2d, "Entry.Tick: returns (line 235)"); return; }
         }
 
         _frames++;
@@ -254,6 +259,7 @@ internal static partial class FlightHost
 
     static void Sample(double now)
     {
+        if (CoreLog.On) ModLog.Every("Entry.Sample", 2d, $"Entry.Sample(now={now})");
         List<KeyValuePair<string, Entry>> list;
         lock (Gate)
         {
@@ -315,6 +321,7 @@ internal static partial class FlightHost
     // A changed window or interval (KydlTools) starts a fresh recording; the tracked objects stay tracked.
     static void Rebuild(int capacity, double now)
     {
+        if (CoreLog.On) ModLog.Every("Entry.Rebuild", 2d, $"Entry.Rebuild(capacity={capacity}, now={now})");
         _capacity = capacity;
         _book = new FlightBook(capacity, NotesKept, capacity);
         foreach (var kv in Entries)
@@ -327,11 +334,12 @@ internal static partial class FlightHost
 
     static bool TrySample(Entry e, double now, out FlightSample sample)
     {
+        if (CoreLog.On) ModLog.Every("Entry.TrySample", 2d, $"Entry.TrySample(e={e}, now={now})");
         if (e.Target != null)          // Unity's check: false once the object is destroyed or unloaded
         {
             Vector3 p = e.Target.transform.position;
             sample = new FlightSample(now, p.x, p.y, p.z, Speed(e, p, now), FlightSampler.Facts(e.Character, e.Ai, e.View, p) + FlightSampler.ModFacts(e.Facts));
-            return sample.Time >= 0;
+            { var returnedAt342 = sample.Time >= 0; if (CoreLog.On) ModLog.Every("Entry.TrySample:342", 2d, $"Entry.TrySample: returns {returnedAt342} (line 342)"); return returnedAt342; }
         }
 
         // not loaded any more: its saved data still says where it is (a far troll that froze in an unloaded zone, 2026-11-05)
@@ -340,18 +348,19 @@ internal static partial class FlightHost
         {
             Vector3 p = zdo.GetPosition();
             sample = new FlightSample(now, p.x, p.y, p.z, Speed(e, p, now), FlightSampler.UnloadedFacts(zdo, p));
-            return sample.Time >= 0;
+            { var returnedAt351 = sample.Time >= 0; if (CoreLog.On) ModLog.Every("Entry.TrySample:351", 2d, $"Entry.TrySample: returns {returnedAt351} (line 351)"); return returnedAt351; }
         }
 
         sample = default;
-        return zdo != null;
+        { var returnedAt355 = zdo != null; if (CoreLog.On) ModLog.Every("Entry.TrySample:355", 2d, $"Entry.TrySample: returns {returnedAt355} (line 355)"); return returnedAt355; }
     }
 
     static double Speed(Entry e, Vector3 p, double now)
     {
+        if (CoreLog.On) ModLog.Every("Entry.Speed", 2d, $"Entry.Speed(e={e}, p={p}, now={now})");
         double speed = e.LastTime >= 0 && now > e.LastTime ? Vector3.Distance(p, e.LastPos) / (now - e.LastTime) : 0;
         e.LastPos = p;
         e.LastTime = now;
-        return speed;
+        { var returnedAt364 = speed; if (CoreLog.On) ModLog.Every("Entry.Speed:364", 2d, $"Entry.Speed: returns {returnedAt364} (line 364)"); return returnedAt364; }
     }
 }

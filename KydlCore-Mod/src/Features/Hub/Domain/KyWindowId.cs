@@ -1,3 +1,4 @@
+using KydlCore.Core;
 namespace KydlCore.Features.Hub.Domain;
 
 /// <summary>
@@ -11,7 +12,8 @@ internal static class KyWindowId
     /// "guid:id", or null when the GUID or the id is null / empty / blank (the caller refuses the window and says why).
     internal static string Make(string modGuid, string id)
     {
-        if (string.IsNullOrWhiteSpace(modGuid) || string.IsNullOrWhiteSpace(id)) return null;
-        return modGuid.Trim() + ":" + id.Trim();
+        if (CoreLog.On) CoreLog.Every("KyWindowId.Make", 2d, $"KyWindowId.Make(modGuid={modGuid}, id={id})");
+        if (string.IsNullOrWhiteSpace(modGuid) || string.IsNullOrWhiteSpace(id)) { if (CoreLog.On) CoreLog.Every("KyWindowId.Make:16", 2d, "KyWindowId.Make: returns null (line 16)"); return null; }
+        { var returnedAt17 = modGuid.Trim() + ":" + id.Trim(); if (CoreLog.On) CoreLog.Every("KyWindowId.Make:17", 2d, $"KyWindowId.Make: returns {returnedAt17} (line 17)"); return returnedAt17; }
     }
 }

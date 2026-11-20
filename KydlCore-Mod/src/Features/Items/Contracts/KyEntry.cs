@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using KydlCore.Core;
+using KydlCore.Common;
 
 namespace KydlCore.Features.Items.Contracts;
 
@@ -42,25 +44,27 @@ public sealed class KyEntry
 
     Sprite LiveIcon()
     {
-        if (PrefabObject == null) return null;
+        if (CoreLog.On) ModLog.Verbose($"KyEntry.LiveIcon()");
+        if (PrefabObject == null) { if (CoreLog.On) ModLog.Verbose("KyEntry.LiveIcon: returns null (line 48)"); return null; }
         ItemDrop drop = PrefabObject.GetComponent<ItemDrop>();
         if (drop != null)
         {
             Sprite[] icons = drop.m_itemData.m_shared.m_icons;
-            return icons != null && icons.Length > 0 ? icons[0] : null;
+            { var returnedAt53 = icons != null && icons.Length > 0 ? icons[0] : null; if (CoreLog.On) ModLog.Verbose($"KyEntry.LiveIcon: returns {returnedAt53} (line 53)"); return returnedAt53; }
         }
         Piece piece = PrefabObject.GetComponent<Piece>();
-        if (piece != null) return piece.m_icon;
-        return DepositIcon(PrefabObject);
+        if (piece != null) { var returnedAt56 = piece.m_icon; if (CoreLog.On) ModLog.Verbose($"KyEntry.LiveIcon: returns {returnedAt56} (line 56)"); return returnedAt56; }
+        { var returnedAt57 = DepositIcon(PrefabObject); if (CoreLog.On) ModLog.Verbose($"KyEntry.LiveIcon: returns {returnedAt57} (line 57)"); return returnedAt57; }
     }
 
     /// <summary>A deposit (Pickable) has no icon of its own: it shows the icon of what it yields. Null when there is none.</summary>
     internal static Sprite DepositIcon(GameObject go)
     {
+        if (CoreLog.On) ModLog.Every("KyEntry.DepositIcon", 2d, $"KyEntry.DepositIcon(go={go})");
         Pickable pick = go != null ? go.GetComponent<Pickable>() : null;
         ItemDrop yields = pick != null && pick.m_itemPrefab != null ? pick.m_itemPrefab.GetComponent<ItemDrop>() : null;
         Sprite[] icons = yields != null ? yields.m_itemData.m_shared.m_icons : null;
-        return icons != null && icons.Length > 0 ? icons[0] : null;
+        { var returnedAt67 = icons != null && icons.Length > 0 ? icons[0] : null; if (CoreLog.On) ModLog.Every("KyEntry.DepositIcon:67", 2d, $"KyEntry.DepositIcon: returns {returnedAt67} (line 67)"); return returnedAt67; }
     }
     /// <summary>Free tags the registering mod gave (may be empty).</summary>
     public IReadOnlyList<string> Tags = new string[0];

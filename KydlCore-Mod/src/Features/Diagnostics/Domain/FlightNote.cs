@@ -1,3 +1,4 @@
+using KydlCore.Core;
 namespace KydlCore.Features.Diagnostics.Domain;
 
 /// <summary>
@@ -9,6 +10,7 @@ internal readonly struct FlightNote
     /// <summary>Creates a note.</summary>
     internal FlightNote(double time, string source, string text)
     {
+        if (CoreLog.On) CoreLog.Every("FlightNote.FlightNote", 2d, $"FlightNote.FlightNote(time={time}, source={source}, text={text})");
         Time = time;
         Source = source ?? "";
         Text = text ?? "";

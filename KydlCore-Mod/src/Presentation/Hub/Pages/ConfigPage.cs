@@ -7,6 +7,7 @@ using KydlCore.Features.Hub.Infrastructure;
 using KydlCore.Ui;
 using UnityEngine;
 using UnityEngine.UIElements;
+using KydlCore.Core;
 
 namespace KydlCore.Presentation.Hub.Pages;
 
@@ -61,14 +62,15 @@ internal sealed class ConfigPage : IDisposable
 
     void OnSettingChanged(object sender, SettingChangedEventArgs e)
     {
-        if (_writing && ReferenceEquals(e.ChangedSetting, _writingEntry)) return;      // our own write: the control already shows the value
+        if (CoreLog.On) ModLog.Verbose($"ConfigPage.OnSettingChanged(sender={sender}, e={e})");
+        if (_writing && ReferenceEquals(e.ChangedSetting, _writingEntry)) { if (CoreLog.On) ModLog.Verbose("ConfigPage.OnSettingChanged: returns (line 66)"); return; }      // our own write: the control already shows the value
         if (_writing)
         {
             // another entry changed BECAUSE of our write (the mod keeps two entries in step): show its new value
             Action follow;
             if (_followers.TryGetValue(e.ChangedSetting, out follow)) follow();
             else _dirty = true;
-            return;
+            { if (CoreLog.On) ModLog.Verbose("ConfigPage.OnSettingChanged: returns (line 73)"); return; }
         }
         _dirty = true;
     }
@@ -79,6 +81,7 @@ internal sealed class ConfigPage : IDisposable
 
     string LockSignature()
     {
+        if (CoreLog.On) ModLog.Every("ConfigPage.LockSignature", 2d, $"ConfigPage.LockSignature()");
         var sb = new System.Text.StringBuilder();
         foreach (ConfigDefinition def in _file.Keys)
             if (InSections(def.Section))
@@ -86,14 +89,14 @@ internal sealed class ConfigPage : IDisposable
                 IEnumerable<object> tags = Tags(_file[def]);
                 sb.Append(ConfigControlMap.IsReadOnly(tags) ? '1' : '0').Append(ConfigControlMap.IsHidden(tags) ? 'h' : 's');   // a tag may change a flag while the game runs
             }
-        return sb.ToString();
+        { var returnedAt92 = sb.ToString(); if (CoreLog.On) ModLog.Every("ConfigPage.LockSignature:92", 2d, $"ConfigPage.LockSignature: returns {returnedAt92} (line 92)"); return returnedAt92; }
     }
 
     void Poll()
     {
         string sig = LockSignature();
         if (sig != _lockSignature) _dirty = true;
-        if (!_dirty) return;
+        if (!_dirty) { if (CoreLog.On) ModLog.Verbose("ConfigPage.Poll: returns (line 99)"); return; }
         _dirty = false;
         ModLog.Verbose("ConfigPage: a setting changed outside the page, redrawing");
         Fill();
@@ -124,12 +127,14 @@ internal sealed class ConfigPage : IDisposable
 
     bool InSections(string section)
     {
-        return _sections == null || Array.IndexOf(_sections, section) >= 0;
+        if (CoreLog.On) ModLog.Every("ConfigPage.InSections", 2d, $"ConfigPage.InSections(section={section})");
+        { var returnedAt131 = _sections == null || Array.IndexOf(_sections, section) >= 0; if (CoreLog.On) ModLog.Every("ConfigPage.InSections:131", 2d, $"ConfigPage.InSections: returns {returnedAt131} (line 131)"); return returnedAt131; }
     }
 
     static IEnumerable<object> Tags(ConfigEntryBase entry)
     {
-        return entry.Description == null ? null : entry.Description.Tags;
+        if (CoreLog.On) ModLog.Every("ConfigPage.Tags", 2d, $"ConfigPage.Tags(entry={entry})");
+        { var returnedAt137 = entry.Description == null ? null : entry.Description.Tags; if (CoreLog.On) ModLog.Every("ConfigPage.Tags:137", 2d, $"ConfigPage.Tags: returns {returnedAt137} (line 137)"); return returnedAt137; }
     }
 
     VisualElement Control(ConfigEntryBase entry)
@@ -154,6 +159,7 @@ internal sealed class ConfigPage : IDisposable
     // slider / colour editor stretches. The name does not wrap.
     static VisualElement Row(string label, VisualElement control)
     {
+        if (CoreLog.On) ModLog.Every("ConfigPage.Row", 2d, $"ConfigPage.Row(label={label}, control={control})");
         var r = new VisualElement();
         r.style.flexDirection = FlexDirection.Row; r.style.alignItems = Align.Center; r.style.flexShrink = 0;
         r.style.marginTop = 4; r.style.marginBottom = 4;
@@ -173,13 +179,14 @@ internal sealed class ConfigPage : IDisposable
         if (!stretch) { control.style.alignSelf = Align.FlexStart; control.style.marginLeft = StyleKeyword.Auto; }   // value fields sit at the right edge (D-062)
         else control.style.marginLeft = Length.Percent(SliderGapPercent);      // user 2026-11-04: ~10 % shorter sliders and a gap to the name (percent of the row ~ 10 % of the slider)
         r.Add(control);
-        return r;
+        { var returnedAt182 = r; if (CoreLog.On) ModLog.Every("ConfigPage.Row:182", 2d, $"ConfigPage.Row: returns {returnedAt182} (line 182)"); return returnedAt182; }
     }
 
     // The text in the value fields (number / text box, drop-down, colour editor) has the size of the drop-down text (the "F9" of PoolMenuKey, the
     // kit's FontSize), with a small margin inside the box (user 2026-10-30, D-063). The page scale is applied afterwards.
     static void Compact(VisualElement control)
     {
+        if (CoreLog.On) ModLog.Every("ConfigPage.Compact", 2d, $"ConfigPage.Compact(control={control})");
         control.Query<VisualElement>().ForEach(e =>
         {
             if (e.style.fontSize.keyword == StyleKeyword.Undefined && e.style.fontSize.value.value > 0f) e.style.fontSize = UiKit.FontSize;
@@ -210,7 +217,8 @@ internal sealed class ConfigPage : IDisposable
     /// </summary>
     internal static void EnforceText(VisualElement root)
     {
-        if (root == null) return;
+        if (CoreLog.On) ModLog.Verbose($"ConfigPage.EnforceText(root={root})");
+        if (root == null) { if (CoreLog.On) ModLog.Verbose("ConfigPage.EnforceText: returns (line 221)"); return; }
         ScaleFonts(root);
         root.Query<VisualElement>().ForEach(e =>
         {
@@ -227,16 +235,18 @@ internal sealed class ConfigPage : IDisposable
 
     static bool InsideInput(VisualElement e)
     {
+        if (CoreLog.On) ModLog.Verbose($"ConfigPage.InsideInput(e={e})");
         for (VisualElement at = e; at != null; at = at.parent)
-            if (at is TextField) return true;
-        return false;
+            if (at is TextField) { if (CoreLog.On) ModLog.Verbose("ConfigPage.InsideInput: returns true (line 240)"); return true; }
+        { if (CoreLog.On) ModLog.Verbose("ConfigPage.InsideInput: returns false (line 241)"); return false; }
     }
 
     internal static void ScaleFonts(VisualElement root)
     {
+        if (CoreLog.On) ModLog.Every("ConfigPage.ScaleFonts", 2d, $"ConfigPage.ScaleFonts(root={root})");
         root.Query<VisualElement>().ForEach(e =>
         {
-            if (e.ClassListContains(ScaledClass)) return;
+            if (e.ClassListContains(ScaledClass)) { if (CoreLog.On) ModLog.Every("ConfigPage.ScaleFonts:249", 2d, "ConfigPage.ScaleFonts: returns (line 249)"); return; }
             StyleLength fs = e.style.fontSize;
             if (fs.keyword == StyleKeyword.Undefined && fs.value.value > 0f) { e.style.fontSize = fs.value.value * FontScale; e.AddToClassList(ScaledClass); }
         });
@@ -245,61 +255,68 @@ internal sealed class ConfigPage : IDisposable
     // A client of someone else's server may not change an admin-only entry (the server owns it); in single player and on the host everything is open.
     static bool MayEditAdminOnly()
     {
-        return ZNet.instance == null || ZNet.instance.IsServer();
+        if (CoreLog.On) ModLog.Every("ConfigPage.MayEditAdminOnly", 2d, $"ConfigPage.MayEditAdminOnly()");
+        { var returnedAt259 = ZNet.instance == null || ZNet.instance.IsServer(); if (CoreLog.On) ModLog.Every("ConfigPage.MayEditAdminOnly:259", 2d, $"ConfigPage.MayEditAdminOnly: returns {returnedAt259} (line 259)"); return returnedAt259; }
     }
 
     static VisualElement LockedValue(ConfigEntryBase entry)
     {
-        return UiControls.Note(entry.GetSerializedValue());
+        if (CoreLog.On) ModLog.Every("ConfigPage.LockedValue", 2d, $"ConfigPage.LockedValue(entry={entry})");
+        { var returnedAt265 = UiControls.Note(entry.GetSerializedValue()); if (CoreLog.On) ModLog.Every("ConfigPage.LockedValue:265", 2d, $"ConfigPage.LockedValue: returns {returnedAt265} (line 265)"); return returnedAt265; }
     }
 
     VisualElement Make(ConfigEntryBase entry, string key)
     {
+        if (CoreLog.On) ModLog.Every("ConfigPage.Make", 2d, $"ConfigPage.Make(entry={entry}, key={key})");
         Type type = entry.SettingType;
         double min, max;
         bool hasRange = Range(entry, out min, out max);
         IList<string> list = ListOf(entry);
         switch (ConfigControlMap.Classify(type, hasRange, list != null))
         {
-            case ControlKind.Toggle: return Toggle(entry, key);
-            case ControlKind.Slider: return Slider(entry, min, max);
+            case ControlKind.Toggle: { var returnedAt277 = Toggle(entry, key); if (CoreLog.On) ModLog.Every("ConfigPage.Make:277", 2d, $"ConfigPage.Make: returns {returnedAt277} (line 277)"); return returnedAt277; }
+            case ControlKind.Slider: { var returnedAt278 = Slider(entry, min, max); if (CoreLog.On) ModLog.Every("ConfigPage.Make:278", 2d, $"ConfigPage.Make: returns {returnedAt278} (line 278)"); return returnedAt278; }
             case ControlKind.Number: return Sized(Follow(entry, UiControls.TextField(ConfigControlMap.Format(type, entry.BoxedValue), TextMax, t => Write(entry, ConfigControlMap.Parse(type, t))), () => ConfigControlMap.Format(type, entry.BoxedValue)), 160f, "kydl-text");
             case ControlKind.Text: return Sized(Follow(entry, UiControls.TextField((string)entry.BoxedValue, TextMax, t => Write(entry, t)), () => (string)entry.BoxedValue), 360f, "kydl-text");
-            case ControlKind.Dropdown: return Dropdown(entry, list);
-            case ControlKind.Color: return ColorEditor(entry);
-            case ControlKind.Key: return RebindButton(entry, false);
-            case ControlKind.Shortcut: return RebindButton(entry, true);
-            default: return UiControls.Note(entry.GetSerializedValue());
+            case ControlKind.Dropdown: { var returnedAt281 = Dropdown(entry, list); if (CoreLog.On) ModLog.Every("ConfigPage.Make:281", 2d, $"ConfigPage.Make: returns {returnedAt281} (line 281)"); return returnedAt281; }
+            case ControlKind.Color: { var returnedAt282 = ColorEditor(entry); if (CoreLog.On) ModLog.Every("ConfigPage.Make:282", 2d, $"ConfigPage.Make: returns {returnedAt282} (line 282)"); return returnedAt282; }
+            case ControlKind.Key: { var returnedAt283 = RebindButton(entry, false); if (CoreLog.On) ModLog.Every("ConfigPage.Make:283", 2d, $"ConfigPage.Make: returns {returnedAt283} (line 283)"); return returnedAt283; }
+            case ControlKind.Shortcut: { var returnedAt284 = RebindButton(entry, true); if (CoreLog.On) ModLog.Every("ConfigPage.Make:284", 2d, $"ConfigPage.Make: returns {returnedAt284} (line 284)"); return returnedAt284; }
+            default: { var returnedAt285 = UiControls.Note(entry.GetSerializedValue()); if (CoreLog.On) ModLog.Every("ConfigPage.Make:285", 2d, $"ConfigPage.Make: returns {returnedAt285} (line 285)"); return returnedAt285; }
         }
     }
 
     // Registers a text box as the follower of its entry: the box shows the entry's value again when the mod changed it during a write of this page.
     TextField Follow(ConfigEntryBase entry, TextField field, Func<string> shown)
     {
+        if (CoreLog.On) ModLog.Every("ConfigPage.Follow", 2d, $"ConfigPage.Follow(entry={entry}, field={field}, shown={shown})");
         _followers[entry] = () => field.SetValueWithoutNotify(shown() ?? "");
-        return field;
+        { var returnedAt294 = field; if (CoreLog.On) ModLog.Every("ConfigPage.Follow:294", 2d, $"ConfigPage.Follow: returns {returnedAt294} (line 294)"); return returnedAt294; }
     }
 
     static VisualElement Sized(VisualElement box, float width, string name)
     {
+        if (CoreLog.On) ModLog.Every("ConfigPage.Sized", 2d, $"ConfigPage.Sized(box={box}, width={width}, name={name})");
         box.name = name;
         box.style.width = width;
-        return box;
+        { var returnedAt302 = box; if (CoreLog.On) ModLog.Every("ConfigPage.Sized:302", 2d, $"ConfigPage.Sized: returns {returnedAt302} (line 302)"); return returnedAt302; }
     }
 
     VisualElement Slider(ConfigEntryBase entry, double min, double max)
     {
+        if (CoreLog.On) ModLog.Every("ConfigPage.Slider", 2d, $"ConfigPage.Slider(entry={entry}, min={min}, max={max})");
         Type type = entry.SettingType;
         var slider = UiControls.Slider((float)min, (float)max, Convert.ToSingle(entry.BoxedValue), ConfigControlMap.SliderFormat(type), v => Write(entry, ConfigControlMap.Clamp(type, v, min, max)));
         slider.name = "kydl-slider";
         slider.style.minHeight = 24;
         var input = slider.Q<TextField>();                                      // the number box: narrower and lower (user 2026-10-30, D-061)
         if (input != null) input.style.width = 46;
-        return slider;
+        { var returnedAt314 = slider; if (CoreLog.On) ModLog.Every("ConfigPage.Slider:314", 2d, $"ConfigPage.Slider: returns {returnedAt314} (line 314)"); return returnedAt314; }
     }
 
     VisualElement Toggle(ConfigEntryBase entry, string key)
     {
+        if (CoreLog.On) ModLog.Every("ConfigPage.Toggle", 2d, $"ConfigPage.Toggle(entry={entry}, key={key})");
         var t = UiControls.Toggle(key, (bool)entry.BoxedValue, on => Write(entry, on));
         t.name = "kydl-toggle";
         // the kit puts the switch before its text; here the text comes first and the switch sits at the right edge (user 2026-10-30, D-061)
@@ -308,11 +325,12 @@ internal sealed class ConfigPage : IDisposable
         label.style.flexGrow = 1;
         sw.style.marginRight = 0; sw.style.marginLeft = 8;
         t.style.paddingLeft = 0; t.style.marginRight = 0;
-        return t;
+        { var returnedAt328 = t; if (CoreLog.On) ModLog.Every("ConfigPage.Toggle:328", 2d, $"ConfigPage.Toggle: returns {returnedAt328} (line 328)"); return returnedAt328; }
     }
 
     VisualElement Dropdown(ConfigEntryBase entry, IList<string> list)
     {
+        if (CoreLog.On) ModLog.Every("ConfigPage.Dropdown", 2d, $"ConfigPage.Dropdown(entry={entry}, list={list})");
         Type type = entry.SettingType;
         IList<string> options = type.IsEnum ? Enum.GetNames(type) : list;
         string current = type.IsEnum ? Enum.GetName(type, entry.BoxedValue) : (string)entry.BoxedValue;
@@ -324,6 +342,7 @@ internal sealed class ConfigPage : IDisposable
     // (a shortcut takes the Shift / Ctrl / Alt held with it), Escape leaves the setting as it is. KeyCapture does the waiting.
     VisualElement RebindButton(ConfigEntryBase entry, bool shortcut)
     {
+        if (CoreLog.On) ModLog.Every("ConfigPage.RebindButton", 2d, $"ConfigPage.RebindButton(entry={entry}, shortcut={shortcut})");
         Func<string> shown = () => shortcut ? ShortcutLabel((KeyboardShortcut)entry.BoxedValue) : KeyCaptureRules.KeyName((KeyCode)entry.BoxedValue);
         Button button = null;
         button = UiControls.Button(shown(), () =>
@@ -336,33 +355,35 @@ internal sealed class ConfigPage : IDisposable
             }, () => button.text = shown());
         }, false);
         button.name = "kydl-key";
-        return button;
+        { var returnedAt358 = button; if (CoreLog.On) ModLog.Every("ConfigPage.RebindButton:358", 2d, $"ConfigPage.RebindButton: returns {returnedAt358} (line 358)"); return returnedAt358; }
     }
 
     static string ShortcutLabel(KeyboardShortcut s)
     {
-        return KeyCaptureRules.ShortcutText(s.MainKey, new List<KeyCode>(s.Modifiers));
+        if (CoreLog.On) ModLog.Every("ConfigPage.ShortcutLabel", 2d, $"ConfigPage.ShortcutLabel(s={s})");
+        { var returnedAt364 = KeyCaptureRules.ShortcutText(s.MainKey, new List<KeyCode>(s.Modifiers)); if (CoreLog.On) ModLog.Every("ConfigPage.ShortcutLabel:364", 2d, $"ConfigPage.ShortcutLabel: returns {returnedAt364} (line 364)"); return returnedAt364; }
     }
 
     VisualElement ColorEditor(ConfigEntryBase entry)
     {
+        if (CoreLog.On) ModLog.Every("ConfigPage.ColorEditor", 2d, $"ConfigPage.ColorEditor(entry={entry})");
         Color now = (Color)entry.BoxedValue;
         Action<string> set;
         VisualElement picker = UiControls.ColorPicker("#" + ColorUtility.ToHtmlStringRGB(now), hex =>
         {
             Color c;
-            if (!ColorUtility.TryParseHtmlString(hex, out c)) return;
+            if (!ColorUtility.TryParseHtmlString(hex, out c)) { if (CoreLog.On) ModLog.Every("ConfigPage.ColorEditor:375", 2d, "ConfigPage.ColorEditor: returns (line 375)"); return; }
             c.a = ((Color)entry.BoxedValue).a;                                  // the picker has no alpha: keep the entry's
             Write(entry, c);
         }, out set);
         picker.name = "kydl-color";
-        return picker;
+        { var returnedAt380 = picker; if (CoreLog.On) ModLog.Every("ConfigPage.ColorEditor:380", 2d, $"ConfigPage.ColorEditor: returns {returnedAt380} (line 380)"); return returnedAt380; }
     }
 
     // --- writing and reading entries --------------------------------------------------------------------------------------
     void Write(ConfigEntryBase entry, object value)
     {
-        if (value == null || Equals(entry.BoxedValue, value)) return;
+        if (value == null || Equals(entry.BoxedValue, value)) { if (CoreLog.On) ModLog.Every("ConfigPage.Write:386", 2d, "ConfigPage.Write: returns (line 386)"); return; }
         _writing = true;
         _writingEntry = entry;
         try { entry.BoxedValue = value; }
@@ -372,23 +393,25 @@ internal sealed class ConfigPage : IDisposable
 
     static bool Range(ConfigEntryBase entry, out double min, out double max)
     {
+        if (CoreLog.On) ModLog.Every("ConfigPage.Range", 2d, $"ConfigPage.Range(entry={entry})");
         min = max = 0;
         AcceptableValueBase av = entry.Description == null ? null : entry.Description.AcceptableValues;
-        if (av == null) return false;
+        if (av == null) { if (CoreLog.On) ModLog.Every("ConfigPage.Range:399", 2d, "ConfigPage.Range: returns false (line 399)"); return false; }
         var lo = av.GetType().GetProperty("MinValue");
         var hi = av.GetType().GetProperty("MaxValue");
-        if (lo == null || hi == null) return false;
+        if (lo == null || hi == null) { if (CoreLog.On) ModLog.Every("ConfigPage.Range:402", 2d, "ConfigPage.Range: returns false (line 402)"); return false; }
         min = Convert.ToDouble(lo.GetValue(av, null));
         max = Convert.ToDouble(hi.GetValue(av, null));
-        return true;
+        { if (CoreLog.On) ModLog.Every("ConfigPage.Range:405", 2d, "ConfigPage.Range: returns true (line 405)"); return true; }
     }
 
     static IList<string> ListOf(ConfigEntryBase entry)
     {
+        if (CoreLog.On) ModLog.Every("ConfigPage.ListOf", 2d, $"ConfigPage.ListOf(entry={entry})");
         AcceptableValueBase av = entry.Description == null ? null : entry.Description.AcceptableValues;
-        if (av == null) return null;
+        if (av == null) { if (CoreLog.On) ModLog.Every("ConfigPage.ListOf:412", 2d, "ConfigPage.ListOf: returns null (line 412)"); return null; }
         var p = av.GetType().GetProperty("AcceptableValues");
         var values = p == null ? null : p.GetValue(av, null) as string[];
-        return values;
+        { var returnedAt415 = values; if (CoreLog.On) ModLog.Every("ConfigPage.ListOf:415", 2d, $"ConfigPage.ListOf: returns {returnedAt415} (line 415)"); return returnedAt415; }
     }
 }

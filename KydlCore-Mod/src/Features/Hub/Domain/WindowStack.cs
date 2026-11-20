@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using KydlCore.Core;
 
 namespace KydlCore.Features.Hub.Domain;
 
@@ -44,45 +45,50 @@ internal sealed class WindowStack
     /// </summary>
     public bool Open(string id)
     {
-        if (!Valid(id)) return false;
+        if (CoreLog.On) CoreLog.Every("WindowStack.Open", 2d, $"WindowStack.Open(id={id})");
+        if (!Valid(id)) { if (CoreLog.On) CoreLog.Every("WindowStack.Open:49", 2d, "WindowStack.Open: returns false (line 49)"); return false; }
         bool wasOpen = AnyOpen;
         _ids.Remove(id);
         _ids.Add(id);
         Notify(wasOpen);
-        return true;
+        { if (CoreLog.On) CoreLog.Every("WindowStack.Open:54", 2d, "WindowStack.Open: returns true (line 54)"); return true; }
     }
 
     /// <summary>A click on a window: brings an open window to the front. Returns false for a window that is not open.</summary>
     public bool BringToFront(string id)
     {
-        if (!IsOpen(id)) return false;
+        if (CoreLog.On) CoreLog.Every("WindowStack.BringToFront", 2d, $"WindowStack.BringToFront(id={id})");
+        if (!IsOpen(id)) { if (CoreLog.On) CoreLog.Every("WindowStack.BringToFront:61", 2d, "WindowStack.BringToFront: returns false (line 61)"); return false; }
         if (_ids[_ids.Count - 1] != id) { _ids.Remove(id); _ids.Add(id); }
-        return true;
+        { if (CoreLog.On) CoreLog.Every("WindowStack.BringToFront:63", 2d, "WindowStack.BringToFront: returns true (line 63)"); return true; }
     }
 
     /// <summary>Closes one window wherever it is. Returns false for a window that is not open.</summary>
     public bool Close(string id)
     {
-        if (!IsOpen(id)) return false;
+        if (CoreLog.On) CoreLog.Every("WindowStack.Close", 2d, $"WindowStack.Close(id={id})");
+        if (!IsOpen(id)) { if (CoreLog.On) CoreLog.Every("WindowStack.Close:70", 2d, "WindowStack.Close: returns false (line 70)"); return false; }
         bool wasOpen = AnyOpen;
         _ids.Remove(id);
         Notify(wasOpen);
-        return true;
+        { if (CoreLog.On) CoreLog.Every("WindowStack.Close:74", 2d, "WindowStack.Close: returns true (line 74)"); return true; }
     }
 
     /// <summary>Escape: closes only the front window and returns its id, or returns null when nothing is open.</summary>
     public string CloseTop()
     {
-        if (_ids.Count == 0) return null;
+        if (CoreLog.On) CoreLog.Verbose($"WindowStack.CloseTop()");
+        if (_ids.Count == 0) { if (CoreLog.On) CoreLog.Verbose("WindowStack.CloseTop: returns null (line 81)"); return null; }
         string top = _ids[_ids.Count - 1];
         Close(top);
-        return top;
+        { var returnedAt84 = top; if (CoreLog.On) CoreLog.Verbose($"WindowStack.CloseTop: returns {returnedAt84} (line 84)"); return returnedAt84; }
     }
 
     static bool Valid(string id) { return !string.IsNullOrEmpty(id); }
 
     void Notify(bool wasOpen)
     {
+        if (CoreLog.On) CoreLog.Every("WindowStack.Notify", 2d, $"WindowStack.Notify(wasOpen={wasOpen})");
         bool now = AnyOpen;
         if (now != wasOpen && AnyOpenChanged != null) AnyOpenChanged(now);
     }

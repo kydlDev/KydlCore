@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
 using UnityEngine;
+using KydlCore.Core;
 
 namespace KydlCore.Common;
 
@@ -25,20 +26,22 @@ public static class PieceLearning
     /// Is this piece in the character's known recipes? Expected outcome: true once learned.
     public static bool KnowsPiece(Player p, Piece piece)
     {
-        return p != null && piece != null && Recipes(p).Contains(piece.m_name);
+        if (CoreLog.On) ModLog.Verbose($"PieceLearning.KnowsPiece(p={p}, piece={piece})");
+        { var returnedAt30 = p != null && piece != null && Recipes(p).Contains(piece.m_name); if (CoreLog.On) ModLog.Verbose($"PieceLearning.KnowsPiece: returns {returnedAt30} (line 30)"); return returnedAt30; }
     }
 
     /// Has the character discovered this item (prefab name, e.g. "Tar", "Iron")? Expected outcome: true after the first pick-up.
     public static bool KnowsMaterial(Player p, string itemPrefab)
     {
+        if (CoreLog.On) ModLog.Verbose($"PieceLearning.KnowsMaterial(p={p}, itemPrefab={itemPrefab})");
         if (p == null || ObjectDB.instance == null)
         {
-            return false;
+            { if (CoreLog.On) ModLog.Verbose("PieceLearning.KnowsMaterial: returns false (line 39)"); return false; }
         }
 
         GameObject go = ObjectDB.instance.GetItemPrefab(itemPrefab);
         ItemDrop drop = go != null ? go.GetComponent<ItemDrop>() : null;
-        return drop != null && Materials(p).Contains(drop.m_itemData.m_shared.m_name);
+        { var returnedAt44 = drop != null && Materials(p).Contains(drop.m_itemData.m_shared.m_name); if (CoreLog.On) ModLog.Verbose($"PieceLearning.KnowsMaterial: returns {returnedAt44} (line 44)"); return returnedAt44; }
     }
 
     /// Learns the piece with the game's own popup. Expected outcome: true when it was learned NOW (false: unknown prefab, already known, or the game call failed).
@@ -46,14 +49,14 @@ public static class PieceLearning
     {
         if (p == null || ZNetScene.instance == null)
         {
-            return false;
+            { if (CoreLog.On) ModLog.Verbose("PieceLearning.Learn: returns false (line 52)"); return false; }
         }
 
         GameObject go = ZNetScene.instance.GetPrefab(piecePrefab);
         Piece piece = go != null ? go.GetComponent<Piece>() : null;
         if (piece == null || KnowsPiece(p, piece))
         {
-            return false;
+            { if (CoreLog.On) ModLog.Verbose("PieceLearning.Learn: returns false (line 59)"); return false; }
         }
 
         try
@@ -66,7 +69,7 @@ public static class PieceLearning
             if (_addKnownPiece != null)
             {
                 _addKnownPiece.Invoke(p, new object[] { piece });
-                return KnowsPiece(p, piece);
+                { var returnedAt72 = KnowsPiece(p, piece); if (CoreLog.On) ModLog.Verbose($"PieceLearning.Learn: returns {returnedAt72} (line 72)"); return returnedAt72; }
             }
         }
         catch (Exception e)
@@ -80,6 +83,6 @@ public static class PieceLearning
             MessageHud.instance.QueueUnlockMsg(piece.m_icon, "$msg_newpiece", piece.m_name);
         }
 
-        return true;
+        { if (CoreLog.On) ModLog.Verbose("PieceLearning.Learn: returns true (line 86)"); return true; }
     }
 }

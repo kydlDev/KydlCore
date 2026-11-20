@@ -8,6 +8,7 @@ using KydlCore.Features.Items.Contracts;
 using KydlCore.Presentation.Hub.Pages;
 using KydlCore.Ui;
 using UnityEngine.UIElements;
+using KydlCore.Core;
 
 namespace KydlCore.Presentation.Hub.Registration;
 
@@ -35,6 +36,7 @@ internal static class KyItemsTab
 
     static void Sync()
     {
+        if (CoreLog.On) ModLog.Every("KyItemsTab.Sync", 2d, $"KyItemsTab.Sync()");
         SyncTab(ItemsId, "KY-Items", ItemsOrder, e => e.Kind != KyKind.Material);
         SyncTab(MaterialsId, "Materials", MaterialsOrder, e => e.Kind == KyKind.Material);
     }
@@ -74,6 +76,7 @@ internal static class KyItemsTab
     /// <summary>Builds the KY-Items (or, for <see cref="MaterialsId"/>, the Materials) page as the hub would (for test hooks).</summary>
     internal static VisualElement BuildPage(string id)
     {
+        if (CoreLog.On) ModLog.Verbose($"KyItemsTab.BuildPage(id={id})");
         return id == MaterialsId ? Build(e => e.Kind == KyKind.Material, id) : Build(e => e.Kind != KyKind.Material, id);
     }
 
@@ -86,17 +89,18 @@ internal static class KyItemsTab
     /// </summary>
     internal static bool ToggleView()
     {
-        if (ModSettings.KyItemsView == null) return false;
+        if (ModSettings.KyItemsView == null) { if (CoreLog.On) ModLog.Every("KyItemsTab.ToggleView:92", 2d, "KyItemsTab.ToggleView: returns false (line 92)"); return false; }
         ModSettings.KyItemsView.Value = Grid ? ItemsView.List : ItemsView.Grid;
         ModLog.Info("KyItemsTab: view " + ModSettings.KyItemsView.Value);
         HubHost.Refresh(Plugin.ModGuid, ItemsId);
         HubHost.Refresh(Plugin.ModGuid, MaterialsId);
-        return Grid;
+        { var returnedAt97 = Grid; if (CoreLog.On) ModLog.Every("KyItemsTab.ToggleView:97", 2d, $"KyItemsTab.ToggleView: returns {returnedAt97} (line 97)"); return returnedAt97; }
     }
 
     // the note on the left, the view switch on the right (top right of the page, user 2026-11-19)
     static VisualElement Header(VisualElement note, bool grid, string id)
     {
+        if (CoreLog.On) ModLog.Every("KyItemsTab.Header", 2d, $"KyItemsTab.Header(note={note}, grid={grid}, id={id})");
         var row = new VisualElement { name = "kydl-kyitems-header" };
         row.style.flexDirection = FlexDirection.Row; row.style.alignItems = Align.FlexStart; row.style.flexShrink = 0;
         note.style.flexGrow = 1; note.style.flexShrink = 1;
@@ -105,16 +109,18 @@ internal static class KyItemsTab
         toggle.name = "kydl-kyitems-view";
         toggle.style.flexShrink = 0; toggle.style.marginLeft = 12;
         row.Add(toggle);
-        return row;
+        { var returnedAt112 = row; if (CoreLog.On) ModLog.Every("KyItemsTab.Header:112", 2d, $"KyItemsTab.Header: returns {returnedAt112} (line 112)"); return returnedAt112; }
     }
 
     static ItemCard Card(KyEntry entry)
     {
-        return new ItemCard { Title = entry.DisplayName, Subtitle = entry.Prefab, Icon = entry.Icon };
+        if (CoreLog.On) ModLog.Verbose($"KyItemsTab.Card(entry={entry})");
+        { var returnedAt118 = new ItemCard { Title = entry.DisplayName, Subtitle = entry.Prefab, Icon = entry.Icon }; if (CoreLog.On) ModLog.Verbose($"KyItemsTab.Card: returns {returnedAt118} (line 118)"); return returnedAt118; }
     }
 
     static VisualElement Row(KyEntry entry)
     {
+        if (CoreLog.On) ModLog.Every("KyItemsTab.Row", 2d, $"KyItemsTab.Row(entry={entry})");
         var r = new VisualElement();
         r.style.flexDirection = FlexDirection.Row; r.style.alignItems = Align.Center; r.style.flexShrink = 0; r.style.marginTop = 2; r.style.marginBottom = 2;
         var icon = new VisualElement { pickingMode = PickingMode.Ignore };
@@ -125,6 +131,6 @@ internal static class KyItemsTab
         name.style.flexGrow = 1; name.style.whiteSpace = WhiteSpace.NoWrap;
         r.Add(name);
         r.Add(UiKit.Label(entry.Kind + "  " + (string.IsNullOrEmpty(entry.Id) ? entry.Prefab : entry.Id), UiKit.SmallSize, UiKit.TextDim));
-        return r;
+        { var returnedAt134 = r; if (CoreLog.On) ModLog.Every("KyItemsTab.Row:134", 2d, $"KyItemsTab.Row: returns {returnedAt134} (line 134)"); return returnedAt134; }
     }
 }

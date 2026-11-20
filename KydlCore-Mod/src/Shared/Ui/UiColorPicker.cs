@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
+using KydlCore.Core;
 
 namespace KydlCore.Ui;
 
@@ -84,6 +85,7 @@ public sealed class UiColorPicker
 
     void FromRgb()
     {
+        if (CoreLog.On) UiLog.Verbose($"UiColorPicker.FromRgb()");
         float v, h, s; Color.RGBToHSV(_c, out h, out s, out v);
         if (v > 0.001f && s > 0.001f) { _h = h; _s = s; }
         else if (v > 0.001f) _s = s;          // grey: hue undefined, keep the last one
@@ -94,8 +96,8 @@ public sealed class UiColorPicker
     void OnHexTyped(string text)
     {
         Color p;
-        if (text == null || text.TrimStart('#').Length != 6 || !ColorUtility.TryParseHtmlString(text.StartsWith("#") ? text : "#" + text, out p)) return;
-        if (ColorUtility.ToHtmlStringRGB(p) == ColorUtility.ToHtmlStringRGB(_c)) return;
+        if (text == null || text.TrimStart('#').Length != 6 || !ColorUtility.TryParseHtmlString(text.StartsWith("#") ? text : "#" + text, out p)) { if (CoreLog.On) UiLog.Verbose("UiColorPicker.OnHexTyped: returns (line 99)"); return; }
+        if (ColorUtility.ToHtmlStringRGB(p) == ColorUtility.ToHtmlStringRGB(_c)) { if (CoreLog.On) UiLog.Verbose("UiColorPicker.OnHexTyped: returns (line 100)"); return; }
         UiLog.Verbose("UiColorPicker: hex typed " + text);
         SetColor(p, false, true);
     }
@@ -103,6 +105,7 @@ public sealed class UiColorPicker
     /// Shows the colour on the sliders, the preview and the hex box. `keepRgb` = the RGB sliders already show it (they are being dragged).
     void Show(bool all, bool fromBrightness = false)
     {
+        if (CoreLog.On) UiLog.Verbose($"UiColorPicker.Show(all={all}, fromBrightness={fromBrightness})");
         _preview.style.backgroundColor = _c;
         if (all || fromBrightness) { _r.SetValueWithoutNotify(_c.r * 255f); _g.SetValueWithoutNotify(_c.g * 255f); _b.SetValueWithoutNotify(_c.b * 255f); }
         if (_bright != null && !fromBrightness) { float h, s, v; Color.RGBToHSV(_c, out h, out s, out v); _bright.SetValueWithoutNotify(v * 100f); }
@@ -111,6 +114,7 @@ public sealed class UiColorPicker
 
     void SetColor(Color c, bool updateHex, bool notify)
     {
+        if (CoreLog.On) UiLog.Verbose($"UiColorPicker.SetColor(c={c}, updateHex={updateHex}, notify={notify})");
         c.a = 1f; _c = c;
         float h, s, v; Color.RGBToHSV(_c, out h, out s, out v);
         if (v > 0.001f && s > 0.001f) { _h = h; _s = s; } else if (v > 0.001f) _s = s;
@@ -122,7 +126,8 @@ public sealed class UiColorPicker
     /// Shows another colour (e.g. a different part was selected) without calling `changed`. Expected outcome: Hex equals the given colour.
     public bool Set(Color c)
     {
+        if (CoreLog.On) UiLog.Verbose($"UiColorPicker.Set(c={c})");
         SetColor(c, true, false);
-        return ColorUtility.ToHtmlStringRGB(_c) == ColorUtility.ToHtmlStringRGB(new Color(c.r, c.g, c.b, 1f));
+        { var returnedAt131 = ColorUtility.ToHtmlStringRGB(_c) == ColorUtility.ToHtmlStringRGB(new Color(c.r, c.g, c.b, 1f)); if (CoreLog.On) UiLog.Verbose($"UiColorPicker.Set: returns {returnedAt131} (line 131)"); return returnedAt131; }
     }
 }

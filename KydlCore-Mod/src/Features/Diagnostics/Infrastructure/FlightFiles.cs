@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using KydlCore.Common;
 using KydlCore.Features.Diagnostics.Domain;
+using KydlCore.Core;
 
 namespace KydlCore.Features.Diagnostics.Infrastructure;
 
@@ -20,9 +21,10 @@ internal static class FlightFiles
     /// <summary>The dump folder (created when missing).</summary>
     internal static string Dir()
     {
+        if (CoreLog.On) ModLog.Every("FlightFiles.Dir", 2d, $"FlightFiles.Dir()");
         string dir = Path.Combine(ModCache.Dir(CacheOwner), Folder);
         Directory.CreateDirectory(dir);
-        return dir;
+        { var returnedAt27 = dir; if (CoreLog.On) ModLog.Every("FlightFiles.Dir:27", 2d, $"FlightFiles.Dir: returns {returnedAt27} (line 27)"); return returnedAt27; }
     }
 
     /// <summary>Writes one dump.</summary>
@@ -45,7 +47,7 @@ internal static class FlightFiles
             return null;
         }
 
-        return File.Exists(path) ? path : null;
+        { var returnedAt50 = File.Exists(path) ? path : null; if (CoreLog.On) ModLog.Every("FlightFiles.Write:50", 2d, $"FlightFiles.Write: returns {returnedAt50} (line 50)"); return returnedAt50; }
     }
 
     /// <summary>Removes dumps older than <paramref name="keepDays"/> days and the oldest beyond <paramref name="keepMax"/> files.</summary>
@@ -77,6 +79,6 @@ internal static class FlightFiles
             ModLog.Warn("FlightRecorder: no permission to remove old dumps: " + e.Message);
         }
 
-        return removed;
+        { var returnedAt82 = removed; if (CoreLog.On) ModLog.Every("FlightFiles.Prune:82", 2d, $"FlightFiles.Prune: returns {returnedAt82} (line 82)"); return returnedAt82; }
     }
 }

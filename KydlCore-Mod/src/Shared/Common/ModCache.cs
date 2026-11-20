@@ -1,5 +1,6 @@
 using System.IO;
 using BepInEx;
+using KydlCore.Core;
 
 namespace KydlCore.Common;
 
@@ -12,9 +13,10 @@ public static class ModCache
     /// Expected outcome: the full path of BepInEx/cache/&lt;modName&gt;/; the folder exists after the call.
     public static string Dir(string modName)
     {
+        if (CoreLog.On) ModLog.Every("ModCache.Dir", 2d, $"ModCache.Dir(modName={modName})");
         string dir = Path.Combine(Paths.CachePath, modName);
         Directory.CreateDirectory(dir);
-        return dir;
+        { var returnedAt19 = dir; if (CoreLog.On) ModLog.Every("ModCache.Dir:19", 2d, $"ModCache.Dir: returns {returnedAt19} (line 19)"); return returnedAt19; }
     }
 
     /// Expected outcome: the full path of BepInEx/cache/&lt;modName&gt;/&lt;fileName&gt; (folder created, file not touched).

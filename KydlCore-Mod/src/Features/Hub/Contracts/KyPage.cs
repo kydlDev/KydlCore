@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using KydlCore.Core;
+using KydlCore.Common;
 
 namespace KydlCore.Features.Hub.Contracts;
 
@@ -23,9 +25,10 @@ public sealed class KyPage
     /// <summary>Adds a section with a heading (empty title = no heading) and returns it to add rows to.</summary>
     public KySection Section(string title)
     {
+        if (CoreLog.On) ModLog.Verbose($"KyPage.Section(title={title})");
         var s = new KySection(title);
         Sections.Add(s);
-        return s;
+        { var returnedAt31 = s; if (CoreLog.On) ModLog.Verbose($"KyPage.Section: returns {returnedAt31} (line 31)"); return returnedAt31; }
     }
 }
 
@@ -43,15 +46,17 @@ public sealed class KySection
     /// <summary>A label and its value; where the value changes with quality, maxValue is shown in a second column.</summary>
     public KySection Value(string label, string value, string maxValue = "")
     {
+        if (CoreLog.On) ModLog.Verbose($"KySection.Value(label={label}, value={value}, maxValue={maxValue})");
         Rows.Add(new KyValueRow(label, value, maxValue));
-        return this;
+        { var returnedAt51 = this; if (CoreLog.On) ModLog.Verbose($"KySection.Value: returns {returnedAt51} (line 51)"); return returnedAt51; }
     }
 
     /// <summary>A small header over the value columns of the rows below (e.g. "Quality 1" | "Quality 4"). Use it before rows that have a maxValue.</summary>
     public KySection Columns(string value, string maxValue)
     {
+        if (CoreLog.On) ModLog.Verbose($"KySection.Columns(value={value}, maxValue={maxValue})");
         Rows.Add(new KyColumnsRow(value, maxValue));
-        return this;
+        { var returnedAt59 = this; if (CoreLog.On) ModLog.Verbose($"KySection.Columns: returns {returnedAt59} (line 59)"); return returnedAt59; }
     }
 
     /// <summary>
@@ -60,64 +65,73 @@ public sealed class KySection
     /// </summary>
     public KySection Hosted(Func<UnityEngine.UIElements.VisualElement> build)
     {
+        if (CoreLog.On) ModLog.Verbose($"KySection.Hosted(build={build})");
         Rows.Add(new KyHostedRow(build));
-        return this;
+        { var returnedAt70 = this; if (CoreLog.On) ModLog.Verbose($"KySection.Hosted: returns {returnedAt70} (line 70)"); return returnedAt70; }
     }
 
     /// <summary>A line of explaining text.</summary>
     public KySection Note(string text)
     {
+        if (CoreLog.On) ModLog.Every("KySection.Note", 2d, $"KySection.Note(text={text})");
         Rows.Add(new KyNoteRow(text));
-        return this;
+        { var returnedAt78 = this; if (CoreLog.On) ModLog.Every("KySection.Note:78", 2d, $"KySection.Note: returns {returnedAt78} (line 78)"); return returnedAt78; }
     }
 
     /// <summary>A label and a drop-down of choices; `chosen` gets the id of the picked one (the page is built again right after).</summary>
     public KySection Choice(string label, IList<KyChoice> choices, string selected, Action<string> chosen)
     {
+        if (CoreLog.On) ModLog.Verbose($"KySection.Choice(label={label}, choices={choices}, selected={selected}, chosen={chosen})");
         Rows.Add(new KyChoiceRow(label, choices, selected, chosen));
-        return this;
+        { var returnedAt86 = this; if (CoreLog.On) ModLog.Verbose($"KySection.Choice: returns {returnedAt86} (line 86)"); return returnedAt86; }
     }
 
     /// <summary>A table: a header line and one line per row, each cell a text, a button or a drop-down (see <see cref="KyCell"/>). Texts may change between builds without the State changing (they are updated in place); the rows and cell kinds may not.</summary>
     public KySection Table(IList<string> headers, IList<IList<KyCell>> rows)
     {
+        if (CoreLog.On) ModLog.Verbose($"KySection.Table(headers={headers}, rows={rows})");
         Rows.Add(new KyTableRow(headers, rows));
-        return this;
+        { var returnedAt94 = this; if (CoreLog.On) ModLog.Verbose($"KySection.Table: returns {returnedAt94} (line 94)"); return returnedAt94; }
     }
 
     /// <summary>A switch with a label; `changed` gets the new state. The page is NOT rebuilt by the change (the switch shows it); put what the switch changes into the page State.</summary>
     public KySection Toggle(string label, bool on, Action<bool> changed)
     {
+        if (CoreLog.On) ModLog.Every("KySection.Toggle", 2d, $"KySection.Toggle(label={label}, on={on}, changed={changed})");
         Rows.Add(new KyToggleRow(label, on, changed));
-        return this;
+        { var returnedAt102 = this; if (CoreLog.On) ModLog.Every("KySection.Toggle:102", 2d, $"KySection.Toggle: returns {returnedAt102} (line 102)"); return returnedAt102; }
     }
 
     /// <summary>A slider with a label; `format` is the .NET number format of the shown value (e.g. "0.0"). `changed` is called while it is dragged; the page is NOT rebuilt by it.</summary>
     public KySection Slider(string label, float min, float max, float value, string format, Action<float> changed)
     {
+        if (CoreLog.On) ModLog.Every("KySection.Slider", 2d, $"KySection.Slider(label={label}, min={min}, max={max}, value={value}, format={format}, changed={changed})");
         Rows.Add(new KySliderRow(label, min, max, value, format, changed));
-        return this;
+        { var returnedAt110 = this; if (CoreLog.On) ModLog.Every("KySection.Slider:110", 2d, $"KySection.Slider: returns {returnedAt110} (line 110)"); return returnedAt110; }
     }
 
     /// <summary>A text box with a label; `changed` gets the new text. The page is NOT rebuilt by the change.</summary>
     public KySection TextBox(string label, string value, int maxLength, Action<string> changed)
     {
+        if (CoreLog.On) ModLog.Verbose($"KySection.TextBox(label={label}, value={value}, maxLength={maxLength}, changed={changed})");
         Rows.Add(new KyTextRow(label, value, maxLength, changed));
-        return this;
+        { var returnedAt118 = this; if (CoreLog.On) ModLog.Verbose($"KySection.TextBox: returns {returnedAt118} (line 118)"); return returnedAt118; }
     }
 
     /// <summary>A list of text lines (one bullet each); `title` is a small caption above it ("" = none).</summary>
     public KySection List(string title, IList<string> items)
     {
+        if (CoreLog.On) ModLog.Verbose($"KySection.List(title={title}, items={items})");
         Rows.Add(new KyListRow(title, items));
-        return this;
+        { var returnedAt126 = this; if (CoreLog.On) ModLog.Verbose($"KySection.List: returns {returnedAt126} (line 126)"); return returnedAt126; }
     }
 
     /// <summary>A button with a label.</summary>
     public KySection Button(string label, Action clicked)
     {
+        if (CoreLog.On) ModLog.Every("KySection.Button", 2d, $"KySection.Button(label={label}, clicked={clicked})");
         Rows.Add(new KyButtonRow(label, clicked));
-        return this;
+        { var returnedAt134 = this; if (CoreLog.On) ModLog.Every("KySection.Button:134", 2d, $"KySection.Button: returns {returnedAt134} (line 134)"); return returnedAt134; }
     }
 }
 
@@ -168,6 +182,7 @@ public sealed class KyChoiceRow : KyRow
     public Action<string> Chosen { get; private set; }
     internal KyChoiceRow(string label, IList<KyChoice> choices, string selected, Action<string> chosen) : base(label)
     {
+        if (CoreLog.On) ModLog.Verbose($"KyChoiceRow.KyChoiceRow(label={label}, choices={choices}, selected={selected})");
         Choices = choices ?? new List<KyChoice>(); Selected = selected ?? ""; Chosen = chosen;
     }
 }
@@ -218,14 +233,16 @@ public sealed class KyCell
     /// <summary>A drop-down cell.</summary>
     public static KyCell Drop(IList<KyChoice> choices, string selected, Action<string> chosen)
     {
-        return new KyCell { Kind = Kinds.Drop, Choices = choices ?? new List<KyChoice>(), Selected = selected ?? "", Chosen = chosen };
+        if (CoreLog.On) ModLog.Verbose($"KyCell.Drop(choices={choices}, selected={selected}, chosen={chosen})");
+        { var returnedAt237 = new KyCell { Kind = Kinds.Drop, Choices = choices ?? new List<KyChoice>(), Selected = selected ?? "", Chosen = chosen }; if (CoreLog.On) ModLog.Verbose($"KyCell.Drop: returns {returnedAt237} (line 237)"); return returnedAt237; }
     }
 
     /// <summary>Makes this button ask `question` with Yes / No buttons in its place before it acts. Returns the cell.</summary>
     public KyCell Confirm(string question, string yes, string no)
     {
+        if (CoreLog.On) ModLog.Verbose($"KyCell.Confirm(question={question}, yes={yes}, no={no})");
         ConfirmText = question ?? ""; YesText = yes ?? ""; NoText = no ?? "";
-        return this;
+        { var returnedAt245 = this; if (CoreLog.On) ModLog.Verbose($"KyCell.Confirm: returns {returnedAt245} (line 245)"); return returnedAt245; }
     }
 }
 
@@ -238,6 +255,7 @@ public sealed class KyTableRow : KyRow
     public IList<IList<KyCell>> Cells { get; private set; }
     internal KyTableRow(IList<string> headers, IList<IList<KyCell>> cells) : base("")
     {
+        if (CoreLog.On) ModLog.Verbose($"KyTableRow.KyTableRow(headers={headers})");
         Headers = headers ?? new List<string>(); Cells = cells ?? new List<IList<KyCell>>();
     }
 }
@@ -285,6 +303,7 @@ public sealed class KySliderRow : KyRow
     public Action<float> Changed { get; private set; }
     internal KySliderRow(string label, float min, float max, float value, string format, Action<float> changed) : base(label)
     {
+        if (CoreLog.On) ModLog.Every("KySliderRow.KySliderRow", 2d, $"KySliderRow.KySliderRow(label={label}, min={min}, max={max}, value={value}, format={format})");
         Min = min; Max = max < min ? min : max; Value = value; Format = string.IsNullOrEmpty(format) ? "0.##" : format; Changed = changed;
     }
 }

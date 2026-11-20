@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using KydlCore.Core;
 
 namespace KydlCore.Features.Diagnostics.Domain;
 
@@ -28,6 +29,7 @@ internal sealed class DumpGate
     /// <returns>Whether the dump may be written.</returns>
     internal bool Allow(string kind, double now, double gapSeconds, int maxDumps)
     {
+        if (CoreLog.On) CoreLog.Every("DumpGate.Allow", 2d, $"DumpGate.Allow(kind={kind}, now={now}, gapSeconds={gapSeconds}, maxDumps={maxDumps})");
         string k = kind ?? "";
         bool tooSoon = _last.TryGetValue(k, out double last) && now - last < gapSeconds;
         bool allowed = !tooSoon && Written < maxDumps;
@@ -41,6 +43,6 @@ internal sealed class DumpGate
             Refused++;
         }
 
-        return allowed;
+        { var returnedAt46 = allowed; if (CoreLog.On) CoreLog.Every("DumpGate.Allow:46", 2d, $"DumpGate.Allow: returns {returnedAt46} (line 46)"); return returnedAt46; }
     }
 }

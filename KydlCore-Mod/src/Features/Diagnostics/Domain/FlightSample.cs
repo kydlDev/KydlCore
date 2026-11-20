@@ -1,3 +1,4 @@
+using KydlCore.Core;
 namespace KydlCore.Features.Diagnostics.Domain;
 
 /// <summary>
@@ -9,6 +10,7 @@ internal readonly struct FlightSample
     /// <summary>Creates a sample.</summary>
     internal FlightSample(double time, double x, double y, double z, double speed, string facts)
     {
+        if (CoreLog.On) CoreLog.Every("FlightSample.FlightSample", 2d, $"FlightSample.FlightSample(time={time}, x={x}, y={y}, z={z}, speed={speed}, facts={facts})");
         Time = time;
         X = x;
         Y = y;

@@ -3,6 +3,7 @@ using KydlCore.Common;
 using KydlCore.Features.Hub.Domain;
 using KydlCore.Features.Hub.Infrastructure;
 using UnityEngine.UIElements;
+using KydlCore.Core;
 
 namespace KydlCore.Features.Hub.Contracts;
 
@@ -27,7 +28,8 @@ public static class KyUi
     /// </summary>
     public static KyWindow Open(string modGuid, string id, VisualElement window, Action onClosed = null)
     {
-        return KyWindows.Add(modGuid, id, window, onClosed);
+        if (CoreLog.On) ModLog.Every("KyUi.Open", 2d, $"KyUi.Open(modGuid={modGuid}, id={id}, window={window}, onClosed={onClosed})");
+        { var returnedAt32 = KyWindows.Add(modGuid, id, window, onClosed); if (CoreLog.On) ModLog.Every("KyUi.Open:32", 2d, $"KyUi.Open: returns {returnedAt32} (line 32)"); return returnedAt32; }
     }
 
     /// <summary>
@@ -52,8 +54,9 @@ public static class KyUi
     /// <summary>Is the window of this mod and id open?</summary>
     public static bool IsOpen(string modGuid, string id)
     {
+        if (CoreLog.On) ModLog.Every("KyUi.IsOpen", 2d, $"KyUi.IsOpen(modGuid={modGuid}, id={id})");
         string full = KyWindowId.Make(modGuid, id);
-        return full != null && KyWindows.Stack.IsOpen(full);
+        { var returnedAt59 = full != null && KyWindows.Stack.IsOpen(full); if (CoreLog.On) ModLog.Every("KyUi.IsOpen:59", 2d, $"KyUi.IsOpen: returns {returnedAt59} (line 59)"); return returnedAt59; }
     }
 }
 
@@ -62,6 +65,7 @@ public sealed class KyWindow
 {
     internal KyWindow(string modGuid, string id, string fullId, VisualElement element, Action onClosed)
     {
+        if (CoreLog.On) ModLog.Every("KyWindow.KyWindow", 2d, $"KyWindow.KyWindow(modGuid={modGuid}, id={id}, fullId={fullId}, element={element}, onClosed={onClosed})");
         ModGuid = modGuid; Id = id; FullId = fullId; Element = element; OnClosed = onClosed;
     }
 

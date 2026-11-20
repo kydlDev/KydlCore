@@ -13,6 +13,7 @@ public readonly struct OperationResponse<T>
 
     public OperationResponse(ResponseStatus status, T value, string reason)
     {
+        if (CoreLog.On) CoreLog.Verbose($"OperationResponse.OperationResponse(status={status}, value={value}, reason={reason})");
         Status = status;
         Value = value;
         Reason = reason ?? "";

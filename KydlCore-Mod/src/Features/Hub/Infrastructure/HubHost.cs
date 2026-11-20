@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using BepInEx;
 using BepInEx.Bootstrap;
@@ -10,6 +10,7 @@ using KydlCore.Presentation.Hub.Pages;
 using KydlCore.Ui;
 using UnityEngine;
 using UnityEngine.UIElements;
+using KydlCore.Core;
 
 namespace KydlCore.Features.Hub.Infrastructure;
 
@@ -32,21 +33,21 @@ internal static class HubHost
     /// <summary>Every frame (Plugin.Update): the hub key opens / closes the hub, Escape closes the top window. Returns whether the hub is open.</summary>
     internal static bool Tick()
     {
-        if (KeyCapture.Blocks) return IsOpen;          // a key is being chosen for a setting (maybe this very key): it must not toggle the hub
+        if (KeyCapture.Blocks) { var returnedAt36 = IsOpen; if (CoreLog.On) ModLog.Every("HubHost.Tick:36", 2d, $"HubHost.Tick: returns {returnedAt36} (line 36)"); return returnedAt36; }          // a key is being chosen for a setting (maybe this very key): it must not toggle the hub
         KeyCode key = ModSettings.HubKey != null ? ModSettings.HubKey.Value : KeyCode.None;
         if (!IsOpen)
         {
-            if (key == KeyCode.None || !ZInput.GetKeyDown(key, true)) return false;
+            if (key == KeyCode.None || !ZInput.GetKeyDown(key, true)) { if (CoreLog.On) ModLog.Every("HubHost.Tick:40", 2d, "HubHost.Tick: returns false (line 40)"); return false; }
             if (Chat.instance != null && Chat.instance.HasFocus() || global::Console.IsVisible() || Menu.IsVisible())
             {
                 ModLog.Verbose("HubHost: key pressed while chat / console / game menu is open - not opened");
                 return false;
             }
             Open(null, null);
-            return IsOpen;
+            { var returnedAt47 = IsOpen; if (CoreLog.On) ModLog.Every("HubHost.Tick:47", 2d, $"HubHost.Tick: returns {returnedAt47} (line 47)"); return returnedAt47; }
         }
         if (key != KeyCode.None && ZInput.GetKeyDown(key, true)) Close("key");      // Escape: KyWindows.Tick closes the front window
-        return IsOpen;
+        { var returnedAt50 = IsOpen; if (CoreLog.On) ModLog.Every("HubHost.Tick:50", 2d, $"HubHost.Tick: returns {returnedAt50} (line 50)"); return returnedAt50; }
     }
 
     /// <summary>Opens the hub (or just selects: it is open already) and shows `mod` / `tab`; null = where it was.</summary>
@@ -70,7 +71,7 @@ internal static class HubHost
 
     internal static void Close(string why)
     {
-        if (_view == null) return;
+        if (_view == null) { if (CoreLog.On) ModLog.Every("HubHost.Close:74", 2d, "HubHost.Close: returns (line 74)"); return; }
         _view.Root.RemoveFromHierarchy();
         _view.Dispose();
         _view = null;
@@ -82,6 +83,7 @@ internal static class HubHost
     /// <summary>KyTab.Refresh: build the page again when it is the one on screen.</summary>
     internal static void Refresh(string mod, string tab)
     {
+        if (CoreLog.On) ModLog.Every("HubHost.Refresh", 2d, $"HubHost.Refresh(mod={mod}, tab={tab})");
         if (_view != null && KyHub.Model.SelectedMod == mod && KyHub.Model.SelectedTab == tab) _view.Refresh();
     }
 
@@ -127,9 +129,9 @@ internal static class HubHost
     {
         PluginInfo info;
         List<ConfigGroups.Group> groups;
-        if (!Chainloader.PluginInfos.TryGetValue(mod, out info) || info.Instance == null || !Groups.TryGetValue(mod, out groups)) return null;
+        if (!Chainloader.PluginInfos.TryGetValue(mod, out info) || info.Instance == null || !Groups.TryGetValue(mod, out groups)) { if (CoreLog.On) ModLog.Verbose("HubHost.GroupPage: returns null (line 132)"); return null; }
         ConfigGroups.Group group = groups.Find(g => g.Name == part);
-        if (group == null) return null;
+        if (group == null) { if (CoreLog.On) ModLog.Verbose("HubHost.GroupPage: returns null (line 134)"); return null; }
         // sections made since the hub was opened (a new player's colour row) still belong to their tab
         foreach (BepInEx.Configuration.ConfigDefinition def in info.Instance.Config.Keys)
             if (ConfigGroups.NameOf(def.Section) == part && !group.Sections.Contains(def.Section)) group.Sections.Add(def.Section);
@@ -140,7 +142,7 @@ internal static class HubHost
             List<string> plain = ConfigGroups.Shown(group.Sections, panel == null ? null : panel.Replaces);
             // never ConfigPage with no sections: that means "every section of the mod"
             if (plain.Count > 0) _config = new ConfigPage(info.Instance.Config, plain.ToArray());
-            if (panel == null) return _config.Root;
+            if (panel == null) { var returnedAt145 = _config.Root; if (CoreLog.On) ModLog.Verbose($"HubHost.GroupPage: returns {returnedAt145} (line 145)"); return returnedAt145; }
             var page = new VisualElement { name = "kydl-group-page" };
             page.style.flexShrink = 0;
             // the panel goes above the entries (KyHub.SetGroupPanel atTop / SetGroupPage) or after them
@@ -148,7 +150,7 @@ internal static class HubHost
             if (panel.AtTop && extra != null) page.Add(extra);
             if (_config != null) page.Add(_config.Root);
             if (!panel.AtTop && extra != null) page.Add(extra);
-            return page;
+            { var returnedAt153 = page; if (CoreLog.On) ModLog.Verbose($"HubHost.GroupPage: returns {returnedAt153} (line 153)"); return returnedAt153; }
         }
         catch (Exception e)
         {
@@ -175,7 +177,7 @@ internal static class HubHost
             shown.schedule.Execute(() => global::KydlCore.Presentation.Hub.Pages.ConfigPage.EnforceText(shown)).Every(EnforceTextMs);
         }
         KyHub.RaiseTabShown(mod, tab);
-        return page;
+        { var returnedAt180 = page; if (CoreLog.On) ModLog.Verbose($"HubHost.Page: returns {returnedAt180} (line 180)"); return returnedAt180; }
     }
 
     const long EnforceTextMs = 200;
@@ -191,7 +193,7 @@ internal static class HubHost
         try
         {
             _config = new ConfigPage(info.Instance.Config);
-            return _config.Root;
+            { var returnedAt196 = _config.Root; if (CoreLog.On) ModLog.Verbose($"HubHost.AutoPage: returns {returnedAt196} (line 196)"); return returnedAt196; }
         }
         catch (Exception e)
         {
@@ -202,7 +204,8 @@ internal static class HubHost
 
     static void DisposeConfig()
     {
-        if (_config == null) return;
+        if (CoreLog.On) ModLog.Every("HubHost.DisposeConfig", 2d, $"HubHost.DisposeConfig()");
+        if (_config == null) { if (CoreLog.On) ModLog.Every("HubHost.DisposeConfig:208", 2d, "HubHost.DisposeConfig: returns (line 208)"); return; }
         _config.Dispose();
         _config = null;
     }

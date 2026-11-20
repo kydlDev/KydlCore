@@ -15,8 +15,9 @@ public sealed class ManualClock : IClock
     /// Moves the clock. Expected outcome: Now grew by `seconds` (negative values are ignored).
     public bool Advance(float seconds)
     {
+        if (CoreLog.On) CoreLog.Verbose($"ManualClock.Advance(seconds={seconds})");
         float before = Now;
         if (seconds > 0f) Now += seconds;
-        return Now >= before;
+        { var returnedAt21 = Now >= before; if (CoreLog.On) CoreLog.Verbose($"ManualClock.Advance: returns {returnedAt21} (line 21)"); return returnedAt21; }
     }
 }

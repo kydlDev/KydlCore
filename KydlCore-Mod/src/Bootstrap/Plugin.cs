@@ -9,6 +9,7 @@ using KydlCore.Features.Diagnostics.Infrastructure;
 using KydlCore.Features.Hub.Infrastructure;
 using KydlCore.Presentation.Hub;
 using UnityEngine;
+using KydlCore.Core;
 
 namespace KydlCore.Bootstrap;
 
@@ -41,6 +42,8 @@ public class Plugin : BaseUnityPlugin
     {
         Instance = this;
         ModLog.Init(Logger, ModName, () => ModSettings.DebugLog != null && ModSettings.DebugLog.Value);
+        KydlCore.Core.CoreLog.Sink = ModLog.Verbose;                                        // the pure code logs through ModLog (rule 8, 2026-11-20)
+        KydlCore.Core.CoreLog.DebugOn = () => ModSettings.DebugLog != null && ModSettings.DebugLog.Value;
         ModLog.Info(ModName + " " + ModVersion + " loaded (dll built " + File.GetLastWriteTime(Assembly.GetExecutingAssembly().Location).ToString("yyyy-MM-dd HH:mm:ss") + ")");
 
         // The shared UI kit (KydlCore.Ui) lives in this DLL only (D-040): Core sets its log sinks, its panel owner and the input lock ONCE.
@@ -88,6 +91,7 @@ public class Plugin : BaseUnityPlugin
 
     void Update()
     {
+        if (CoreLog.On) ModLog.Every("Plugin.Update", 2d, $"Plugin.Update()");
         FlightHost.Tick();                 // the flight recorder: one sample per interval, queued dumps written
         if (_cfgWatcher != null) _cfgWatcher.Tick();
         KeyCapture.Tick();                 // first: a key chosen for a setting is not also the hub key or Escape

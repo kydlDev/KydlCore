@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using KydlCore.Common;
 using KydlCore.Features.Hub.Infrastructure;
@@ -6,6 +6,7 @@ using KydlCore.Presentation.Hub.Pages;
 using KydlCore.Ui;
 using UnityEngine;
 using UnityEngine.UIElements;
+using KydlCore.Core;
 
 namespace KydlCore.Features.Hub.Contracts;
 
@@ -103,7 +104,8 @@ public static class KyHub
     /// </summary>
     public static bool SetGroupPanel(string modGuid, string group, Func<VisualElement> build, Func<string, bool> replaces = null)
     {
-        return SetGroupPanel(modGuid, group, build, replaces, false);
+        if (CoreLog.On) ModLog.Verbose($"GroupPanel.SetGroupPanel(modGuid={modGuid}, group={group}, build={build}, replaces={replaces})");
+        { var returnedAt108 = SetGroupPanel(modGuid, group, build, replaces, false); if (CoreLog.On) ModLog.Verbose($"GroupPanel.SetGroupPanel: returns {returnedAt108} (line 108)"); return returnedAt108; }
     }
 
     /// <summary>
@@ -146,8 +148,9 @@ public static class KyHub
     /// <summary>The panel of a settings tab, or null.</summary>
     internal static GroupPanel PanelOf(string modGuid, string group)
     {
+        if (CoreLog.On) ModLog.Verbose($"GroupPanel.PanelOf(modGuid={modGuid}, group={group})");
         GroupPanel panel;
-        return GroupPanels.TryGetValue(Key(modGuid, group), out panel) ? panel : null;
+        { var returnedAt153 = GroupPanels.TryGetValue(Key(modGuid, group), out panel) ? panel : null; if (CoreLog.On) ModLog.Verbose($"GroupPanel.PanelOf: returns {returnedAt153} (line 153)"); return returnedAt153; }
     }
 
     /// <summary>Removes a tab of a mod. False when it was not there. A mod left with no tab shows the automatic "Settings" tab again.</summary>
@@ -164,8 +167,9 @@ public static class KyHub
     /// <summary>True when the mod has a row-2 tab with this id (a mod checks its own Stop removed its tab: no stale UI registration).</summary>
     public static bool HasTab(string modGuid, string id)
     {
+        if (CoreLog.On) ModLog.Verbose($"GroupPanel.HasTab(modGuid={modGuid}, id={id})");
         bool valid = !string.IsNullOrEmpty(modGuid) && !string.IsNullOrEmpty(id);
-        return valid && Model.HasTab(modGuid, id);
+        { var returnedAt172 = valid && Model.HasTab(modGuid, id); if (CoreLog.On) ModLog.Verbose($"GroupPanel.HasTab: returns {returnedAt172} (line 172)"); return returnedAt172; }
     }
 
     /// <summary>Sets the row-1 name of a mod (the default is the plugin's name). `icon` is reserved for later and not shown yet.</summary>
@@ -206,21 +210,22 @@ public static class KyHub
         // Stryker disable all : needs a real ConfigFile and the UI; tested in game
         var page = new ConfigPage(file, sections);
         page.Root.RegisterCallback<DetachFromPanelEvent>(e => page.Dispose());          // the page stops listening when it leaves the screen
-        return page.Root;
+        { var returnedAt213 = page.Root; if (CoreLog.On) ModLog.Every("GroupPanel.ConfigEntries:213", 2d, $"GroupPanel.ConfigEntries: returns {returnedAt213} (line 213)"); return returnedAt213; }
         // Stryker restore all
     }
 
     internal static string TitleOf(string modGuid)
     {
+        if (CoreLog.On) ModLog.Every("GroupPanel.TitleOf", 2d, $"GroupPanel.TitleOf(modGuid={modGuid})");
         string t;
-        return Titles.TryGetValue(modGuid, out t) ? t : null;
+        { var returnedAt221 = Titles.TryGetValue(modGuid, out t) ? t : null; if (CoreLog.On) ModLog.Every("GroupPanel.TitleOf:221", 2d, $"GroupPanel.TitleOf: returns {returnedAt221} (line 221)"); return returnedAt221; }
     }
 
     /// <summary>The page of a registered tab, or null when the mod registered no builder for it. A throwing builder is logged and gives null.</summary>
     internal static VisualElement BuildPage(string modGuid, string id)
     {
         Func<VisualElement> build;
-        if (!Builders.TryGetValue(Key(modGuid, id), out build)) return null;
+        if (!Builders.TryGetValue(Key(modGuid, id), out build)) { if (CoreLog.On) ModLog.Verbose("GroupPanel.BuildPage: returns null (line 228)"); return null; }
         try { return global::KydlCore.Ui.UiLog.Within(modGuid, build); }     // the kit's log lines of this page belong to the mod (UiLog.Owner, D-071)
         // Stryker disable once all : the only effect of the handler is the error line (the null result is tested)
         catch (Exception e) { ModLog.Error("KyHub: the page of " + modGuid + " / " + id + " failed: " + e); return null; }
@@ -229,7 +234,7 @@ public static class KyHub
     internal static void RaiseTabShown(string modGuid, string id)
     {
         var handler = TabShown;
-        if (handler == null) return;
+        if (handler == null) { if (CoreLog.On) ModLog.Verbose("GroupPanel.RaiseTabShown: returns (line 237)"); return; }
         foreach (Action<string, string> h in handler.GetInvocationList())
         {
             try { h(modGuid, id); }

@@ -1,0 +1,92 @@
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+
+namespace KydlCore.Tests.Integration;
+
+/// <summary>
+/// PROJECT_RULES 8 ("with debug on, absolutely everything is tracked", user 2026-11-20): every block-bodied method under src/ (not src/Testing) writes a
+/// debug line (ModLog in game code, CoreLog in the pure code, UiLog in the UI kit), and every `return` has a log line on it or right above it, so no method stops silently.
+/// Origin: the GunPowdered musket reload key failed in game and nothing was logged; KydlCore had 232 of 345 methods without a log line. Expression-bodied members (=>) are not
+/// checked; give them a block body when they decide something.
+/// </summary>
+[TestFixture]
+public class LoggingRulesTests
+{
+    static readonly Regex Signature = new Regex(@"^\s*(?:\[[^\]]*\]\s*)*(?:(?:public|internal|private|protected|static|override|virtual|sealed|unsafe|new|extern)\s+)*([\w<>\[\],\.\?]+(?:\s*<[^>]*>)?)\s+(\w+)\s*(<[^>]*>)?\s*\(.*\)\s*(?:where\s+[^{]*)?$");
+    static readonly Regex Return = new Regex(@"(?<![\w.])return(\s+[^;]*)?;");
+    static readonly HashSet<string> NotMethods = new HashSet<string> { "if", "for", "foreach", "while", "switch", "using", "lock", "catch", "return", "nameof", "typeof", "new", "else", "get", "set" };
+
+    sealed class Method
+    {
+        public string File = "";
+        public string Name = "";
+        public int Open;
+        public int Close;
+    }
+
+    static IEnumerable<string> SourceFiles() => Directory.GetFiles(TestPaths.Src, "*.cs", SearchOption.AllDirectories)
+        .Where(f => !f.Replace('\\', '/').Contains("/src/Testing/") && !LoggerFiles.Contains(Path.GetFileName(f)));
+
+    // the loggers themselves (a logger that logs through itself loops)
+    static readonly HashSet<string> LoggerFiles = new HashSet<string> { "CoreLog.cs", "ModLog.cs", "ModLog.Diagnostics.cs", "ModContext.cs", "UiLog.cs", "UiLogSinks.cs" };
+
+    static List<Method> Methods(string file, string[] lines)
+    {
+        var found = new List<Method>();
+        for (int i = 0; i + 1 < lines.Length; i++)
+        {
+            Match m = Signature.Match(lines[i]);
+            if (!m.Success || lines[i + 1].Trim() != "{" || NotMethods.Contains(m.Groups[2].Value) || NotMethods.Contains(m.Groups[1].Value) || m.Groups[1].Value.Contains("=")) continue;
+            int depth = 0, j = i + 1;
+            for (; j < lines.Length; j++)
+            {
+                string code = Code(lines[j]);
+                depth += code.Count(c => c == '{') - code.Count(c => c == '}');
+                if (depth == 0) break;
+            }
+            found.Add(new Method { File = file, Name = m.Groups[2].Value, Open = i + 1, Close = j });
+        }
+        return found;
+    }
+
+    static string Code(string line)
+    {
+        int c = line.IndexOf("//", System.StringComparison.Ordinal);
+        return c >= 0 ? line.Substring(0, c) : line;
+    }
+
+    static bool Logs(string text) => text.Contains("ModLog.") || text.Contains("CoreLog.") || text.Contains("UiLog.");
+
+    [Test]
+    public void EveryMethod_WritesADebugLine()
+    {
+        var silent = new List<string>();
+        foreach (string f in SourceFiles())
+        {
+            string[] lines = File.ReadAllLines(f);
+            foreach (Method m in Methods(f, lines))
+                if (!Logs(string.Join("\n", lines.Skip(m.Open).Take(m.Close - m.Open + 1)))) silent.Add(Path.GetFileName(f) + ": " + m.Name);
+        }
+        Assert.That(silent, Is.Empty, "methods without any ModLog / CoreLog / UiLog line (PROJECT_RULES 8; Claude/lessons/scripts/add_method_logging.py adds them)");
+    }
+
+    [Test]
+    public void EveryReturn_IsLogged()
+    {
+        var silent = new List<string>();
+        foreach (string f in SourceFiles())
+        {
+            string[] lines = File.ReadAllLines(f);
+            foreach (Method m in Methods(f, lines))
+                for (int k = m.Open + 1; k < m.Close; k++)
+                {
+                    string code = Code(lines[k]);
+                    if (!Return.IsMatch(code) || code.Contains("yield") || code.Contains("=>")) continue;
+                    if (!Logs(code) && !Logs(lines[k - 1])) silent.Add(Path.GetFileName(f) + ":" + (k + 1) + " in " + m.Name);
+                }
+        }
+        Assert.That(silent, Is.Empty, "returns without a log line on them or right above (PROJECT_RULES 8: no method stops silently)");
+    }
+}

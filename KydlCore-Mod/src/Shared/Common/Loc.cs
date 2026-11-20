@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Jotunn.Managers;
+using KydlCore.Core;
 
 namespace KydlCore.Common;
 
@@ -38,6 +39,7 @@ public static class Loc
 
     static string ToJson(Dictionary<string, string> d)
     {
+        if (CoreLog.On) ModLog.Verbose($"Loc.ToJson(d={d})");
         var sb = new StringBuilder("{");
         bool first = true;
         foreach (var kv in d)
@@ -46,7 +48,7 @@ public static class Loc
             first = false;
             sb.Append('"').Append(Esc(kv.Key)).Append("\":\"").Append(Esc(kv.Value)).Append('"');
         }
-        return sb.Append('}').ToString();
+        { var returnedAt51 = sb.Append('}').ToString(); if (CoreLog.On) ModLog.Verbose($"Loc.ToJson: returns {returnedAt51} (line 51)"); return returnedAt51; }
     }
 
     static string Esc(string s) { return (s ?? "").Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n"); }
@@ -58,12 +60,13 @@ public static class Loc
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static string T(string key, params string[] args)
     {
+        if (CoreLog.On) ModLog.Every("Loc.T", 2d, $"Loc.T(key={key})");
         var ctx = ModContexts.For(Assembly.GetCallingAssembly());
         var l = Localization.instance;
         string s;
         if (l != null) s = l.Localize("$" + key);
         else if (!ctx.English.TryGetValue(key, out s)) s = key;
         if (args != null) for (int i = 0; i < args.Length; i++) s = s.Replace("{" + i + "}", args[i]);
-        return s;
+        { var returnedAt70 = s; if (CoreLog.On) ModLog.Every("Loc.T:70", 2d, $"Loc.T: returns {returnedAt70} (line 70)"); return returnedAt70; }
     }
 }
