@@ -44,6 +44,7 @@ public class Plugin : BaseUnityPlugin
         ModLog.Init(Logger, ModName, () => ModSettings.DebugLog != null && ModSettings.DebugLog.Value);
         KydlCore.Core.CoreLog.Sink = ModLog.Verbose;                                        // the pure code logs through ModLog (rule 8, 2026-11-20)
         KydlCore.Core.CoreLog.DebugOn = () => ModSettings.DebugLog != null && ModSettings.DebugLog.Value;
+        KydlCore.Ui.UiLog.DebugOn = KydlCore.Core.CoreLog.DebugOn;          // the UI kit's own debug lines follow the same switch; the kit cannot use CoreLog (it is copied alone into Unity)
         ModLog.Info(ModName + " " + ModVersion + " loaded (dll built " + File.GetLastWriteTime(Assembly.GetExecutingAssembly().Location).ToString("yyyy-MM-dd HH:mm:ss") + ")");
 
         // The shared UI kit (KydlCore.Ui) lives in this DLL only (D-040): Core sets its log sinks, its panel owner and the input lock ONCE.
