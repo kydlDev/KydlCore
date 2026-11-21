@@ -76,6 +76,13 @@ public static partial class ModLog
     internal static void Verbose(ModContext c, string message) { if (IsDebugOn(c)) Info(c, message); }
     internal static void VerboseWarn(ModContext c, string message) { if (IsDebugOn(c)) Warn(c, message); }
 
+    const string ExpectedPrefix = "expected warning (test): ";
+
+    /// Test support: while the returned scope is open, a warning whose text contains `text` is written as Info "expected warning (test): ..." and counted
+    /// (ExpectedWarning.Count), so a test that provokes a warning on purpose leaves the console clean and can still assert it happened.
+    /// Expected outcome: the scope is active; dispose it (using) at the end of the test.
+    public static ExpectedWarning ExpectWarning(string text) { return ExpectedWarning.Open(text); }
+
     // ---- expected-value checks (user, 2026-10-24: "something not aligned with the expected result should be a warning at the very least")
     // A diagnostic number that the code can predict is logged WITH its prediction. Inside the tolerance it is a debug line (only with the
     // debug switch on); outside it is a WARNING that is always written, so it is seen without searching. Prefix "CHECK" lets GameProbe count them.
@@ -178,6 +185,7 @@ public static partial class ModLog
     {
         try
         {
+            if (level == LogLevel.Warning && ExpectedWarning.Absorb(message)) { level = LogLevel.Info; message = ExpectedPrefix + message; }
             if (IsRepeat(c, level, message)) return;
             Source(c).Log(level, Line(message));        // synchronous on purpose: BepInEx's UnityLogListener calls Unity's native log, which must not run off the game thread (a background writer froze a relog, GunPowdered a16full2, 2026-11-21)
         }

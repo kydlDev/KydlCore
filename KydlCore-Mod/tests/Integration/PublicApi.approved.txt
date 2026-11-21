@@ -13,6 +13,10 @@ static class KydlCore.Common.ConfigTools
   method System.Int32 KydlCore.Common.ConfigTools::ApplyCommaFix(BepInEx.Configuration.ConfigFile,System.String[])
   method System.Int32 KydlCore.Common.ConfigTools::DropRemoved(BepInEx.Configuration.ConfigFile)
   method System.String[] KydlCore.Common.ConfigTools::Capture(BepInEx.Configuration.ConfigFile)
+sealed class KydlCore.Common.ExpectedWarning
+  method System.Int32 KydlCore.Common.ExpectedWarning::get_Count()
+  method System.String KydlCore.Common.ExpectedWarning::get_Text()
+  method System.Void KydlCore.Common.ExpectedWarning::Dispose()
 static class KydlCore.Common.KyCategory
   field KydlCore.Common.KyCategory::Name : System.String = KY-Items
   method System.String KydlCore.Common.KyCategory::For(System.String)
@@ -30,6 +34,7 @@ static class KydlCore.Common.ModContexts
   method KydlCore.Common.ModContext KydlCore.Common.ModContexts::For(System.Reflection.Assembly)
   method KydlCore.Common.ModContext KydlCore.Common.ModContexts::For(System.Type)
 static class KydlCore.Common.ModLog
+  method KydlCore.Common.ExpectedWarning KydlCore.Common.ModLog::ExpectWarning(System.String)
   method System.Boolean KydlCore.Common.ModLog::Check(System.String,System.Double,System.Double,System.Double,System.String)
   method System.Boolean KydlCore.Common.ModLog::CheckRange(System.String,System.Double,System.Double,System.Double,System.String)
   method System.Boolean KydlCore.Common.ModLog::Every(System.String,System.Double,System.String)

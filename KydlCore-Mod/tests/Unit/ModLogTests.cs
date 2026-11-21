@@ -20,7 +20,8 @@ public class ModLogTests
     sealed class CaptureListener : ILogListener
     {
         public readonly List<string> Lines = new List<string>();
-        public void LogEvent(object sender, LogEventArgs eventArgs) { Lines.Add(Convert.ToString(eventArgs.Data)); }
+        public readonly List<LogLevel> Levels = new List<LogLevel>();
+        public void LogEvent(object sender, LogEventArgs eventArgs) { Lines.Add(Convert.ToString(eventArgs.Data)); Levels.Add(eventArgs.Level); }
         public void Dispose() { }
     }
 
@@ -51,6 +52,71 @@ public class ModLogTests
     }
 
     static string Msg(string line) { return TimestampedLine.Match(line).Groups["msg"].Value; }
+
+    // ---- ExpectWarning (T-EXPECTWARN): a warning a test provokes on purpose is written as Info and counted
+
+    static int CountOf(object scope) { return (int)scope.GetType().GetProperty("Count").GetValue(scope); }
+
+    [Test]
+    public void ExpectWarning_MatchingWarning_IsWrittenAsInfoWithAPrefixAndCounted()
+    {
+        using var scope = (IDisposable)ModAssembly.Call(LogType, "ExpectWarning", "fails on purpose");
+
+        ModAssembly.Call(LogType, "Warn", "a listener fails on purpose: boom");
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_listener.Levels[1], Is.EqualTo(LogLevel.Info));
+            Assert.That(Msg(_listener.Lines[1]), Is.EqualTo("expected warning (test): a listener fails on purpose: boom"));
+            Assert.That(CountOf(scope), Is.EqualTo(1));
+        }
+    }
+
+    [Test]
+    public void ExpectWarning_OtherWarning_StaysAWarningAndIsNotCounted()
+    {
+        using var scope = (IDisposable)ModAssembly.Call(LogType, "ExpectWarning", "fails on purpose");
+
+        ModAssembly.Call(LogType, "Warn", "something else broke");
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_listener.Levels[1], Is.EqualTo(LogLevel.Warning));
+            Assert.That(Msg(_listener.Lines[1]), Is.EqualTo("something else broke"));
+            Assert.That(CountOf(scope), Is.EqualTo(0));
+        }
+    }
+
+    [Test]
+    public void ExpectWarning_AfterDispose_TheSameWarningIsAWarningAgain()
+    {
+        var scope = (IDisposable)ModAssembly.Call(LogType, "ExpectWarning", "fails on purpose");
+        scope.Dispose();
+        scope.Dispose();
+
+        ModAssembly.Call(LogType, "Warn", "fails on purpose, after the scope");
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_listener.Levels[1], Is.EqualTo(LogLevel.Warning));
+            Assert.That(CountOf(scope), Is.EqualTo(0));
+        }
+    }
+
+    [TestCase("")]
+    [TestCase(null)]
+    public void ExpectWarning_EmptyText_MatchesNothing(string text)
+    {
+        using var scope = (IDisposable)ModAssembly.Call(LogType, "ExpectWarning", text);
+
+        ModAssembly.Call(LogType, "Warn", "any warning");
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_listener.Levels[1], Is.EqualTo(LogLevel.Warning));
+            Assert.That(CountOf(scope), Is.EqualTo(0));
+        }
+    }
 
     [Test]
     public void Init_FirstCall_WritesTheSessionMarkerAsFirstLine()

@@ -121,7 +121,11 @@ internal static class InGameTests
         bool openAfter = KyUi.IsOpen(guid, id) && KyUi.AnyOpen;
         var second = KyUi.Open(guid, id, new UnityEngine.UIElements.VisualElement(), () => closed++);
         bool replaced = closed == 1 && KyUi.IsOpen(guid, id);
-        bool refused = KyUi.Open(guid, " ", new UnityEngine.UIElements.VisualElement()) == null;
+        bool refused;
+        using (var expected = ModLog.ExpectWarning("KyUi.Open: refused"))      // the blank id is refused with a warning ON PURPOSE: written as Info, counted here
+        {
+            refused = KyUi.Open(guid, " ", new UnityEngine.UIElements.VisualElement()) == null && expected.Count == 1;
+        }
         second.Close();
         second.Close();
         bool done = !KyUi.IsOpen(guid, id) && closed == 2 && KyUi.AnyOpen == wasOpen;
