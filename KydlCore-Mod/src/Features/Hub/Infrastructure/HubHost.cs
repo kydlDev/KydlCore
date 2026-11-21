@@ -33,21 +33,21 @@ internal static class HubHost
     /// <summary>Every frame (Plugin.Update): the hub key opens / closes the hub, Escape closes the top window. Returns whether the hub is open.</summary>
     internal static bool Tick()
     {
-        if (KeyCapture.Blocks) { var returnedAt36 = IsOpen; if (CoreLog.On) ModLog.Every("HubHost.Tick:36", 2d, $"HubHost.Tick: returns {CoreLog.Shown(returnedAt36)} (line 36)"); return returnedAt36; }          // a key is being chosen for a setting (maybe this very key): it must not toggle the hub
+        if (KeyCapture.Blocks) { var returnedAt36 = IsOpen; if (CoreLog.Due("HubHost.Tick:36", 2d)) ModLog.Every("HubHost.Tick:36", 2d, $"HubHost.Tick: returns {CoreLog.Shown(returnedAt36)} (line 36)"); return returnedAt36; }          // a key is being chosen for a setting (maybe this very key): it must not toggle the hub
         KeyCode key = ModSettings.HubKey != null ? ModSettings.HubKey.Value : KeyCode.None;
         if (!IsOpen)
         {
-            if (key == KeyCode.None || !ZInput.GetKeyDown(key, true)) { if (CoreLog.On) ModLog.Every("HubHost.Tick:40", 2d, "HubHost.Tick: returns false (line 40)"); return false; }
+            if (key == KeyCode.None || !ZInput.GetKeyDown(key, true)) { if (CoreLog.Due("HubHost.Tick:40", 2d)) ModLog.Every("HubHost.Tick:40", 2d, "HubHost.Tick: returns false (line 40)"); return false; }
             if (Chat.instance != null && Chat.instance.HasFocus() || global::Console.IsVisible() || Menu.IsVisible())
             {
                 ModLog.Verbose("HubHost: key pressed while chat / console / game menu is open - not opened");
                 return false;
             }
             Open(null, null);
-            { var returnedAt47 = IsOpen; if (CoreLog.On) ModLog.Every("HubHost.Tick:47", 2d, $"HubHost.Tick: returns {CoreLog.Shown(returnedAt47)} (line 47)"); return returnedAt47; }
+            { var returnedAt47 = IsOpen; if (CoreLog.Due("HubHost.Tick:47", 2d)) ModLog.Every("HubHost.Tick:47", 2d, $"HubHost.Tick: returns {CoreLog.Shown(returnedAt47)} (line 47)"); return returnedAt47; }
         }
         if (key != KeyCode.None && ZInput.GetKeyDown(key, true)) Close("key");      // Escape: KyWindows.Tick closes the front window
-        { var returnedAt50 = IsOpen; if (CoreLog.On) ModLog.Every("HubHost.Tick:50", 2d, $"HubHost.Tick: returns {CoreLog.Shown(returnedAt50)} (line 50)"); return returnedAt50; }
+        { var returnedAt50 = IsOpen; if (CoreLog.Due("HubHost.Tick:50", 2d)) ModLog.Every("HubHost.Tick:50", 2d, $"HubHost.Tick: returns {CoreLog.Shown(returnedAt50)} (line 50)"); return returnedAt50; }
     }
 
     /// <summary>Opens the hub (or just selects: it is open already) and shows `mod` / `tab`; null = where it was.</summary>
@@ -71,7 +71,7 @@ internal static class HubHost
 
     internal static void Close(string why)
     {
-        if (_view == null) { if (CoreLog.On) ModLog.Every("HubHost.Close:74", 2d, "HubHost.Close: returns (line 74)"); return; }
+        if (_view == null) { if (CoreLog.Due("HubHost.Close:74", 2d)) ModLog.Every("HubHost.Close:74", 2d, "HubHost.Close: returns (line 74)"); return; }
         _view.Root.RemoveFromHierarchy();
         _view.Dispose();
         _view = null;
@@ -83,7 +83,7 @@ internal static class HubHost
     /// <summary>KyTab.Refresh: build the page again when it is the one on screen.</summary>
     internal static void Refresh(string mod, string tab)
     {
-        if (CoreLog.On) ModLog.Every("HubHost.Refresh", 2d, $"HubHost.Refresh(mod={CoreLog.Shown(mod)}, tab={CoreLog.Shown(tab)})");
+        if (CoreLog.Due("HubHost.Refresh", 2d)) ModLog.Every("HubHost.Refresh", 2d, $"HubHost.Refresh(mod={CoreLog.Shown(mod)}, tab={CoreLog.Shown(tab)})");
         if (_view != null && KyHub.Model.SelectedMod == mod && KyHub.Model.SelectedTab == tab) _view.Refresh();
     }
 
@@ -204,8 +204,8 @@ internal static class HubHost
 
     static void DisposeConfig()
     {
-        if (CoreLog.On) ModLog.Every("HubHost.DisposeConfig", 2d, $"HubHost.DisposeConfig()");
-        if (_config == null) { if (CoreLog.On) ModLog.Every("HubHost.DisposeConfig:208", 2d, "HubHost.DisposeConfig: returns (line 208)"); return; }
+        if (CoreLog.Due("HubHost.DisposeConfig", 2d)) ModLog.Every("HubHost.DisposeConfig", 2d, $"HubHost.DisposeConfig()");
+        if (_config == null) { if (CoreLog.Due("HubHost.DisposeConfig:208", 2d)) ModLog.Every("HubHost.DisposeConfig:208", 2d, "HubHost.DisposeConfig: returns (line 208)"); return; }
         _config.Dispose();
         _config = null;
     }

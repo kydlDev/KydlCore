@@ -135,7 +135,7 @@ public sealed class ConfigReloader : IDisposable
     public bool Tick()
     {
         if (_changed) { _changed = false; _reloadAt = Time.realtimeSinceStartup + 0.5f; _retries = 0; }
-        if (_reloadAt <= 0f || Time.realtimeSinceStartup < _reloadAt) { if (CoreLog.On) ModLog.Every("ConfigReloader.Tick:138", 2d, "ConfigReloader.Tick: returns false (line 138)"); return false; }
+        if (_reloadAt <= 0f || Time.realtimeSinceStartup < _reloadAt) { if (CoreLog.Due("ConfigReloader.Tick:138", 2d)) ModLog.Every("ConfigReloader.Tick:138", 2d, "ConfigReloader.Tick: returns false (line 138)"); return false; }
         _reloadAt = 0f;
         try
         {
@@ -154,7 +154,7 @@ public sealed class ConfigReloader : IDisposable
 
     public void Dispose()
     {
-        if (_watcher == null) { if (CoreLog.On) ModLog.Every("ConfigReloader.Dispose:157", 2d, "ConfigReloader.Dispose: returns (line 157)"); return; }
+        if (_watcher == null) { if (CoreLog.Due("ConfigReloader.Dispose:157", 2d)) ModLog.Every("ConfigReloader.Dispose:157", 2d, "ConfigReloader.Dispose: returns (line 157)"); return; }
         _watcher.EnableRaisingEvents = false;
         _watcher.Dispose();
         _watcher = null;

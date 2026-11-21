@@ -10,7 +10,7 @@ internal readonly struct FlightSample
     /// <summary>Creates a sample.</summary>
     internal FlightSample(double time, double x, double y, double z, double speed, string facts)
     {
-        if (CoreLog.On) CoreLog.Every("FlightSample.FlightSample", 2d, $"FlightSample.FlightSample(time={CoreLog.Shown(time)}, x={CoreLog.Shown(x)}, y={CoreLog.Shown(y)}, z={CoreLog.Shown(z)}, speed={CoreLog.Shown(speed)}, facts={CoreLog.Shown(facts)})");
+        if (CoreLog.Due("FlightSample.FlightSample", 2d)) CoreLog.Every("FlightSample.FlightSample", 2d, $"FlightSample.FlightSample(time={CoreLog.Shown(time)}, x={CoreLog.Shown(x)}, y={CoreLog.Shown(y)}, z={CoreLog.Shown(z)}, speed={CoreLog.Shown(speed)}, facts={CoreLog.Shown(facts)})");
         Time = time;
         X = x;
         Y = y;

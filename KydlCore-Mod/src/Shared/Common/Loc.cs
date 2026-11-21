@@ -60,13 +60,13 @@ public static class Loc
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static string T(string key, params string[] args)
     {
-        if (CoreLog.On) ModLog.Every("Loc.T", 2d, $"Loc.T(key={CoreLog.Shown(key)})");
+        if (CoreLog.Due("Loc.T", 2d)) ModLog.Every("Loc.T", 2d, $"Loc.T(key={CoreLog.Shown(key)})");
         var ctx = ModContexts.For(Assembly.GetCallingAssembly());
         var l = Localization.instance;
         string s;
         if (l != null) s = l.Localize("$" + key);
         else if (!ctx.English.TryGetValue(key, out s)) s = key;
         if (args != null) for (int i = 0; i < args.Length; i++) s = s.Replace("{" + i + "}", args[i]);
-        { var returnedAt70 = s; if (CoreLog.On) ModLog.Every("Loc.T:70", 2d, $"Loc.T: returns {CoreLog.Shown(returnedAt70)} (line 70)"); return returnedAt70; }
+        { var returnedAt70 = s; if (CoreLog.Due("Loc.T:70", 2d)) ModLog.Every("Loc.T:70", 2d, $"Loc.T: returns {CoreLog.Shown(returnedAt70)} (line 70)"); return returnedAt70; }
     }
 }

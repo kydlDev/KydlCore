@@ -100,7 +100,7 @@ internal static class KyPageView
 
     static void AddTable(VisualElement host, KyTableRow table, Action rebuild, List<Label> live)
     {
-        if (CoreLog.On) ModLog.Every("KyPageView.AddTable", 2d, $"KyPageView.AddTable(host={CoreLog.Shown(host)}, table={CoreLog.Shown(table)}, rebuild={CoreLog.Shown(rebuild)}, live={CoreLog.Shown(live)})");
+        if (CoreLog.Due("KyPageView.AddTable", 2d)) ModLog.Every("KyPageView.AddTable", 2d, $"KyPageView.AddTable(host={CoreLog.Shown(host)}, table={CoreLog.Shown(table)}, rebuild={CoreLog.Shown(rebuild)}, live={CoreLog.Shown(live)})");
         if (table.Headers.Count > 0)
         {
             var head = Line();
@@ -117,11 +117,11 @@ internal static class KyPageView
 
     static VisualElement Line()
     {
-        if (CoreLog.On) ModLog.Every("KyPageView.Line", 2d, $"KyPageView.Line()");
+        if (CoreLog.Due("KyPageView.Line", 2d)) ModLog.Every("KyPageView.Line", 2d, $"KyPageView.Line()");
         var r = new VisualElement();
         r.style.flexDirection = FlexDirection.Row; r.style.alignItems = Align.Center; r.style.flexShrink = 0;
         r.style.marginTop = 3; r.style.marginBottom = 3;
-        { var returnedAt124 = r; if (CoreLog.On) ModLog.Every("KyPageView.Line:124", 2d, $"KyPageView.Line: returns {CoreLog.Shown(returnedAt124)} (line 124)"); return returnedAt124; }
+        { var returnedAt124 = r; if (CoreLog.Due("KyPageView.Line:124", 2d)) ModLog.Every("KyPageView.Line:124", 2d, $"KyPageView.Line: returns {CoreLog.Shown(returnedAt124)} (line 124)"); return returnedAt124; }
     }
 
     static float ColWidth(int column) { return column == 0 ? 170f : 100f; }
@@ -130,12 +130,12 @@ internal static class KyPageView
 
     static VisualElement CellElement(KyCell c, int column, Action rebuild, List<Label> live)
     {
-        if (CoreLog.On) ModLog.Every("KyPageView.CellElement", 2d, $"KyPageView.CellElement(c={CoreLog.Shown(c)}, column={CoreLog.Shown(column)}, rebuild={CoreLog.Shown(rebuild)}, live={CoreLog.Shown(live)})");
+        if (CoreLog.Due("KyPageView.CellElement", 2d)) ModLog.Every("KyPageView.CellElement", 2d, $"KyPageView.CellElement(c={CoreLog.Shown(c)}, column={CoreLog.Shown(column)}, rebuild={CoreLog.Shown(rebuild)}, live={CoreLog.Shown(live)})");
         if (c.Kind == KyCell.Kinds.Text)
         {
             var label = Cell(c.Text, ColWidth(column), UiKit.Text);
             if (c.IsRich) label.enableRichText = true;
-            { var returnedAt138 = Track(label, live); if (CoreLog.On) ModLog.Every("KyPageView.CellElement:138", 2d, $"KyPageView.CellElement: returns {CoreLog.Shown(returnedAt138)} (line 138)"); return returnedAt138; }
+            { var returnedAt138 = Track(label, live); if (CoreLog.Due("KyPageView.CellElement:138", 2d)) ModLog.Every("KyPageView.CellElement:138", 2d, $"KyPageView.CellElement: returns {CoreLog.Shown(returnedAt138)} (line 138)"); return returnedAt138; }
         }
         if (c.Kind == KyCell.Kinds.Drop)
         {
@@ -144,7 +144,7 @@ internal static class KyPageView
             string selected = ids.Contains(c.Selected) ? c.Selected : (ids.Count > 0 ? ids[0] : "");
             var drop = UiControls.Dropdown(ids, selected, id => { string t; return text.TryGetValue(id, out t) ? t : id; }, id => { if (c.Chosen != null) c.Chosen(id); rebuild(); });
             drop.style.width = 180f; drop.style.flexShrink = 0; drop.style.marginRight = 4;
-            { var returnedAt147 = drop; if (CoreLog.On) ModLog.Every("KyPageView.CellElement:147", 2d, $"KyPageView.CellElement: returns {CoreLog.Shown(returnedAt147)} (line 147)"); return returnedAt147; }
+            { var returnedAt147 = drop; if (CoreLog.Due("KyPageView.CellElement:147", 2d)) ModLog.Every("KyPageView.CellElement:147", 2d, $"KyPageView.CellElement: returns {CoreLog.Shown(returnedAt147)} (line 147)"); return returnedAt147; }
         }
         var box = new VisualElement();
         box.style.flexDirection = FlexDirection.Row; box.style.alignItems = Align.Center; box.style.flexShrink = 0;
@@ -164,33 +164,33 @@ internal static class KyPageView
             ConfigPage.ScaleFonts(box);
         };
         normal();
-        { var returnedAt167 = box; if (CoreLog.On) ModLog.Every("KyPageView.CellElement:167", 2d, $"KyPageView.CellElement: returns {CoreLog.Shown(returnedAt167)} (line 167)"); return returnedAt167; }
+        { var returnedAt167 = box; if (CoreLog.Due("KyPageView.CellElement:167", 2d)) ModLog.Every("KyPageView.CellElement:167", 2d, $"KyPageView.CellElement: returns {CoreLog.Shown(returnedAt167)} (line 167)"); return returnedAt167; }
     }
 
     static Button Sized(Button b) { b.style.width = 90f; b.style.flexShrink = 0; b.style.marginRight = 4; return b; }
 
     static void AddList(VisualElement host, KyListRow list)
     {
-        if (CoreLog.On) ModLog.Every("KyPageView.AddList", 2d, $"KyPageView.AddList(host={CoreLog.Shown(host)}, list={CoreLog.Shown(list)})");
+        if (CoreLog.Due("KyPageView.AddList", 2d)) ModLog.Every("KyPageView.AddList", 2d, $"KyPageView.AddList(host={CoreLog.Shown(host)}, list={CoreLog.Shown(list)})");
         if (list.Label.Length > 0) host.Add(Cell(list.Label, -1f, UiKit.TextDim));
         foreach (var item in list.Items) host.Add(Cell("\u2022 " + item, -1f, UiKit.Text));
     }
 
     static VisualElement ColumnsLine(KyColumnsRow row)
     {
-        if (CoreLog.On) ModLog.Every("KyPageView.ColumnsLine", 2d, $"KyPageView.ColumnsLine(row={CoreLog.Shown(row)})");
+        if (CoreLog.Due("KyPageView.ColumnsLine", 2d)) ModLog.Every("KyPageView.ColumnsLine", 2d, $"KyPageView.ColumnsLine(row={CoreLog.Shown(row)})");
         var r = new VisualElement();
         r.style.flexDirection = FlexDirection.Row; r.style.alignItems = Align.FlexStart; r.style.flexShrink = 0;
         r.style.marginTop = 2; r.style.marginBottom = 2;
         r.Add(Cell("", LabelWidth, UiKit.TextDim));
         r.Add(Cell(row.Value, ValueWidth, UiKit.TextDim));
         r.Add(Cell(row.MaxValue, ValueWidth, UiKit.TextDim));
-        { var returnedAt188 = r; if (CoreLog.On) ModLog.Every("KyPageView.ColumnsLine:188", 2d, $"KyPageView.ColumnsLine: returns {CoreLog.Shown(returnedAt188)} (line 188)"); return returnedAt188; }
+        { var returnedAt188 = r; if (CoreLog.Due("KyPageView.ColumnsLine:188", 2d)) ModLog.Every("KyPageView.ColumnsLine:188", 2d, $"KyPageView.ColumnsLine: returns {CoreLog.Shown(returnedAt188)} (line 188)"); return returnedAt188; }
     }
 
     static VisualElement ValueLine(KyValueRow row)
     {
-        if (CoreLog.On) ModLog.Every("KyPageView.ValueLine", 2d, $"KyPageView.ValueLine(row={CoreLog.Shown(row)})");
+        if (CoreLog.Due("KyPageView.ValueLine", 2d)) ModLog.Every("KyPageView.ValueLine", 2d, $"KyPageView.ValueLine(row={CoreLog.Shown(row)})");
         var r = new VisualElement();
         r.style.flexDirection = FlexDirection.Row; r.style.alignItems = Align.FlexStart; r.style.flexShrink = 0;
         r.style.marginTop = 2; r.style.marginBottom = 2;
@@ -198,27 +198,27 @@ internal static class KyPageView
         r.Add(Cell(row.Label, LabelWidth, UiKit.TextDim));
         r.Add(Cell(row.Value, max ? ValueWidth : -1f, UiKit.Text));
         if (max) r.Add(Cell(row.MaxValue, ValueWidth, UiKit.Gold));
-        { var returnedAt201 = r; if (CoreLog.On) ModLog.Every("KyPageView.ValueLine:201", 2d, $"KyPageView.ValueLine: returns {CoreLog.Shown(returnedAt201)} (line 201)"); return returnedAt201; }
+        { var returnedAt201 = r; if (CoreLog.Due("KyPageView.ValueLine:201", 2d)) ModLog.Every("KyPageView.ValueLine:201", 2d, $"KyPageView.ValueLine: returns {CoreLog.Shown(returnedAt201)} (line 201)"); return returnedAt201; }
     }
 
     static Label Cell(string text, float width, Color color)
     {
-        if (CoreLog.On) ModLog.Every("KyPageView.Cell", 2d, $"KyPageView.Cell(text={CoreLog.Shown(text)}, width={CoreLog.Shown(width)}, color={CoreLog.Shown(color)})");
+        if (CoreLog.Due("KyPageView.Cell", 2d)) ModLog.Every("KyPageView.Cell", 2d, $"KyPageView.Cell(text={CoreLog.Shown(text)}, width={CoreLog.Shown(width)}, color={CoreLog.Shown(color)})");
         var l = UiKit.Label(text, UiKit.FontSize, color);
         l.style.whiteSpace = WhiteSpace.Normal;
         if (width >= 0f) { l.style.width = width; l.style.flexShrink = 0; }
         else { l.style.flexGrow = 1; l.style.flexShrink = 1; }
-        { var returnedAt211 = l; if (CoreLog.On) ModLog.Every("KyPageView.Cell:211", 2d, $"KyPageView.Cell: returns {CoreLog.Shown(returnedAt211)} (line 211)"); return returnedAt211; }
+        { var returnedAt211 = l; if (CoreLog.Due("KyPageView.Cell:211", 2d)) ModLog.Every("KyPageView.Cell:211", 2d, $"KyPageView.Cell: returns {CoreLog.Shown(returnedAt211)} (line 211)"); return returnedAt211; }
     }
 
     static VisualElement ChoiceLine(KyChoiceRow row, Action rebuild)
     {
-        if (CoreLog.On) ModLog.Every("KyPageView.ChoiceLine", 2d, $"KyPageView.ChoiceLine(row={CoreLog.Shown(row)}, rebuild={CoreLog.Shown(rebuild)})");
+        if (CoreLog.Due("KyPageView.ChoiceLine", 2d)) ModLog.Every("KyPageView.ChoiceLine", 2d, $"KyPageView.ChoiceLine(row={CoreLog.Shown(row)}, rebuild={CoreLog.Shown(rebuild)})");
         var ids = new System.Collections.Generic.List<string>();
         var text = new System.Collections.Generic.Dictionary<string, string>();
         foreach (var ch in row.Choices) { ids.Add(ch.Id); text[ch.Id] = ch.Text; }
         string selected = ids.Contains(row.Selected) ? row.Selected : (ids.Count > 0 ? ids[0] : "");
         var drop = UiControls.Dropdown(ids, selected, id => { string t; return text.TryGetValue(id, out t) ? t : id; }, id => { if (row.Chosen != null) row.Chosen(id); rebuild(); });
-        { var returnedAt222 = UiControls.Row(row.Label, drop); if (CoreLog.On) ModLog.Every("KyPageView.ChoiceLine:222", 2d, $"KyPageView.ChoiceLine: returns {CoreLog.Shown(returnedAt222)} (line 222)"); return returnedAt222; }
+        { var returnedAt222 = UiControls.Row(row.Label, drop); if (CoreLog.Due("KyPageView.ChoiceLine:222", 2d)) ModLog.Every("KyPageView.ChoiceLine:222", 2d, $"KyPageView.ChoiceLine: returns {CoreLog.Shown(returnedAt222)} (line 222)"); return returnedAt222; }
     }
 }

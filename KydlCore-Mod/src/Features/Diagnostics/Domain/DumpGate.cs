@@ -29,7 +29,7 @@ internal sealed class DumpGate
     /// <returns>Whether the dump may be written.</returns>
     internal bool Allow(string kind, double now, double gapSeconds, int maxDumps)
     {
-        if (CoreLog.On) CoreLog.Every("DumpGate.Allow", 2d, $"DumpGate.Allow(kind={CoreLog.Shown(kind)}, now={CoreLog.Shown(now)}, gapSeconds={CoreLog.Shown(gapSeconds)}, maxDumps={CoreLog.Shown(maxDumps)})");
+        if (CoreLog.Due("DumpGate.Allow", 2d)) CoreLog.Every("DumpGate.Allow", 2d, $"DumpGate.Allow(kind={CoreLog.Shown(kind)}, now={CoreLog.Shown(now)}, gapSeconds={CoreLog.Shown(gapSeconds)}, maxDumps={CoreLog.Shown(maxDumps)})");
         string k = kind ?? "";
         bool tooSoon = _last.TryGetValue(k, out double last) && now - last < gapSeconds;
         bool allowed = !tooSoon && Written < maxDumps;
@@ -43,6 +43,6 @@ internal sealed class DumpGate
             Refused++;
         }
 
-        { var returnedAt46 = allowed; if (CoreLog.On) CoreLog.Every("DumpGate.Allow:46", 2d, $"DumpGate.Allow: returns {CoreLog.Shown(returnedAt46)} (line 46)"); return returnedAt46; }
+        { var returnedAt46 = allowed; if (CoreLog.Due("DumpGate.Allow:46", 2d)) CoreLog.Every("DumpGate.Allow:46", 2d, $"DumpGate.Allow: returns {CoreLog.Shown(returnedAt46)} (line 46)"); return returnedAt46; }
     }
 }

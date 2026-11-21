@@ -13,7 +13,7 @@ public readonly struct OperationResponse<T>
 
     public OperationResponse(ResponseStatus status, T value, string reason)
     {
-        if (CoreLog.On) CoreLog.Verbose($"OperationResponse.OperationResponse(status={CoreLog.Shown(status)}, value={CoreLog.Shown(value)}, reason={CoreLog.Shown(reason)})");
+        if (CoreLog.Due("OperationResponse.OperationResponse", 2d)) CoreLog.Verbose($"OperationResponse.OperationResponse (one in 2 s, D-147)(status={CoreLog.Shown(status)}, value={CoreLog.Shown(value)}, reason={CoreLog.Shown(reason)})");
         Status = status;
         Value = value;
         Reason = reason ?? "";

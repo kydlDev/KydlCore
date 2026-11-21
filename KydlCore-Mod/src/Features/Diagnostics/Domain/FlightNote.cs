@@ -10,7 +10,7 @@ internal readonly struct FlightNote
     /// <summary>Creates a note.</summary>
     internal FlightNote(double time, string source, string text)
     {
-        if (CoreLog.On) CoreLog.Every("FlightNote.FlightNote", 2d, $"FlightNote.FlightNote(time={CoreLog.Shown(time)}, source={CoreLog.Shown(source)}, text={CoreLog.Shown(text)})");
+        if (CoreLog.Due("FlightNote.FlightNote", 2d)) CoreLog.Every("FlightNote.FlightNote", 2d, $"FlightNote.FlightNote(time={CoreLog.Shown(time)}, source={CoreLog.Shown(source)}, text={CoreLog.Shown(text)})");
         Time = time;
         Source = source ?? "";
         Text = text ?? "";

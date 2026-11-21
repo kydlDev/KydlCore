@@ -34,7 +34,7 @@ internal sealed class FlightBook
     /// <param name="envSamples">Environment samples kept.</param>
     internal FlightBook(int samplesPerTrack, int notes, int envSamples)
     {
-        if (CoreLog.On) CoreLog.Every("Track.FlightBook", 2d, $"Track.FlightBook(samplesPerTrack={CoreLog.Shown(samplesPerTrack)}, notes={CoreLog.Shown(notes)}, envSamples={CoreLog.Shown(envSamples)})");
+        if (CoreLog.Due("Track.FlightBook", 2d)) CoreLog.Every("Track.FlightBook", 2d, $"Track.FlightBook(samplesPerTrack={CoreLog.Shown(samplesPerTrack)}, notes={CoreLog.Shown(notes)}, envSamples={CoreLog.Shown(envSamples)})");
         SamplesPerTrack = Math.Max(1, samplesPerTrack);
         _notes = new FlightRing<FlightNote>(Math.Max(1, notes));
         _env = new FlightRing<FlightNote>(Math.Max(1, envSamples));
@@ -53,10 +53,10 @@ internal sealed class FlightBook
     /// <returns>Whether the key is tracked afterwards (false for a null or empty key).</returns>
     internal bool Start(string key, string mod, string label, double now)
     {
-        if (CoreLog.On) CoreLog.Every("Track.Start", 2d, $"Track.Start(key={CoreLog.Shown(key)}, mod={CoreLog.Shown(mod)}, label={CoreLog.Shown(label)}, now={CoreLog.Shown(now)})");
+        if (CoreLog.Due("Track.Start", 2d)) CoreLog.Every("Track.Start", 2d, $"Track.Start(key={CoreLog.Shown(key)}, mod={CoreLog.Shown(mod)}, label={CoreLog.Shown(label)}, now={CoreLog.Shown(now)})");
         if (string.IsNullOrEmpty(key))
         {
-            { var returnedAt59 = IsTracked(key); if (CoreLog.On) CoreLog.Every("Track.Start:59", 2d, $"Track.Start: returns {CoreLog.Shown(returnedAt59)} (line 59)"); return returnedAt59; }
+            { var returnedAt59 = IsTracked(key); if (CoreLog.Due("Track.Start:59", 2d)) CoreLog.Every("Track.Start:59", 2d, $"Track.Start: returns {CoreLog.Shown(returnedAt59)} (line 59)"); return returnedAt59; }
         }
 
         if (!_tracks.TryGetValue(key, out Track t))
@@ -69,7 +69,7 @@ internal sealed class FlightBook
         t.Label = string.IsNullOrEmpty(label) ? key : label;
         t.LastActivity = now;
         t.GoneAt = -1;
-        { var returnedAt72 = IsTracked(key); if (CoreLog.On) CoreLog.Every("Track.Start:72", 2d, $"Track.Start: returns {CoreLog.Shown(returnedAt72)} (line 72)"); return returnedAt72; }
+        { var returnedAt72 = IsTracked(key); if (CoreLog.Due("Track.Start:72", 2d)) CoreLog.Every("Track.Start:72", 2d, $"Track.Start: returns {CoreLog.Shown(returnedAt72)} (line 72)"); return returnedAt72; }
     }
 
     /// <summary>Stops tracking a key and forgets its samples.</summary>
@@ -80,26 +80,26 @@ internal sealed class FlightBook
     /// <returns>Whether the sample was stored (false for a key that is not tracked).</returns>
     internal bool Add(string key, FlightSample sample)
     {
-        if (CoreLog.On) CoreLog.Every("Track.Add", 2d, $"Track.Add(key={CoreLog.Shown(key)}, sample={CoreLog.Shown(sample)})");
+        if (CoreLog.Due("Track.Add", 2d)) CoreLog.Every("Track.Add", 2d, $"Track.Add(key={CoreLog.Shown(key)}, sample={CoreLog.Shown(sample)})");
         if (key == null || !_tracks.TryGetValue(key, out Track t))
         {
-            { var returnedAt86 = IsTracked(key); if (CoreLog.On) CoreLog.Every("Track.Add:86", 2d, $"Track.Add: returns {CoreLog.Shown(returnedAt86)} (line 86)"); return returnedAt86; }
+            { var returnedAt86 = IsTracked(key); if (CoreLog.Due("Track.Add:86", 2d)) CoreLog.Every("Track.Add:86", 2d, $"Track.Add: returns {CoreLog.Shown(returnedAt86)} (line 86)"); return returnedAt86; }
         }
 
         t.Samples.Add(sample);
         t.LastActivity = sample.Time;
         t.GoneAt = -1;
-        { var returnedAt92 = t.Samples.Count > 0; if (CoreLog.On) CoreLog.Every("Track.Add:92", 2d, $"Track.Add: returns {CoreLog.Shown(returnedAt92)} (line 92)"); return returnedAt92; }
+        { var returnedAt92 = t.Samples.Count > 0; if (CoreLog.Due("Track.Add:92", 2d)) CoreLog.Every("Track.Add:92", 2d, $"Track.Add: returns {CoreLog.Shown(returnedAt92)} (line 92)"); return returnedAt92; }
     }
 
     /// <summary>Marks a tracked key as gone (its object and its saved data no longer exist); the history stays until <see cref="Prune"/>.</summary>
     /// <returns>Whether the key is marked gone afterwards.</returns>
     internal bool MarkGone(string key, double now)
     {
-        if (CoreLog.On) CoreLog.Every("Track.MarkGone", 2d, $"Track.MarkGone(key={CoreLog.Shown(key)}, now={CoreLog.Shown(now)})");
+        if (CoreLog.Due("Track.MarkGone", 2d)) CoreLog.Every("Track.MarkGone", 2d, $"Track.MarkGone(key={CoreLog.Shown(key)}, now={CoreLog.Shown(now)})");
         if (key == null || !_tracks.TryGetValue(key, out Track t))
         {
-            { var returnedAt102 = IsTracked(key); if (CoreLog.On) CoreLog.Every("Track.MarkGone:102", 2d, $"Track.MarkGone: returns {CoreLog.Shown(returnedAt102)} (line 102)"); return returnedAt102; }
+            { var returnedAt102 = IsTracked(key); if (CoreLog.Due("Track.MarkGone:102", 2d)) CoreLog.Every("Track.MarkGone:102", 2d, $"Track.MarkGone: returns {CoreLog.Shown(returnedAt102)} (line 102)"); return returnedAt102; }
         }
 
         if (t.GoneAt < 0)
@@ -107,21 +107,21 @@ internal sealed class FlightBook
             t.GoneAt = now;
         }
 
-        { var returnedAt110 = t.GoneAt >= 0; if (CoreLog.On) CoreLog.Every("Track.MarkGone:110", 2d, $"Track.MarkGone: returns {CoreLog.Shown(returnedAt110)} (line 110)"); return returnedAt110; }
+        { var returnedAt110 = t.GoneAt >= 0; if (CoreLog.Due("Track.MarkGone:110", 2d)) CoreLog.Every("Track.MarkGone:110", 2d, $"Track.MarkGone: returns {CoreLog.Shown(returnedAt110)} (line 110)"); return returnedAt110; }
     }
 
     /// <summary>Drops the keys that have been gone for longer than <paramref name="goneSeconds"/>.</summary>
     /// <returns>How many were dropped.</returns>
     internal int Prune(double now, double goneSeconds)
     {
-        if (CoreLog.On) CoreLog.Every("Track.Prune", 2d, $"Track.Prune(now={CoreLog.Shown(now)}, goneSeconds={CoreLog.Shown(goneSeconds)})");
+        if (CoreLog.Due("Track.Prune", 2d)) CoreLog.Every("Track.Prune", 2d, $"Track.Prune(now={CoreLog.Shown(now)}, goneSeconds={CoreLog.Shown(goneSeconds)})");
         var old = _tracks.Where(kv => kv.Value.GoneAt >= 0 && now - kv.Value.GoneAt > goneSeconds).Select(kv => kv.Key).ToList();
         foreach (string key in old)
         {
             _tracks.Remove(key);
         }
 
-        { var returnedAt124 = old.Count; if (CoreLog.On) CoreLog.Every("Track.Prune:124", 2d, $"Track.Prune: returns {CoreLog.Shown(returnedAt124)} (line 124)"); return returnedAt124; }
+        { var returnedAt124 = old.Count; if (CoreLog.Due("Track.Prune:124", 2d)) CoreLog.Every("Track.Prune:124", 2d, $"Track.Prune: returns {CoreLog.Shown(returnedAt124)} (line 124)"); return returnedAt124; }
     }
 
     /// <summary>Adds a timeline note. Returns how many notes are kept now.</summary>
@@ -137,7 +137,7 @@ internal sealed class FlightBook
     /// </summary>
     internal string Format(string reason, double now, double windowSeconds, DateTime wallNow, int maxTracks)
     {
-        if (CoreLog.On) CoreLog.Every("Track.Format", 2d, $"Track.Format(reason={CoreLog.Shown(reason)}, now={CoreLog.Shown(now)}, windowSeconds={CoreLog.Shown(windowSeconds)}, wallNow={CoreLog.Shown(wallNow)}, maxTracks={CoreLog.Shown(maxTracks)})");
+        if (CoreLog.Due("Track.Format", 2d)) CoreLog.Every("Track.Format", 2d, $"Track.Format(reason={CoreLog.Shown(reason)}, now={CoreLog.Shown(now)}, windowSeconds={CoreLog.Shown(windowSeconds)}, wallNow={CoreLog.Shown(wallNow)}, maxTracks={CoreLog.Shown(maxTracks)})");
         double from = now - Math.Max(1, windowSeconds);
         var sb = new StringBuilder();
         sb.Append("FLIGHT RECORDER DUMP - ").AppendLine(reason ?? "(no reason)");
@@ -169,12 +169,12 @@ internal sealed class FlightBook
             sb.AppendLine().Append("(").Append(_tracks.Count - maxTracks).AppendLine(" more tracked object(s) not written)");
         }
 
-        { var returnedAt172 = sb.ToString(); if (CoreLog.On) CoreLog.Every("Track.Format:172", 2d, $"Track.Format: returns {CoreLog.Shown(returnedAt172)} (line 172)"); return returnedAt172; }
+        { var returnedAt172 = sb.ToString(); if (CoreLog.Due("Track.Format:172", 2d)) CoreLog.Every("Track.Format:172", 2d, $"Track.Format: returns {CoreLog.Shown(returnedAt172)} (line 172)"); return returnedAt172; }
     }
 
     static void AppendTrack(StringBuilder sb, string key, Track t, double from, double now, DateTime wallNow)
     {
-        if (CoreLog.On) CoreLog.Every("Track.AppendTrack", 2d, $"Track.AppendTrack(sb={CoreLog.Shown(sb)}, key={CoreLog.Shown(key)}, t={CoreLog.Shown(t)}, from={CoreLog.Shown(from)}, now={CoreLog.Shown(now)}, wallNow={CoreLog.Shown(wallNow)})");
+        if (CoreLog.Due("Track.AppendTrack", 2d)) CoreLog.Every("Track.AppendTrack", 2d, $"Track.AppendTrack(sb={CoreLog.Shown(sb)}, key={CoreLog.Shown(key)}, t={CoreLog.Shown(t)}, from={CoreLog.Shown(from)}, now={CoreLog.Shown(now)}, wallNow={CoreLog.Shown(wallNow)})");
         sb.AppendLine();
         sb.Append("== ").Append(t.Mod).Append(" / ").Append(t.Label).Append(" (").Append(key).Append(')');
         if (t.GoneAt >= 0)

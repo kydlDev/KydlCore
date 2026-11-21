@@ -210,15 +210,15 @@ public static class KyHub
         // Stryker disable all : needs a real ConfigFile and the UI; tested in game
         var page = new ConfigPage(file, sections);
         page.Root.RegisterCallback<DetachFromPanelEvent>(e => page.Dispose());          // the page stops listening when it leaves the screen
-        { var returnedAt213 = page.Root; if (CoreLog.On) ModLog.Every("GroupPanel.ConfigEntries:213", 2d, $"GroupPanel.ConfigEntries: returns {CoreLog.Shown(returnedAt213)} (line 213)"); return returnedAt213; }
+        { var returnedAt213 = page.Root; if (CoreLog.Due("GroupPanel.ConfigEntries:213", 2d)) ModLog.Every("GroupPanel.ConfigEntries:213", 2d, $"GroupPanel.ConfigEntries: returns {CoreLog.Shown(returnedAt213)} (line 213)"); return returnedAt213; }
         // Stryker restore all
     }
 
     internal static string TitleOf(string modGuid)
     {
-        if (CoreLog.On) ModLog.Every("GroupPanel.TitleOf", 2d, $"GroupPanel.TitleOf(modGuid={CoreLog.Shown(modGuid)})");
+        if (CoreLog.Due("GroupPanel.TitleOf", 2d)) ModLog.Every("GroupPanel.TitleOf", 2d, $"GroupPanel.TitleOf(modGuid={CoreLog.Shown(modGuid)})");
         string t;
-        { var returnedAt221 = Titles.TryGetValue(modGuid, out t) ? t : null; if (CoreLog.On) ModLog.Every("GroupPanel.TitleOf:221", 2d, $"GroupPanel.TitleOf: returns {CoreLog.Shown(returnedAt221)} (line 221)"); return returnedAt221; }
+        { var returnedAt221 = Titles.TryGetValue(modGuid, out t) ? t : null; if (CoreLog.Due("GroupPanel.TitleOf:221", 2d)) ModLog.Every("GroupPanel.TitleOf:221", 2d, $"GroupPanel.TitleOf: returns {CoreLog.Shown(returnedAt221)} (line 221)"); return returnedAt221; }
     }
 
     /// <summary>The page of a registered tab, or null when the mod registered no builder for it. A throwing builder is logged and gives null.</summary>

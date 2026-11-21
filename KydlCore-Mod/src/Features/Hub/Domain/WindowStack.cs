@@ -45,33 +45,33 @@ internal sealed class WindowStack
     /// </summary>
     public bool Open(string id)
     {
-        if (CoreLog.On) CoreLog.Every("WindowStack.Open", 2d, $"WindowStack.Open(id={CoreLog.Shown(id)})");
-        if (!Valid(id)) { if (CoreLog.On) CoreLog.Every("WindowStack.Open:49", 2d, "WindowStack.Open: returns false (line 49)"); return false; }
+        if (CoreLog.Due("WindowStack.Open", 2d)) CoreLog.Every("WindowStack.Open", 2d, $"WindowStack.Open(id={CoreLog.Shown(id)})");
+        if (!Valid(id)) { if (CoreLog.Due("WindowStack.Open:49", 2d)) CoreLog.Every("WindowStack.Open:49", 2d, "WindowStack.Open: returns false (line 49)"); return false; }
         bool wasOpen = AnyOpen;
         _ids.Remove(id);
         _ids.Add(id);
         Notify(wasOpen);
-        { if (CoreLog.On) CoreLog.Every("WindowStack.Open:54", 2d, "WindowStack.Open: returns true (line 54)"); return true; }
+        { if (CoreLog.Due("WindowStack.Open:54", 2d)) CoreLog.Every("WindowStack.Open:54", 2d, "WindowStack.Open: returns true (line 54)"); return true; }
     }
 
     /// <summary>A click on a window: brings an open window to the front. Returns false for a window that is not open.</summary>
     public bool BringToFront(string id)
     {
-        if (CoreLog.On) CoreLog.Every("WindowStack.BringToFront", 2d, $"WindowStack.BringToFront(id={CoreLog.Shown(id)})");
-        if (!IsOpen(id)) { if (CoreLog.On) CoreLog.Every("WindowStack.BringToFront:61", 2d, "WindowStack.BringToFront: returns false (line 61)"); return false; }
+        if (CoreLog.Due("WindowStack.BringToFront", 2d)) CoreLog.Every("WindowStack.BringToFront", 2d, $"WindowStack.BringToFront(id={CoreLog.Shown(id)})");
+        if (!IsOpen(id)) { if (CoreLog.Due("WindowStack.BringToFront:61", 2d)) CoreLog.Every("WindowStack.BringToFront:61", 2d, "WindowStack.BringToFront: returns false (line 61)"); return false; }
         if (_ids[_ids.Count - 1] != id) { _ids.Remove(id); _ids.Add(id); }
-        { if (CoreLog.On) CoreLog.Every("WindowStack.BringToFront:63", 2d, "WindowStack.BringToFront: returns true (line 63)"); return true; }
+        { if (CoreLog.Due("WindowStack.BringToFront:63", 2d)) CoreLog.Every("WindowStack.BringToFront:63", 2d, "WindowStack.BringToFront: returns true (line 63)"); return true; }
     }
 
     /// <summary>Closes one window wherever it is. Returns false for a window that is not open.</summary>
     public bool Close(string id)
     {
-        if (CoreLog.On) CoreLog.Every("WindowStack.Close", 2d, $"WindowStack.Close(id={CoreLog.Shown(id)})");
-        if (!IsOpen(id)) { if (CoreLog.On) CoreLog.Every("WindowStack.Close:70", 2d, "WindowStack.Close: returns false (line 70)"); return false; }
+        if (CoreLog.Due("WindowStack.Close", 2d)) CoreLog.Every("WindowStack.Close", 2d, $"WindowStack.Close(id={CoreLog.Shown(id)})");
+        if (!IsOpen(id)) { if (CoreLog.Due("WindowStack.Close:70", 2d)) CoreLog.Every("WindowStack.Close:70", 2d, "WindowStack.Close: returns false (line 70)"); return false; }
         bool wasOpen = AnyOpen;
         _ids.Remove(id);
         Notify(wasOpen);
-        { if (CoreLog.On) CoreLog.Every("WindowStack.Close:74", 2d, "WindowStack.Close: returns true (line 74)"); return true; }
+        { if (CoreLog.Due("WindowStack.Close:74", 2d)) CoreLog.Every("WindowStack.Close:74", 2d, "WindowStack.Close: returns true (line 74)"); return true; }
     }
 
     /// <summary>Escape: closes only the front window and returns its id, or returns null when nothing is open.</summary>
@@ -88,7 +88,7 @@ internal sealed class WindowStack
 
     void Notify(bool wasOpen)
     {
-        if (CoreLog.On) CoreLog.Every("WindowStack.Notify", 2d, $"WindowStack.Notify(wasOpen={CoreLog.Shown(wasOpen)})");
+        if (CoreLog.Due("WindowStack.Notify", 2d)) CoreLog.Every("WindowStack.Notify", 2d, $"WindowStack.Notify(wasOpen={CoreLog.Shown(wasOpen)})");
         bool now = AnyOpen;
         if (now != wasOpen && AnyOpenChanged != null) AnyOpenChanged(now);
     }

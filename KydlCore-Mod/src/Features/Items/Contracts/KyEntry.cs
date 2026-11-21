@@ -60,11 +60,11 @@ public sealed class KyEntry
     /// <summary>A deposit (Pickable) has no icon of its own: it shows the icon of what it yields. Null when there is none.</summary>
     internal static Sprite DepositIcon(GameObject go)
     {
-        if (CoreLog.On) ModLog.Every("KyEntry.DepositIcon", 2d, $"KyEntry.DepositIcon(go={CoreLog.Shown(go)})");
+        if (CoreLog.Due("KyEntry.DepositIcon", 2d)) ModLog.Every("KyEntry.DepositIcon", 2d, $"KyEntry.DepositIcon(go={CoreLog.Shown(go)})");
         Pickable pick = go != null ? go.GetComponent<Pickable>() : null;
         ItemDrop yields = pick != null && pick.m_itemPrefab != null ? pick.m_itemPrefab.GetComponent<ItemDrop>() : null;
         Sprite[] icons = yields != null ? yields.m_itemData.m_shared.m_icons : null;
-        { var returnedAt67 = icons != null && icons.Length > 0 ? icons[0] : null; if (CoreLog.On) ModLog.Every("KyEntry.DepositIcon:67", 2d, $"KyEntry.DepositIcon: returns {CoreLog.Shown(returnedAt67)} (line 67)"); return returnedAt67; }
+        { var returnedAt67 = icons != null && icons.Length > 0 ? icons[0] : null; if (CoreLog.Due("KyEntry.DepositIcon:67", 2d)) ModLog.Every("KyEntry.DepositIcon:67", 2d, $"KyEntry.DepositIcon: returns {CoreLog.Shown(returnedAt67)} (line 67)"); return returnedAt67; }
     }
     /// <summary>Free tags the registering mod gave (may be empty).</summary>
     public IReadOnlyList<string> Tags = new string[0];

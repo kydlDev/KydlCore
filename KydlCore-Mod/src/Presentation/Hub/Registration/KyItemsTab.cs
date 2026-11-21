@@ -36,7 +36,7 @@ internal static class KyItemsTab
 
     static void Sync()
     {
-        if (CoreLog.On) ModLog.Every("KyItemsTab.Sync", 2d, $"KyItemsTab.Sync()");
+        if (CoreLog.Due("KyItemsTab.Sync", 2d)) ModLog.Every("KyItemsTab.Sync", 2d, $"KyItemsTab.Sync()");
         SyncTab(ItemsId, "KY-Items", ItemsOrder, e => e.Kind != KyKind.Material);
         SyncTab(MaterialsId, "Materials", MaterialsOrder, e => e.Kind == KyKind.Material);
     }
@@ -89,18 +89,18 @@ internal static class KyItemsTab
     /// </summary>
     internal static bool ToggleView()
     {
-        if (ModSettings.KyItemsView == null) { if (CoreLog.On) ModLog.Every("KyItemsTab.ToggleView:92", 2d, "KyItemsTab.ToggleView: returns false (line 92)"); return false; }
+        if (ModSettings.KyItemsView == null) { if (CoreLog.Due("KyItemsTab.ToggleView:92", 2d)) ModLog.Every("KyItemsTab.ToggleView:92", 2d, "KyItemsTab.ToggleView: returns false (line 92)"); return false; }
         ModSettings.KyItemsView.Value = Grid ? ItemsView.List : ItemsView.Grid;
         ModLog.Info("KyItemsTab: view " + ModSettings.KyItemsView.Value);
         HubHost.Refresh(Plugin.ModGuid, ItemsId);
         HubHost.Refresh(Plugin.ModGuid, MaterialsId);
-        { var returnedAt97 = Grid; if (CoreLog.On) ModLog.Every("KyItemsTab.ToggleView:97", 2d, $"KyItemsTab.ToggleView: returns {CoreLog.Shown(returnedAt97)} (line 97)"); return returnedAt97; }
+        { var returnedAt97 = Grid; if (CoreLog.Due("KyItemsTab.ToggleView:97", 2d)) ModLog.Every("KyItemsTab.ToggleView:97", 2d, $"KyItemsTab.ToggleView: returns {CoreLog.Shown(returnedAt97)} (line 97)"); return returnedAt97; }
     }
 
     // the note on the left, the view switch on the right (top right of the page, user 2026-11-19)
     static VisualElement Header(VisualElement note, bool grid, string id)
     {
-        if (CoreLog.On) ModLog.Every("KyItemsTab.Header", 2d, $"KyItemsTab.Header(note={CoreLog.Shown(note)}, grid={CoreLog.Shown(grid)}, id={CoreLog.Shown(id)})");
+        if (CoreLog.Due("KyItemsTab.Header", 2d)) ModLog.Every("KyItemsTab.Header", 2d, $"KyItemsTab.Header(note={CoreLog.Shown(note)}, grid={CoreLog.Shown(grid)}, id={CoreLog.Shown(id)})");
         var row = new VisualElement { name = "kydl-kyitems-header" };
         row.style.flexDirection = FlexDirection.Row; row.style.alignItems = Align.FlexStart; row.style.flexShrink = 0;
         note.style.flexGrow = 1; note.style.flexShrink = 1;
@@ -109,7 +109,7 @@ internal static class KyItemsTab
         toggle.name = "kydl-kyitems-view";
         toggle.style.flexShrink = 0; toggle.style.marginLeft = 12;
         row.Add(toggle);
-        { var returnedAt112 = row; if (CoreLog.On) ModLog.Every("KyItemsTab.Header:112", 2d, $"KyItemsTab.Header: returns {CoreLog.Shown(returnedAt112)} (line 112)"); return returnedAt112; }
+        { var returnedAt112 = row; if (CoreLog.Due("KyItemsTab.Header:112", 2d)) ModLog.Every("KyItemsTab.Header:112", 2d, $"KyItemsTab.Header: returns {CoreLog.Shown(returnedAt112)} (line 112)"); return returnedAt112; }
     }
 
     static ItemCard Card(KyEntry entry)
@@ -120,7 +120,7 @@ internal static class KyItemsTab
 
     static VisualElement Row(KyEntry entry)
     {
-        if (CoreLog.On) ModLog.Every("KyItemsTab.Row", 2d, $"KyItemsTab.Row(entry={CoreLog.Shown(entry)})");
+        if (CoreLog.Due("KyItemsTab.Row", 2d)) ModLog.Every("KyItemsTab.Row", 2d, $"KyItemsTab.Row(entry={CoreLog.Shown(entry)})");
         var r = new VisualElement();
         r.style.flexDirection = FlexDirection.Row; r.style.alignItems = Align.Center; r.style.flexShrink = 0; r.style.marginTop = 2; r.style.marginBottom = 2;
         var icon = new VisualElement { pickingMode = PickingMode.Ignore };
@@ -131,6 +131,6 @@ internal static class KyItemsTab
         name.style.flexGrow = 1; name.style.whiteSpace = WhiteSpace.NoWrap;
         r.Add(name);
         r.Add(UiKit.Label(entry.Kind + "  " + (string.IsNullOrEmpty(entry.Id) ? entry.Prefab : entry.Id), UiKit.SmallSize, UiKit.TextDim));
-        { var returnedAt134 = r; if (CoreLog.On) ModLog.Every("KyItemsTab.Row:134", 2d, $"KyItemsTab.Row: returns {CoreLog.Shown(returnedAt134)} (line 134)"); return returnedAt134; }
+        { var returnedAt134 = r; if (CoreLog.Due("KyItemsTab.Row:134", 2d)) ModLog.Every("KyItemsTab.Row:134", 2d, $"KyItemsTab.Row: returns {CoreLog.Shown(returnedAt134)} (line 134)"); return returnedAt134; }
     }
 }

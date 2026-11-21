@@ -23,7 +23,7 @@ internal sealed class JotunnItems : IKyGameSide
     public bool Hook(Action<string> refresh)
     {
         bool hooked = refresh != null;
-        if (!hooked) { var returnedAt26 = hooked; if (CoreLog.On) ModLog.Every("JotunnItems.Hook:26", 2d, $"JotunnItems.Hook: returns {CoreLog.Shown(returnedAt26)} (line 26)"); return returnedAt26; }
+        if (!hooked) { var returnedAt26 = hooked; if (CoreLog.Due("JotunnItems.Hook:26", 2d)) ModLog.Every("JotunnItems.Hook:26", 2d, $"JotunnItems.Hook: returns {CoreLog.Shown(returnedAt26)} (line 26)"); return returnedAt26; }
         try
         {
             ItemManager.OnItemsRegistered += () => refresh("Jotunn registered the items");
@@ -66,7 +66,7 @@ internal sealed class JotunnItems : IKyGameSide
             GameObject hammer = ObjectDB.instance == null ? null : ObjectDB.instance.GetItemPrefab("Hammer");
             ItemDrop drop = hammer == null ? null : hammer.GetComponent<ItemDrop>();
             PieceTable table = drop == null ? null : drop.m_itemData.m_shared.m_buildPieces;
-            if (table == null) { var returnedAt69 = new List<GameObject>(); if (CoreLog.On) ModLog.Every("JotunnItems.PiecesIn:69", 2d, $"JotunnItems.PiecesIn: returns {CoreLog.Shown(returnedAt69)} (line 69)"); return returnedAt69; }
+            if (table == null) { var returnedAt69 = new List<GameObject>(); if (CoreLog.Due("JotunnItems.PiecesIn:69", 2d)) ModLog.Every("JotunnItems.PiecesIn:69", 2d, $"JotunnItems.PiecesIn: returns {CoreLog.Shown(returnedAt69)} (line 69)"); return returnedAt69; }
             return table.m_pieces.Where(p => p != null && p.GetComponent<Piece>() != null && p.GetComponent<Piece>().m_category == category).ToList();
         }
         catch (NullReferenceException e) { ModLog.Verbose("JotunnItems: the hammer's pieces could not be read: " + e.Message); return new List<GameObject>(); }

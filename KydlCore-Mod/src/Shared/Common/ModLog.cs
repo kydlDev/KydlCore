@@ -179,7 +179,7 @@ public static partial class ModLog
         try
         {
             if (IsRepeat(c, level, message)) return;
-            Source(c).Log(level, Line(message));
+            Emit(Source(c), level, Line(message));      // ModLog.Writer.cs: queued for the background writer once it runs (D-147)
         }
         catch (ObjectDisposedException) { }          // the BepInEx log is closed while the game shuts down
         catch (Exception) { }                        // last resort: never throw out of the logger

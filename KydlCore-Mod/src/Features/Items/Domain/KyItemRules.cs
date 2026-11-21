@@ -16,8 +16,8 @@ internal static class KyItemRules
     /// True for "com.kydldev.*" GUIDs with a name after the prefix (case ignored).
     internal static bool IsUserGuid(string guid)
     {
-        if (CoreLog.On) CoreLog.Every("KyItemRules.IsUserGuid", 2d, $"KyItemRules.IsUserGuid(guid={CoreLog.Shown(guid)})");
-        { var returnedAt20 = guid != null && guid.Length > GuidPrefix.Length && guid.StartsWith(GuidPrefix, StringComparison.OrdinalIgnoreCase); if (CoreLog.On) CoreLog.Every("KyItemRules.IsUserGuid:20", 2d, $"KyItemRules.IsUserGuid: returns {CoreLog.Shown(returnedAt20)} (line 20)"); return returnedAt20; }
+        if (CoreLog.Due("KyItemRules.IsUserGuid", 2d)) CoreLog.Every("KyItemRules.IsUserGuid", 2d, $"KyItemRules.IsUserGuid(guid={CoreLog.Shown(guid)})");
+        { var returnedAt20 = guid != null && guid.Length > GuidPrefix.Length && guid.StartsWith(GuidPrefix, StringComparison.OrdinalIgnoreCase); if (CoreLog.Due("KyItemRules.IsUserGuid:20", 2d)) CoreLog.Every("KyItemRules.IsUserGuid:20", 2d, $"KyItemRules.IsUserGuid: returns {CoreLog.Shown(returnedAt20)} (line 20)"); return returnedAt20; }
     }
 
     /// The id namespace of a mod: its GUID after the prefix, lowercase ("" for a GUID that is not the user's).

@@ -13,10 +13,10 @@ public static class ModCache
     /// Expected outcome: the full path of BepInEx/cache/&lt;modName&gt;/; the folder exists after the call.
     public static string Dir(string modName)
     {
-        if (CoreLog.On) ModLog.Every("ModCache.Dir", 2d, $"ModCache.Dir(modName={CoreLog.Shown(modName)})");
+        if (CoreLog.Due("ModCache.Dir", 2d)) ModLog.Every("ModCache.Dir", 2d, $"ModCache.Dir(modName={CoreLog.Shown(modName)})");
         string dir = Path.Combine(Paths.CachePath, modName);
         Directory.CreateDirectory(dir);
-        { var returnedAt19 = dir; if (CoreLog.On) ModLog.Every("ModCache.Dir:19", 2d, $"ModCache.Dir: returns {CoreLog.Shown(returnedAt19)} (line 19)"); return returnedAt19; }
+        { var returnedAt19 = dir; if (CoreLog.Due("ModCache.Dir:19", 2d)) ModLog.Every("ModCache.Dir:19", 2d, $"ModCache.Dir: returns {CoreLog.Shown(returnedAt19)} (line 19)"); return returnedAt19; }
     }
 
     /// Expected outcome: the full path of BepInEx/cache/&lt;modName&gt;/&lt;fileName&gt; (folder created, file not touched).

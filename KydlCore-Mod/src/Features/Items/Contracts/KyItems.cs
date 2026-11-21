@@ -132,7 +132,7 @@ public static class KyItems
     /// <summary>Called once by the ItemsFeature: reads the game each time it has registered all items and pieces. Expected outcome: true when hooked.</summary>
     internal static bool Init()
     {
-        if (_hooked) { var returnedAt135 = _hooked; if (CoreLog.On) ModLog.Every("KyItems.Init:135", 2d, $"KyItems.Init: returns {CoreLog.Shown(returnedAt135)} (line 135)"); return returnedAt135; }
+        if (_hooked) { var returnedAt135 = _hooked; if (CoreLog.Due("KyItems.Init:135", 2d)) ModLog.Every("KyItems.Init:135", 2d, $"KyItems.Init: returns {CoreLog.Shown(returnedAt135)} (line 135)"); return returnedAt135; }
         _hooked = Game.Hook(Refresh);
         ModLog.Verbose("KyItems: game side " + Game.GetType().Name + (_hooked ? " hooked" : " NOT hooked"));
         return _hooked;

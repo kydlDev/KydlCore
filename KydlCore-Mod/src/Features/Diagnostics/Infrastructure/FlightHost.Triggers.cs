@@ -67,7 +67,7 @@ internal static partial class FlightHost
 
     static void OnNote(ModContext c, string text)
     {
-        if (CoreLog.On) ModLog.Verbose($"FlightHost.OnNote(c={CoreLog.Shown(c)}, text={CoreLog.Shown(text)})");
+        if (CoreLog.Due("FlightHost.OnNote", 10d)) ModLog.Verbose($"FlightHost.OnNote (one in 10 s; every STATUS line of every mod comes here, D-147)(c={CoreLog.Shown(c)}, text={CoreLog.Shown(text)})");
         lock (Gate)
         {
             if (_book != null) _book.Note(new FlightNote(Now, c.Name, text));
@@ -102,13 +102,13 @@ internal static partial class FlightHost
 
     static void DrainDumps(double now)
     {
-        if (CoreLog.On) ModLog.Every("FlightHost.DrainDumps", 2d, $"FlightHost.DrainDumps(now={CoreLog.Shown(now)})");
+        if (CoreLog.Due("FlightHost.DrainDumps", 2d)) ModLog.Every("FlightHost.DrainDumps", 2d, $"FlightHost.DrainDumps(now={CoreLog.Shown(now)})");
         while (true)
         {
             KeyValuePair<string, string> d;
             lock (Gate)
             {
-                if (PendingDumps.Count == 0) { if (CoreLog.On) ModLog.Every("FlightHost.DrainDumps:111", 2d, "FlightHost.DrainDumps: returns (line 111)"); return; }
+                if (PendingDumps.Count == 0) { if (CoreLog.Due("FlightHost.DrainDumps:111", 2d)) ModLog.Every("FlightHost.DrainDumps:111", 2d, "FlightHost.DrainDumps: returns (line 111)"); return; }
                 d = PendingDumps.Dequeue();
             }
 
@@ -125,7 +125,7 @@ internal static partial class FlightHost
             {
                 ModLog.Verbose("FlightRecorder: no dump for '" + reason + "' (" + kind + " had one less than " + Gap(kind) + " s ago, or the limit of "
                                + ModSettings.FlightMaxDumps.Value + " per game start is reached; " + _gate.Refused + " refused so far)");
-                { if (CoreLog.On) ModLog.Every("FlightHost.WriteDump:128", 2d, "FlightHost.WriteDump: returns null (line 128)"); return null; }
+                { if (CoreLog.Due("FlightHost.WriteDump:128", 2d)) ModLog.Every("FlightHost.WriteDump:128", 2d, "FlightHost.WriteDump: returns null (line 128)"); return null; }
             }
 
             text = _book.Format(reason, now, Window(), DateTime.Now, MaxTracksInDump);
@@ -138,7 +138,7 @@ internal static partial class FlightHost
             ModLog.Info("FlightRecorder: dump written " + path + " (" + reason + ")");
         }
 
-        { var returnedAt141 = path; if (CoreLog.On) ModLog.Every("FlightHost.WriteDump:141", 2d, $"FlightHost.WriteDump: returns {CoreLog.Shown(returnedAt141)} (line 141)"); return returnedAt141; }
+        { var returnedAt141 = path; if (CoreLog.Due("FlightHost.WriteDump:141", 2d)) ModLog.Every("FlightHost.WriteDump:141", 2d, $"FlightHost.WriteDump: returns {CoreLog.Shown(returnedAt141)} (line 141)"); return returnedAt141; }
     }
 
     // a failed test always gets its dump; repeated CHECK OFF / errors of one mod at most one per minute
@@ -147,7 +147,7 @@ internal static partial class FlightHost
 
     static void WarnSoon(string text)
     {
-        if (Now < _nextWarn) { if (CoreLog.On) ModLog.Every("FlightHost.WarnSoon:150", 2d, "FlightHost.WarnSoon: returns (line 150)"); return; }
+        if (Now < _nextWarn) { if (CoreLog.Due("FlightHost.WarnSoon:150", 2d)) ModLog.Every("FlightHost.WarnSoon:150", 2d, "FlightHost.WarnSoon: returns (line 150)"); return; }
         _nextWarn = Now + 10;
         ModLog.Warn(text);
     }

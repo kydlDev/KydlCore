@@ -62,7 +62,7 @@ internal static class TriggerRules
     /// <summary>A file-name part made from a reason: letters, digits and '-' only, at most <paramref name="max"/> characters, never empty.</summary>
     internal static string Slug(string reason, int max = 40)
     {
-        if (CoreLog.On) CoreLog.Every("TriggerRules.Slug", 2d, $"TriggerRules.Slug(reason={CoreLog.Shown(reason)}, max={CoreLog.Shown(max)})");
+        if (CoreLog.Due("TriggerRules.Slug", 2d)) CoreLog.Every("TriggerRules.Slug", 2d, $"TriggerRules.Slug(reason={CoreLog.Shown(reason)}, max={CoreLog.Shown(max)})");
         var sb = new StringBuilder();
         bool dash = false;
         foreach (char ch in reason ?? "")
@@ -85,7 +85,7 @@ internal static class TriggerRules
         }
 
         string slug = sb.ToString().Trim('-');
-        { var returnedAt88 = slug.Length == 0 ? "dump" : slug; if (CoreLog.On) CoreLog.Every("TriggerRules.Slug:88", 2d, $"TriggerRules.Slug: returns {CoreLog.Shown(returnedAt88)} (line 88)"); return returnedAt88; }
+        { var returnedAt88 = slug.Length == 0 ? "dump" : slug; if (CoreLog.Due("TriggerRules.Slug:88", 2d)) CoreLog.Every("TriggerRules.Slug:88", 2d, $"TriggerRules.Slug: returns {CoreLog.Shown(returnedAt88)} (line 88)"); return returnedAt88; }
     }
 
     /// <summary>The text cut to <paramref name="max"/> characters (with "..." when cut), first line only; never null.</summary>

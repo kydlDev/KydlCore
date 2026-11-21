@@ -43,17 +43,17 @@ public sealed class OperationPipeline<TInput, TOutput>
     /// One run. Expected outcome: the first non-valid check's status (Rejected / Ignored) and reason (the step name goes to the trace only: no allocation), else the deciding step's response.
     public OperationResponse<TOutput> Run(TInput input)
     {
-        if (CoreLog.On) CoreLog.Every("OperationPipeline.Run", 2d, $"OperationPipeline.Run(input={CoreLog.Shown(input)})");
+        if (CoreLog.Due("OperationPipeline.Run", 2d)) CoreLog.Every("OperationPipeline.Run", 2d, $"OperationPipeline.Run(input={CoreLog.Shown(input)})");
         for (int i = 0; i < _checks.Count; i++)
         {
             var v = _checks[i](input);
             if (v.IsValid) continue;
             var stop = new OperationResponse<TOutput>(v.Status, default(TOutput), v.Reason);
             if (Trace != null) Trace(_name + ": stopped at " + _names[i] + " - " + stop);
-            { var returnedAt53 = stop; if (CoreLog.On) CoreLog.Every("OperationPipeline.Run:53", 2d, $"OperationPipeline.Run: returns {CoreLog.Shown(returnedAt53)} (line 53)"); return returnedAt53; }
+            { var returnedAt53 = stop; if (CoreLog.Due("OperationPipeline.Run:53", 2d)) CoreLog.Every("OperationPipeline.Run:53", 2d, $"OperationPipeline.Run: returns {CoreLog.Shown(returnedAt53)} (line 53)"); return returnedAt53; }
         }
         var r = _decide(input);
         if (Trace != null) Trace(_name + ": " + _checks.Count + " checks passed - " + r);
-        { var returnedAt57 = r; if (CoreLog.On) CoreLog.Every("OperationPipeline.Run:57", 2d, $"OperationPipeline.Run: returns {CoreLog.Shown(returnedAt57)} (line 57)"); return returnedAt57; }
+        { var returnedAt57 = r; if (CoreLog.Due("OperationPipeline.Run:57", 2d)) CoreLog.Every("OperationPipeline.Run:57", 2d, $"OperationPipeline.Run: returns {CoreLog.Shown(returnedAt57)} (line 57)"); return returnedAt57; }
     }
 }

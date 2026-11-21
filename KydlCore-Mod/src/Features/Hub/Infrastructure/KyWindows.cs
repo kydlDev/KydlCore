@@ -26,7 +26,7 @@ internal static class KyWindows
     /// <summary>The first window opening takes the one input lock, the last one closing gives it back. Called before any window opens.</summary>
     internal static void EnsureWired()
     {
-        if (_wired) { if (CoreLog.On) ModLog.Every("KyWindows.EnsureWired:29", 2d, "KyWindows.EnsureWired: returns (line 29)"); return; }
+        if (_wired) { if (CoreLog.Due("KyWindows.EnsureWired:29", 2d)) ModLog.Every("KyWindows.EnsureWired:29", 2d, "KyWindows.EnsureWired: returns (line 29)"); return; }
         _wired = true;
         Stack.AnyOpenChanged += open =>
         {
@@ -62,7 +62,7 @@ internal static class KyWindows
     internal static bool Remove(string full, string why)
     {
         KyWindow w;
-        if (full == null || !Windows.TryGetValue(full, out w)) { if (CoreLog.On) ModLog.Every("KyWindows.Remove:65", 2d, "KyWindows.Remove: returns false (line 65)"); return false; }
+        if (full == null || !Windows.TryGetValue(full, out w)) { if (CoreLog.Due("KyWindows.Remove:65", 2d)) ModLog.Every("KyWindows.Remove:65", 2d, "KyWindows.Remove: returns false (line 65)"); return false; }
         Windows.Remove(full);
         try { w.Element.RemoveFromHierarchy(); }
         catch (Exception e) { ModLog.Warn("KyWindows: removing '" + full + "' from the UI failed: " + e.Message); }
@@ -77,7 +77,7 @@ internal static class KyWindows
     internal static bool Front(string full)
     {
         KyWindow w;
-        if (full == null || !Windows.TryGetValue(full, out w)) { if (CoreLog.On) ModLog.Every("KyWindows.Front:80", 2d, "KyWindows.Front: returns false (line 80)"); return false; }
+        if (full == null || !Windows.TryGetValue(full, out w)) { if (CoreLog.Due("KyWindows.Front:80", 2d)) ModLog.Every("KyWindows.Front:80", 2d, "KyWindows.Front: returns false (line 80)"); return false; }
         if (Stack.Top != full) { Stack.BringToFront(full); w.Element.BringToFront(); ModLog.Verbose("KyWindows: '" + full + "' brought to the front"); }
         return true;
     }
@@ -85,21 +85,21 @@ internal static class KyWindows
     /// <summary>Every frame (Plugin.Update): Escape closes ONLY the front window (the hub or a mod's). Returns whether a window was closed.</summary>
     internal static bool Tick()
     {
-        if (CoreLog.On) ModLog.Every("KyWindows.Tick", 2d, $"KyWindows.Tick()");
-        if (KeyCapture.Blocks) { if (CoreLog.On) ModLog.Every("KyWindows.Tick:89", 2d, "KyWindows.Tick: returns false (line 89)"); return false; }           // Escape that cancels a key capture does not also close the window
-        if (!Stack.AnyOpen || !ZInput.GetKeyDown(KeyCode.Escape, true)) { if (CoreLog.On) ModLog.Every("KyWindows.Tick:90", 2d, "KyWindows.Tick: returns false (line 90)"); return false; }
+        if (CoreLog.Due("KyWindows.Tick", 2d)) ModLog.Every("KyWindows.Tick", 2d, $"KyWindows.Tick()");
+        if (KeyCapture.Blocks) { if (CoreLog.Due("KyWindows.Tick:89", 2d)) ModLog.Every("KyWindows.Tick:89", 2d, "KyWindows.Tick: returns false (line 89)"); return false; }           // Escape that cancels a key capture does not also close the window
+        if (!Stack.AnyOpen || !ZInput.GetKeyDown(KeyCode.Escape, true)) { if (CoreLog.Due("KyWindows.Tick:90", 2d)) ModLog.Every("KyWindows.Tick:90", 2d, "KyWindows.Tick: returns false (line 90)"); return false; }
         string top = Stack.Top;
         if (top == KyWindowId.Hub) HubHost.Close("Escape");
         else Remove(top, "Escape");
-        { if (CoreLog.On) ModLog.Every("KyWindows.Tick:94", 2d, "KyWindows.Tick: returns true (line 94)"); return true; }
+        { if (CoreLog.Due("KyWindows.Tick:94", 2d)) ModLog.Every("KyWindows.Tick:94", 2d, "KyWindows.Tick: returns true (line 94)"); return true; }
     }
 
     /// <summary>Plugin shutdown: close every mod window (their `onClosed` run) so no chest stays locked and no input stays blocked.</summary>
     internal static int CloseAll(string why)
     {
-        if (CoreLog.On) ModLog.Every("KyWindows.CloseAll", 2d, $"KyWindows.CloseAll(why={CoreLog.Shown(why)})");
+        if (CoreLog.Due("KyWindows.CloseAll", 2d)) ModLog.Every("KyWindows.CloseAll", 2d, $"KyWindows.CloseAll(why={CoreLog.Shown(why)})");
         var ids = new List<string>(Windows.Keys);
         foreach (string id in ids) Remove(id, why);
-        { var returnedAt103 = ids.Count; if (CoreLog.On) ModLog.Every("KyWindows.CloseAll:103", 2d, $"KyWindows.CloseAll: returns {CoreLog.Shown(returnedAt103)} (line 103)"); return returnedAt103; }
+        { var returnedAt103 = ids.Count; if (CoreLog.Due("KyWindows.CloseAll:103", 2d)) ModLog.Every("KyWindows.CloseAll:103", 2d, $"KyWindows.CloseAll: returns {CoreLog.Shown(returnedAt103)} (line 103)"); return returnedAt103; }
     }
 }

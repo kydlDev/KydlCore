@@ -73,9 +73,9 @@ public sealed class KySection
     /// <summary>A line of explaining text.</summary>
     public KySection Note(string text)
     {
-        if (CoreLog.On) ModLog.Every("KySection.Note", 2d, $"KySection.Note(text={CoreLog.Shown(text)})");
+        if (CoreLog.Due("KySection.Note", 2d)) ModLog.Every("KySection.Note", 2d, $"KySection.Note(text={CoreLog.Shown(text)})");
         Rows.Add(new KyNoteRow(text));
-        { var returnedAt78 = this; if (CoreLog.On) ModLog.Every("KySection.Note:78", 2d, $"KySection.Note: returns {CoreLog.Shown(returnedAt78)} (line 78)"); return returnedAt78; }
+        { var returnedAt78 = this; if (CoreLog.Due("KySection.Note:78", 2d)) ModLog.Every("KySection.Note:78", 2d, $"KySection.Note: returns {CoreLog.Shown(returnedAt78)} (line 78)"); return returnedAt78; }
     }
 
     /// <summary>A label and a drop-down of choices; `chosen` gets the id of the picked one (the page is built again right after).</summary>
@@ -97,17 +97,17 @@ public sealed class KySection
     /// <summary>A switch with a label; `changed` gets the new state. The page is NOT rebuilt by the change (the switch shows it); put what the switch changes into the page State.</summary>
     public KySection Toggle(string label, bool on, Action<bool> changed)
     {
-        if (CoreLog.On) ModLog.Every("KySection.Toggle", 2d, $"KySection.Toggle(label={CoreLog.Shown(label)}, on={CoreLog.Shown(on)}, changed={CoreLog.Shown(changed)})");
+        if (CoreLog.Due("KySection.Toggle", 2d)) ModLog.Every("KySection.Toggle", 2d, $"KySection.Toggle(label={CoreLog.Shown(label)}, on={CoreLog.Shown(on)}, changed={CoreLog.Shown(changed)})");
         Rows.Add(new KyToggleRow(label, on, changed));
-        { var returnedAt102 = this; if (CoreLog.On) ModLog.Every("KySection.Toggle:102", 2d, $"KySection.Toggle: returns {CoreLog.Shown(returnedAt102)} (line 102)"); return returnedAt102; }
+        { var returnedAt102 = this; if (CoreLog.Due("KySection.Toggle:102", 2d)) ModLog.Every("KySection.Toggle:102", 2d, $"KySection.Toggle: returns {CoreLog.Shown(returnedAt102)} (line 102)"); return returnedAt102; }
     }
 
     /// <summary>A slider with a label; `format` is the .NET number format of the shown value (e.g. "0.0"). `changed` is called while it is dragged; the page is NOT rebuilt by it.</summary>
     public KySection Slider(string label, float min, float max, float value, string format, Action<float> changed)
     {
-        if (CoreLog.On) ModLog.Every("KySection.Slider", 2d, $"KySection.Slider(label={CoreLog.Shown(label)}, min={CoreLog.Shown(min)}, max={CoreLog.Shown(max)}, value={CoreLog.Shown(value)}, format={CoreLog.Shown(format)}, changed={CoreLog.Shown(changed)})");
+        if (CoreLog.Due("KySection.Slider", 2d)) ModLog.Every("KySection.Slider", 2d, $"KySection.Slider(label={CoreLog.Shown(label)}, min={CoreLog.Shown(min)}, max={CoreLog.Shown(max)}, value={CoreLog.Shown(value)}, format={CoreLog.Shown(format)}, changed={CoreLog.Shown(changed)})");
         Rows.Add(new KySliderRow(label, min, max, value, format, changed));
-        { var returnedAt110 = this; if (CoreLog.On) ModLog.Every("KySection.Slider:110", 2d, $"KySection.Slider: returns {CoreLog.Shown(returnedAt110)} (line 110)"); return returnedAt110; }
+        { var returnedAt110 = this; if (CoreLog.Due("KySection.Slider:110", 2d)) ModLog.Every("KySection.Slider:110", 2d, $"KySection.Slider: returns {CoreLog.Shown(returnedAt110)} (line 110)"); return returnedAt110; }
     }
 
     /// <summary>A text box with a label; `changed` gets the new text. The page is NOT rebuilt by the change.</summary>
@@ -129,9 +129,9 @@ public sealed class KySection
     /// <summary>A button with a label.</summary>
     public KySection Button(string label, Action clicked)
     {
-        if (CoreLog.On) ModLog.Every("KySection.Button", 2d, $"KySection.Button(label={CoreLog.Shown(label)}, clicked={CoreLog.Shown(clicked)})");
+        if (CoreLog.Due("KySection.Button", 2d)) ModLog.Every("KySection.Button", 2d, $"KySection.Button(label={CoreLog.Shown(label)}, clicked={CoreLog.Shown(clicked)})");
         Rows.Add(new KyButtonRow(label, clicked));
-        { var returnedAt134 = this; if (CoreLog.On) ModLog.Every("KySection.Button:134", 2d, $"KySection.Button: returns {CoreLog.Shown(returnedAt134)} (line 134)"); return returnedAt134; }
+        { var returnedAt134 = this; if (CoreLog.Due("KySection.Button:134", 2d)) ModLog.Every("KySection.Button:134", 2d, $"KySection.Button: returns {CoreLog.Shown(returnedAt134)} (line 134)"); return returnedAt134; }
     }
 }
 
@@ -303,7 +303,7 @@ public sealed class KySliderRow : KyRow
     public Action<float> Changed { get; private set; }
     internal KySliderRow(string label, float min, float max, float value, string format, Action<float> changed) : base(label)
     {
-        if (CoreLog.On) ModLog.Every("KySliderRow.KySliderRow", 2d, $"KySliderRow.KySliderRow(label={CoreLog.Shown(label)}, min={CoreLog.Shown(min)}, max={CoreLog.Shown(max)}, value={CoreLog.Shown(value)}, format={CoreLog.Shown(format)})");
+        if (CoreLog.Due("KySliderRow.KySliderRow", 2d)) ModLog.Every("KySliderRow.KySliderRow", 2d, $"KySliderRow.KySliderRow(label={CoreLog.Shown(label)}, min={CoreLog.Shown(min)}, max={CoreLog.Shown(max)}, value={CoreLog.Shown(value)}, format={CoreLog.Shown(format)})");
         Min = min; Max = max < min ? min : max; Value = value; Format = string.IsNullOrEmpty(format) ? "0.##" : format; Changed = changed;
     }
 }
