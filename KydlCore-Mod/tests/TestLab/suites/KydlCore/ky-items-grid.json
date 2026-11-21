@@ -14,8 +14,7 @@
     { "do": "hook", "name": "kc.kyItemsView", "args": { "grid": false }, "contains": "list, cards 0", "label": "back to the list" },
     { "do": "hook", "name": "kc.kyItemsView", "args": { "grid": false }, "contains": "button Grid view", "label": "the button offers the grid" },
     { "do": "hook", "name": "kc.hubClose", "expect": false, "label": "close the hub" },
-    { "do": "console", "command": "killall" },
-    { "do": "console", "command": "removedrops" }
+    { "do": "console", "command": "killall" }
   ],
   "asserts": [ { "check": "noErrors", "source": "KydlCore" } ]
 }
