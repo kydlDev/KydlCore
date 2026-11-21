@@ -45,8 +45,6 @@ public class Plugin : BaseUnityPlugin
         KydlCore.Core.CoreLog.Sink = ModLog.Verbose;                                        // the pure code logs through ModLog (rule 8, 2026-11-20)
         KydlCore.Core.CoreLog.DebugOn = () => ModSettings.DebugLog != null && ModSettings.DebugLog.Value;
         KydlCore.Ui.UiLog.DebugOn = KydlCore.Core.CoreLog.DebugOn;          // the UI kit's own debug lines follow the same switch; the kit cannot use CoreLog (it is copied alone into Unity)
-        ModLog.StartBackgroundWriter();                                      // D-147 (user 2026-11-21): Info / Debug lines of every mod written off the game thread
-        UnityEngine.Application.quitting += () => ModLog.FlushPending();    // nothing queued is lost on a normal quit
         ModLog.Info(ModName + " " + ModVersion + " loaded (dll built " + File.GetLastWriteTime(Assembly.GetExecutingAssembly().Location).ToString("yyyy-MM-dd HH:mm:ss") + ")");
 
         // The shared UI kit (KydlCore.Ui) lives in this DLL only (D-040): Core sets its log sinks, its panel owner and the input lock ONCE.
@@ -109,6 +107,5 @@ public class Plugin : BaseUnityPlugin
         HubHost.Close("plugin destroyed");
         KyWindows.CloseAll("plugin destroyed");
         ModLog.Verbose("Plugin: destroyed");
-        ModLog.FlushPending();
     }
 }

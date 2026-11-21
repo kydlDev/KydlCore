@@ -179,7 +179,7 @@ public static partial class ModLog
         try
         {
             if (IsRepeat(c, level, message)) return;
-            Emit(Source(c), level, Line(message));      // ModLog.Writer.cs: queued for the background writer once it runs (D-147)
+            Source(c).Log(level, Line(message));        // synchronous on purpose: BepInEx's UnityLogListener calls Unity's native log, which must not run off the game thread (a background writer froze a relog, GunPowdered a16full2, 2026-11-21)
         }
         catch (ObjectDisposedException) { }          // the BepInEx log is closed while the game shuts down
         catch (Exception) { }                        // last resort: never throw out of the logger
