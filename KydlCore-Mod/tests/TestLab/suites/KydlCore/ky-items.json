@@ -1,6 +1,6 @@
 {
   "name": "ky-items",
-  "description": "The KY-Items registry is ready and holds the items of the installed KydlDev mods WhipItUp is switched on for this test, so a leftover setting of another mod cannot decide it.",
+  "description": "The KY-Items registry is ready and holds the items of the installed KydlDev mods WhipItUp is switched on for the whole suite (suite.json configOverrides), so the user turning mods off in the test profile cannot decide it.",
   "timeout": 60,
   "steps": [
     {
@@ -8,18 +8,6 @@
       "name": "kc.arena",
       "contains": "arena at",
       "label": "start on the arena spot"
-    },
-    {
-      "do": "setConfig",
-      "guid": "com.kydldev.WhipItUp",
-      "section": "General",
-      "key": "Enable Mod",
-      "value": true,
-      "label": "WhipItUp on for this test (2026-11-23 k112g16-1: its Enable Mod was left false in the test profile, so it had no items; restored after the test)"
-    },
-    {
-      "do": "wait",
-      "seconds": 2
     },
     {
       "do": "wait",

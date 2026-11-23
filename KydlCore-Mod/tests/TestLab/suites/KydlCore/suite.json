@@ -9,52 +9,10 @@
   ],
   "configOverrides": [
     {
-      "guid": "com.kydldev.KydlCore",
+      "guid": "com.kydldev.WhipItUp",
       "section": "General",
-      "key": "HubKey",
-      "value": "F6"
-    },
-    {
-      "guid": "com.kydldev.KydlCore",
-      "section": "General",
-      "key": "KY-Items View",
-      "value": "List"
-    },
-    {
-      "guid": "com.kydldev.KydlCore",
-      "section": "DebugLog",
-      "key": "Enable",
+      "key": "Enable Mod",
       "value": "true"
-    },
-    {
-      "guid": "com.kydldev.KydlCore",
-      "section": "Diagnostics",
-      "key": "FlightSampleSeconds",
-      "value": "1"
-    },
-    {
-      "guid": "com.kydldev.KydlCore",
-      "section": "Diagnostics",
-      "key": "FlightWindowSeconds",
-      "value": "120"
-    },
-    {
-      "guid": "com.kydldev.KydlCore",
-      "section": "Diagnostics",
-      "key": "FlightMaxDumps",
-      "value": "30"
-    },
-    {
-      "guid": "com.kydldev.KydlCore",
-      "section": "Diagnostics",
-      "key": "FlightKeepDays",
-      "value": "3"
-    },
-    {
-      "guid": "com.kydldev.KydlCore",
-      "section": "Diagnostics",
-      "key": "FlightKeepFiles",
-      "value": "100"
     }
   ],
   "resetBetweenTests": true,
@@ -66,7 +24,7 @@
     "hub-opens-a-mod-tab",
     "ky-items",
     "ky-items-contribute",
-        "ky-items-grid",
+    "ky-items-grid",
     "flight-recorder"
   ],
   "setup": {
