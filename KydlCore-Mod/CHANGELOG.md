@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.1.2
+- New: KY-Items has a grid view (4 square icons per row with name and prefab) next to the list; switch at the top right, remembered in `[General] KY-Items View`.
+- New: a Materials tab in the KY hub for deposits and crafting ingredients (`KyKind.Material`).
+- New for mod authors: `ModLog.ExpectWarning` marks warnings a test provokes on purpose, so they do not count as failures.
+- New for mod authors' TestLab suites: the start-of-test arena cleanup removes dropped items, creatures, and logs, stumps and pieces that were not in the world template, and puts back terrain a test changed.
+- Changed: every method logs on entry and on each return when the debug log is on; per-frame lines are throttled, so a log stays readable. Less log spam overall (the flight recorder's echo and repeated network lines are throttled).
+- Fixed: Valheim could hang at start because the log listener wrote log lines about itself without end.
+- Fixed: logged values stay on one line, and a logged value containing the text "CHECK OFF" no longer counts as a failed check.
+- Fixed: the UI kit compiles again in a mod's own Unity project.
+
+### Testing
+- (filled in by the release gate run)
+
 ## 1.1.1
 - New: in the KY hub (F6) every settings category of a mod has its own tab, for every mod. Categories that belong together share one tab (for example all "Staff of Protection - ..." sections of ComfortMagicBubbles). "General" comes first and "DebugLog" last, also when a mod has tabs of its own (they sit in between). A mod with a single category keeps its one "Settings" tab.
 - New for mod authors: `KyHub.SetGroupPanel` puts a panel of the mod's own at the end of one settings tab and can leave out the plain entries of the sections that panel draws itself (they stay in the F1 menu and the cfg file); `KyHub.RemoveGroupPanel` takes it away again. An overload with `atTop` puts the panel above the entries instead, and `KyHub.SetGroupPage` does the same with a declarative page (buttons and notes, like `AddPage`), so a mod's own actions share the tab of their config category instead of a second tab with the same name.
