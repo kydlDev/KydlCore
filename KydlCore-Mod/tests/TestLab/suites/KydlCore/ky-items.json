@@ -20,6 +20,19 @@
       "timeout": 15
     },
     {
+      "do": "wait",
+      "until": {
+        "check": "hook",
+        "name": "kc.itemsAtLeast",
+        "args": {
+          "min": 21,
+          "mod": "com.kydldev.WhipItUp"
+        },
+        "expect": true
+      },
+      "timeout": 15
+    },
+    {
       "do": "hook",
       "name": "kc.itemsAtLeast",
       "args": {
