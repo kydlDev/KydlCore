@@ -9,6 +9,24 @@
   ],
   "configOverrides": [
     {
+      "guid": "com.kydldev.KydlCore",
+      "section": "General",
+      "key": "HubKey",
+      "value": "F6"
+    },
+    {
+      "guid": "com.kydldev.KydlCore",
+      "section": "General",
+      "key": "KY-Items View",
+      "value": "List"
+    },
+    {
+      "guid": "com.kydldev.KydlCore",
+      "section": "DebugLog",
+      "key": "Enable",
+      "value": "true"
+    },
+    {
       "guid": "com.kydldev.WhipItUp",
       "section": "General",
       "key": "Enable Mod",
