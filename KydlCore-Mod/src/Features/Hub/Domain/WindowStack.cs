@@ -77,11 +77,11 @@ internal sealed class WindowStack
     /// <summary>Escape: closes only the front window and returns its id, or returns null when nothing is open.</summary>
     public string CloseTop()
     {
-        if (CoreLog.On) CoreLog.Verbose($"WindowStack.CloseTop()");
-        if (_ids.Count == 0) { if (CoreLog.On) CoreLog.Verbose("WindowStack.CloseTop: returns null (line 81)"); return null; }
+        if (CoreLog.IsOn()) CoreLog.Verbose($"WindowStack.CloseTop()");
+        if (_ids.Count == 0) { if (CoreLog.IsOn()) CoreLog.Verbose("WindowStack.CloseTop: returns null (line 81)"); return null; }
         string top = _ids[_ids.Count - 1];
         Close(top);
-        { var returnedAt84 = top; if (CoreLog.On) CoreLog.Verbose($"WindowStack.CloseTop: returns {CoreLog.Shown(returnedAt84)} (line 84)"); return returnedAt84; }
+        { var returnedAt84 = top; if (CoreLog.IsOn()) CoreLog.Verbose($"WindowStack.CloseTop: returns {CoreLog.Shown(returnedAt84)} (line 84)"); return returnedAt84; }
     }
 
     static bool Valid(string id) { return !string.IsNullOrEmpty(id); }

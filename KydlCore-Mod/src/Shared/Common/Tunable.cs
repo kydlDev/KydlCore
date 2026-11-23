@@ -48,7 +48,7 @@ public sealed class Tunable<T>
     [MethodImpl(MethodImplOptions.NoInlining)]
     public Tunable(string section, string name, T value, T min, T max, string description = "") : this(ModContexts.For(Assembly.GetCallingAssembly()), section, name, value, description)
     {
-        if (CoreLog.On) ModLog.Verbose($"Tunable.Tunable(section={CoreLog.Shown(section)}, name={CoreLog.Shown(name)}, value={CoreLog.Shown(value)}, min={CoreLog.Shown(min)}, max={CoreLog.Shown(max)}, description={CoreLog.Shown(description)})");
+        if (CoreLog.IsOn()) ModLog.Verbose($"Tunable.Tunable(section={CoreLog.Shown(section)}, name={CoreLog.Shown(name)}, value={CoreLog.Shown(value)}, min={CoreLog.Shown(min)}, max={CoreLog.Shown(max)}, description={CoreLog.Shown(description)})");
         // Stryker disable once Equality : swapping equal values changes nothing
         if (Comparer<T>.Default.Compare(min, max) > 0) { var t = min; min = max; max = t; }
         Min = min; Max = max;

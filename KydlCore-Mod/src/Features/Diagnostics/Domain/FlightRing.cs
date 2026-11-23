@@ -19,7 +19,7 @@ internal sealed class FlightRing<T>
     /// <param name="capacity">How many items it keeps (at least 1).</param>
     internal FlightRing(int capacity)
     {
-        if (CoreLog.On) CoreLog.Verbose($"FlightRing.FlightRing(capacity={CoreLog.Shown(capacity)})");
+        if (CoreLog.IsOn()) CoreLog.Verbose($"FlightRing.FlightRing(capacity={CoreLog.Shown(capacity)})");
         if (capacity < 1)
         {
             throw new ArgumentOutOfRangeException(nameof(capacity), capacity, "a ring keeps at least one item");

@@ -25,13 +25,13 @@ internal static class TriggerRules
     /// <summary>Is this the lab's "Test X: Passed / Failed" line? Gives the test name, whether it failed and the reason the lab gave.</summary>
     internal static bool TryLabResult(string source, string text, out string test, out bool failed, out string why)
     {
-        if (CoreLog.On) CoreLog.Verbose($"TriggerRules.TryLabResult(source={CoreLog.Shown(source)}, text={CoreLog.Shown(text)})");
+        if (CoreLog.IsOn()) CoreLog.Verbose($"TriggerRules.TryLabResult(source={CoreLog.Shown(source)}, text={CoreLog.Shown(text)})");
         test = null;
         failed = false;
         why = null;
         if (source != LabSource || string.IsNullOrEmpty(text))
         {
-            { var returnedAt34 = test != null; if (CoreLog.On) CoreLog.Verbose($"TriggerRules.TryLabResult: returns {CoreLog.Shown(returnedAt34)} (line 34)"); return returnedAt34; }
+            { var returnedAt34 = test != null; if (CoreLog.IsOn()) CoreLog.Verbose($"TriggerRules.TryLabResult: returns {CoreLog.Shown(returnedAt34)} (line 34)"); return returnedAt34; }
         }
 
         Match m;
@@ -41,18 +41,18 @@ internal static class TriggerRules
         }
         catch (RegexMatchTimeoutException)
         {
-            { var returnedAt44 = test != null; if (CoreLog.On) CoreLog.Verbose($"TriggerRules.TryLabResult: returns {CoreLog.Shown(returnedAt44)} (line 44)"); return returnedAt44; }
+            { var returnedAt44 = test != null; if (CoreLog.IsOn()) CoreLog.Verbose($"TriggerRules.TryLabResult: returns {CoreLog.Shown(returnedAt44)} (line 44)"); return returnedAt44; }
         }
 
         if (!m.Success)
         {
-            { var returnedAt49 = test != null; if (CoreLog.On) CoreLog.Verbose($"TriggerRules.TryLabResult: returns {CoreLog.Shown(returnedAt49)} (line 49)"); return returnedAt49; }
+            { var returnedAt49 = test != null; if (CoreLog.IsOn()) CoreLog.Verbose($"TriggerRules.TryLabResult: returns {CoreLog.Shown(returnedAt49)} (line 49)"); return returnedAt49; }
         }
 
         test = m.Groups["test"].Value;
         failed = m.Groups["result"].Value == "Failed";
         why = m.Groups["why"].Success ? m.Groups["why"].Value : "";
-        { var returnedAt55 = test != null; if (CoreLog.On) CoreLog.Verbose($"TriggerRules.TryLabResult: returns {CoreLog.Shown(returnedAt55)} (line 55)"); return returnedAt55; }
+        { var returnedAt55 = test != null; if (CoreLog.IsOn()) CoreLog.Verbose($"TriggerRules.TryLabResult: returns {CoreLog.Shown(returnedAt55)} (line 55)"); return returnedAt55; }
     }
 
     /// <summary>Is this the lab's line after every test ("Test state reset.")?</summary>
@@ -91,8 +91,8 @@ internal static class TriggerRules
     /// <summary>The text cut to <paramref name="max"/> characters (with "..." when cut), first line only; never null.</summary>
     internal static string Short(string text, int max)
     {
-        if (CoreLog.On) CoreLog.Verbose($"TriggerRules.Short(text={CoreLog.Shown(text)}, max={CoreLog.Shown(max)})");
+        if (CoreLog.IsOn()) CoreLog.Verbose($"TriggerRules.Short(text={CoreLog.Shown(text)}, max={CoreLog.Shown(max)})");
         string first = (text ?? "").Split('\n')[0].TrimEnd('\r');
-        { var returnedAt96 = first.Length <= max ? first : first.Substring(0, Math.Max(0, max)) + "..."; if (CoreLog.On) CoreLog.Verbose($"TriggerRules.Short: returns {CoreLog.Shown(returnedAt96)} (line 96)"); return returnedAt96; }
+        { var returnedAt96 = first.Length <= max ? first : first.Substring(0, Math.Max(0, max)) + "..."; if (CoreLog.IsOn()) CoreLog.Verbose($"TriggerRules.Short: returns {CoreLog.Shown(returnedAt96)} (line 96)"); return returnedAt96; }
     }
 }

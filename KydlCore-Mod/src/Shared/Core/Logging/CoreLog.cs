@@ -24,6 +24,9 @@ namespace KydlCore.Core
         /// <summary>True when a line would be written: callers check it before building the text, so nothing is paid with debug logging off.</summary>
         internal static bool On => Sink != null && DebugOn != null && DebugOn();
 
+        /// <summary>Same as <see cref="On"/> as a method, so Stryker's ignore-methods can leave the log guards of the tested rules alone (KydlCore 1.1.2, G14).</summary>
+        internal static bool IsOn() => On;
+
         /// <summary>Writes the line when debug logging is on.</summary>
         internal static void Verbose(string message)
         {
