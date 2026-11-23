@@ -1,4 +1,4 @@
-# Changelog
+﻿# Changelog
 
 ## 1.1.2
 - New: KY-Items has a grid view (4 square icons per row with name and prefab) next to the list; switch at the top right, remembered in `[General] KY-Items View`.
@@ -11,7 +11,10 @@
 - Fixed: the UI kit compiles again in a mod's own Unity project.
 
 ### Testing
-- (filled in by the release gate run)
+- Unit tests: 562 passed. Integration tests: 39 passed.
+- Coverage of the testable code: 98.4%. Mutation testing (Stryker): 96.4% of the mutants are caught by the tests.
+- SonarQube: no Medium or High impact issue.
+- DrakesTestLab: the KydlCore suite green 3 times in a row on this build, and GunPowdered's full suites on top of it.
 
 ## 1.1.1
 - New: in the KY hub (F6) every settings category of a mod has its own tab, for every mod. Categories that belong together share one tab (for example all "Staff of Protection - ..." sections of ComfortMagicBubbles). "General" comes first and "DebugLog" last, also when a mod has tabs of its own (they sit in between). A mod with a single category keeps its one "Settings" tab.
