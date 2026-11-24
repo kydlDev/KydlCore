@@ -1,4 +1,4 @@
-# Changelog
+﻿# Changelog
 
 ## 1.1.2
 - New: KY-Items has a grid view (4 square icons per row with name and prefab) next to the list; switch at the top right, remembered in `[General] KY-Items View`.
