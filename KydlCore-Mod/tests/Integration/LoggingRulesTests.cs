@@ -30,7 +30,7 @@ public class LoggingRulesTests
         .Where(f => !IsLogListener(f) && !f.Replace('\\', '/').Contains("/src/Testing/") && !LoggerFiles.Contains(Path.GetFileName(f)));
 
     // the loggers themselves (a logger that logs through itself loops)
-    static readonly HashSet<string> LoggerFiles = new HashSet<string> { "CoreLog.cs", "ModLog.cs", "ModLog.Diagnostics.cs", "ModContext.cs", "UiLog.cs", "UiLogSinks.cs" };
+    static readonly HashSet<string> LoggerFiles = new HashSet<string> { "CoreLog.cs", "ModLog.cs", "ModLog.Diagnostics.cs", "ModContext.cs", "ModContexts.cs", "UiLog.cs", "UiLogSinks.cs" };     // ModContexts.cs: split out of ModContext.cs (2026-11-24, one public type per file)
 
     // code that receives every log line (a BepInEx ILogListener, Unity's logMessageReceived) must never log: each of its own lines would come back to it
     // and loop forever (KydlCore FlightListener, 2026-11-20: the log filled up and Valheim did not start)

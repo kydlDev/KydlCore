@@ -6,17 +6,6 @@ using KydlCore.Core;
 
 namespace KydlCore.Common;
 
-/// <summary>
-/// KydlCore D-084: the attribute DrakesTestLab finds by NAME. The mod does not reference DrakesTestLab; a static method with this attribute becomes a test hook
-/// (`{ "do": "hook", "name": "<Name>", "args": {...} }` in a suite). One copy, in KydlCore.dll; every mod uses it.
-/// </summary>
-[AttributeUsage(AttributeTargets.Method)]
-public sealed class TestHookAttribute : Attribute
-{
-    public TestHookAttribute(string name) { Name = name; }
-    public string Name { get; }
-}
-
 /// <summary>Helpers the per-mod Testing/TestHooks.cs files share (KydlCore D-084).</summary>
 public static class TestLabSupport
 {

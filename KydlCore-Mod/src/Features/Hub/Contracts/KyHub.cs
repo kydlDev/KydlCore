@@ -10,28 +10,6 @@ using KydlCore.Core;
 
 namespace KydlCore.Features.Hub.Contracts;
 
-/// <summary>A row-2 tab of the KY hub, made by <see cref="KyHub.AddTab"/>.</summary>
-public sealed class KyTab
-{
-    /// <summary>The plugin GUID of the mod that owns the tab.</summary>
-    public string ModGuid { get; internal set; }
-    /// <summary>The tab id, unique inside the mod.</summary>
-    public string Id { get; internal set; }
-    /// <summary>The shown name.</summary>
-    public string Title { get; internal set; }
-    /// <summary>The place in row 2 (smaller first; the same order = the order of registering).</summary>
-    public int Order { get; internal set; }
-
-    /// <summary>Builds the page again when this tab is the one on screen (the mod's data changed).</summary>
-    // Stryker disable once Block : the body only calls the game-side window (nothing to see while no hub is open)
-    public void Refresh()
-    {
-        ModLog.Verbose("KyHub: Refresh " + ModGuid + " / " + Id);
-        // Stryker disable once all : only does something while the hub window is open (game)
-        HubHost.Refresh(ModGuid, Id);
-    }
-}
-
 /// <summary>
 /// The KY hub (F6): the one menu of every KydlDev mod (DESIGN 3 / 5, PLAN T-034). Row 1 = every loaded plugin whose GUID starts with
 /// "com.kydldev.", row 2 = the tabs that mod registered here; a mod that registers none gets one automatic "Settings" tab with all its config
