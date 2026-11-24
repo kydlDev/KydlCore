@@ -25,9 +25,13 @@ namespace KydlCore.Bootstrap;
 public class Plugin : BaseUnityPlugin
 {
     // ModGuid never changes after the first release. ModVersion = manifest.json version_number = newest CHANGELOG heading (tests check it).
+    /// <summary>The BepInEx GUID; a mod's [BepInDependency] names it.</summary>
     public const string ModGuid = "com.kydldev.KydlCore";
+    /// <summary>The mod's name (log source, cache folder).</summary>
     public const string ModName = "KydlCore";
+    /// <summary>The version; equal to manifest.json and the newest CHANGELOG heading.</summary>
     public const string ModVersion = "1.1.2";
+    /// <summary>The name of the embedded AssetBundle.</summary>
     public const string BundleName = "kydlcore";
     /// UiKit.Owner: the name part of the one UI root object ("Kydl_UI_" + owner).
     internal const string UiOwner = "Root";

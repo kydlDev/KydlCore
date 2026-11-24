@@ -28,6 +28,7 @@ public sealed class KyEntry
     public string ModGuid = "";
     /// <summary>The mod's name, or "build category KY-Items" for a piece found only by its category.</summary>
     public string ModName = "";
+    /// <summary>What it is: an item, a piece or a material (shown on the Materials tab).</summary>
     public KyKind Kind;
     /// <summary>The localisation key / name from the game data ("$item_x" or a plain name); <see cref="DisplayName"/> is the shown text.</summary>
     public string NameToken = "";

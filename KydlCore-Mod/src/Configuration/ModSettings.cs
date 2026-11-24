@@ -21,7 +21,7 @@ internal static class ModSettings
     public static ConfigEntry<KeyCode> HubKey;
     // [General] how the KY-Items / Materials pages show the prefabs (user 2026-11-19, D-096): a list, or a grid of big icons
     internal static ConfigEntry<ItemsView> KyItemsView;
-    // [DebugLog]
+    /// <summary>[DebugLog] Enable: KydlCore's own verbose log lines (off by default; TestLab turns it on).</summary>
     public static ConfigEntry<bool> DebugLog;
 
 
