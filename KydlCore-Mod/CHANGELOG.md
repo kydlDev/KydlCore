@@ -1,4 +1,4 @@
-﻿# Changelog
+# Changelog
 
 ## 1.1.2
 - New: KY-Items has a grid view (4 square icons per row with name and prefab) next to the list; switch at the top right, remembered in `[General] KY-Items View`.
@@ -12,8 +12,8 @@
 - Fixed: the UI kit compiles again in a mod's own Unity project.
 
 ### Testing
-- Unit tests: 562 passed. Integration tests: 39 passed.
-- Coverage of the testable code: 98.4%. Mutation testing (Stryker): 96.4% of the mutants are caught by the tests.
+- Unit tests: 570 passed. Integration tests: 39 passed.
+- Coverage of the testable code: 98.4%. Mutation testing (Stryker): 96.3% of the mutants are caught by the tests.
 - SonarQube: no Medium or High impact issue.
 - DrakesTestLab: the KydlCore suite green 3 times in a row on this build, and GunPowdered's full suites on top of it.
 
