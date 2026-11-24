@@ -12,8 +12,10 @@ namespace KydlCore.Common;
 /// </summary>
 public static class TestTerrainRestore
 {
-    /// AppDomain key of the copy (ZDOID of the terrain compiler -> its TCData bytes), shared by all mods of the session.
-    public const string SnapshotKey = "Kydl.TestCleanup.Terrain";
+    /// AppDomain key of the copy (zone of the terrain compiler, <see cref="TestCleanupRules.TerrainKey"/> -> its TCData bytes), shared by all mods of the session.
+    /// Keyed by zone, not ZDOID: a relog gives every ZDO a new id, and the ZDOID-keyed copy wrote one zone's levelling into another (GunPowdered
+    /// 20261124-001640: hills, holes, floating slabs, torn terrain edges). Zones do not move, so the copy stays right across a relog.
+    public const string ZoneSnapshotKey = "Kydl.TestCleanup.TerrainByZone";
     static readonly AccessTools.FieldRef<TerrainComp, ZNetView> NView = AccessTools.FieldRefAccess<TerrainComp, ZNetView>("m_nview");
     static readonly System.Reflection.MethodInfo SaveMethod = AccessTools.Method(typeof(TerrainComp), "Save");
     static readonly System.Reflection.MethodInfo CheckLoadMethod = AccessTools.Method(typeof(TerrainComp), "CheckLoad");
@@ -23,7 +25,7 @@ public static class TestTerrainRestore
     {
         if (CoreLog.On) ModLog.Verbose(ctx, $"TestTerrainRestore.Run(spot={CoreLog.Shown(spot)})");
         var domain = System.AppDomain.CurrentDomain;
-        if (!(domain.GetData(SnapshotKey) is Dictionary<ZDOID, byte[]> copy)) { copy = new Dictionary<ZDOID, byte[]>(); domain.SetData(SnapshotKey, copy); }
+        if (!(domain.GetData(ZoneSnapshotKey) is Dictionary<(int X, int Z), byte[]> copy)) { copy = new Dictionary<(int X, int Z), byte[]>(); domain.SetData(ZoneSnapshotKey, copy); }
         int restored = 0;
         foreach (var comp in Object.FindObjectsByType<TerrainComp>(FindObjectsSortMode.None))
         {
@@ -32,22 +34,31 @@ public static class TestTerrainRestore
             var d = comp.transform.position - spot; d.y = 0f;
             if (d.magnitude > TestCleanupRules.RangeMetres + TestCleanupRules.ZoneMetres) continue;
             if (!nview.IsOwner()) nview.ClaimOwnership();
-            var id = nview.GetZDO().m_uid;
-            if (!copy.TryGetValue(id, out var first))
+            var at = comp.transform.position;
+            var zone = TestCleanupRules.TerrainKey(at.x, at.z);      // the zone, not the ZDOID: a relog gives the compiler a new id, its zone stays
+            if (!copy.TryGetValue(zone, out var first))
             {
                 SaveMethod?.Invoke(comp, new object[] { false });      // an untouched compiler has no data yet: Save writes the pristine state
-                copy[id] = nview.GetZDO().GetByteArray(ZDOVars.s_TCData);
-                ModLog.Verbose(ctx, "TestTerrainRestore: copy of the terrain data at " + comp.transform.position.ToString("F0") + ", " + (copy[id] == null ? 0 : copy[id].Length) + " bytes");
+                copy[zone] = nview.GetZDO().GetByteArray(ZDOVars.s_TCData);
+                ModLog.Verbose(ctx, $"TestTerrainRestore: copy taken - zone={zone.X},{zone.Z}, at={at.ToString("F0")}, bytes={(copy[zone] == null ? 0 : copy[zone].Length)}, zdo={nview.GetZDO().m_uid}");
                 continue;
             }
             var nowBytes = nview.GetZDO().GetByteArray(ZDOVars.s_TCData);
-            ModLog.Verbose(ctx, "TestTerrainRestore: " + comp.transform.position.ToString("F0") + " copy " + (first == null ? -1 : first.Length) + " bytes, now " + (nowBytes == null ? -1 : nowBytes.Length) + " bytes, revision " + nview.GetZDO().DataRevision);
+            ModLog.Verbose(ctx, $"TestTerrainRestore: compare - zone={zone.X},{zone.Z}, at={at.ToString("F0")}, copy={(first == null ? -1 : first.Length)} bytes, now={(nowBytes == null ? -1 : nowBytes.Length)} bytes, revision={nview.GetZDO().DataRevision}, zdo={nview.GetZDO().m_uid}");
             if (first == null || !TestCleanupRules.TerrainChanged(first, nowBytes)) continue;
             nview.GetZDO().Set(ZDOVars.s_TCData, first);
             CheckLoadMethod?.Invoke(comp, null);
+            ModLog.Info(ctx, $"TestTerrainRestore: put back - zone={zone.X},{zone.Z}, at={at.ToString("F0")}, bytes={first.Length}");
             restored++;
         }
-        if (restored > 0) ModLog.Info(ctx, "TestTerrainRestore: " + restored + " terrain area(s) put back to the template");
-        { var returnedAt51 = restored; if (CoreLog.On) ModLog.Verbose(ctx, $"TestTerrainRestore.Run: returns {CoreLog.Shown(returnedAt51)} (line 51)"); return returnedAt51; }
+        if (restored > 0)
+        {
+            // CheckLoad only queues the heightmap rebuild; until it ran, the next test step read the ground from the old mesh (GunPowdered a18persist1: the ground
+            // read 10 m too low, a rock went in underground). Rebuild now and sync the colliders, so the ground is right when Run returns.
+            Heightmap.ForceGenerateAll();
+            Physics.SyncTransforms();
+            ModLog.Info(ctx, $"TestTerrainRestore: {restored} terrain area(s) put back to the template - heightmaps rebuilt, colliders synced");
+        }
+        { var returnedAt62 = restored; if (CoreLog.On) ModLog.Verbose(ctx, $"TestTerrainRestore.Run: returns {CoreLog.Shown(returnedAt62)} (line 62)"); return returnedAt62; }
     }
 }

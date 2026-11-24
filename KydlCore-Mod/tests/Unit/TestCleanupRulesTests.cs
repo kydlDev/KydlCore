@@ -47,6 +47,27 @@ public class TestCleanupRulesTests
         }
     }
 
+    // GunPowdered 20261124-001640: the copy was keyed by ZDOID, a relog gave new ids and another zone's levelling went into the arena (torn terrain).
+    // The key is the zone (ZoneSystem.GetZone maths: 64 m zones centred on multiples of 64), which a relog cannot change.
+    [TestCase(0f, 0f, 0, 0)]
+    [TestCase(31.9f, -31.9f, 0, 0)]
+    [TestCase(32f, 32f, 1, 1)]
+    [TestCase(-32.1f, -32f, -1, 0)]
+    [TestCase(128f, 0f, 2, 0)]
+    [TestCase(192f, 0f, 3, 0)]
+    [TestCase(115f, 28f, 2, 0)]
+    public void TerrainKey_IsTheZoneOfThePoint(float x, float z, int zoneX, int zoneZ)
+    {
+        Assert.That(TestCleanupRules.TerrainKey(x, z), Is.EqualTo((zoneX, zoneZ)));
+    }
+
+    [Test]
+    public void TerrainKey_NeighbourZonesDiffer_SameZoneMatches()
+    {
+        Assert.That(TestCleanupRules.TerrainKey(128f, 0f), Is.Not.EqualTo(TestCleanupRules.TerrainKey(192f, 0f)), "the two zones of the a18kneel3 mix-up");
+        Assert.That(TestCleanupRules.TerrainKey(100f, 10f), Is.EqualTo(TestCleanupRules.TerrainKey(150f, -20f)), "two points of one zone");
+    }
+
     [Test]
     public void TerrainChanged_SameBytes_IsFalse_AnyDifferenceIsTrue()
     {

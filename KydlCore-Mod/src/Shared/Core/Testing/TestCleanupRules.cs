@@ -22,12 +22,25 @@ public static class TestCleanupRules
         { var returnedAt22 = remove; if (CoreLog.On) CoreLog.Verbose($"TestCleanupRules.ShouldRemove: returns {CoreLog.Shown(returnedAt22)} (line 22)"); return returnedAt22; }
     }
 
+    /// Side of one Valheim zone in metres (ZoneSystem.c_ZoneSize); a terrain compiler sits at its zone's centre.
+    public const float ZoneSizeMetres = 64f;
+
+    /// The key the template terrain copy is kept under: the zone that holds the point (same maths as ZoneSystem.GetZone). Not the ZDOID: a relog loads the
+    /// world again with NEW ZDOIDs, and an old id then names another zone's terrain compiler (GunPowdered a18kneel3 / 20261124-001640: another zone's
+    /// levelling was written into the arena - hills, holes, floating slabs and torn terrain edges). A zone never moves, so the key survives a relog.
+    public static (int X, int Z) TerrainKey(float x, float z)
+    {
+        if (CoreLog.On) CoreLog.Verbose($"TestCleanupRules.TerrainKey(x={CoreLog.Shown(x)}, z={CoreLog.Shown(z)})");
+        var key = ((int)System.Math.Floor((x + ZoneSizeMetres / 2f) / ZoneSizeMetres), (int)System.Math.Floor((z + ZoneSizeMetres / 2f) / ZoneSizeMetres));
+        { var returnedAt35 = key; if (CoreLog.On) CoreLog.Verbose($"TestCleanupRules.TerrainKey: returns {CoreLog.Shown(returnedAt35)} (line 35)"); return returnedAt35; }
+    }
+
     /// Did the ground change since the copy was taken? Different bytes (or a missing current value) mean yes.
     public static bool TerrainChanged(byte[] copy, byte[] now)
     {
         if (CoreLog.On) CoreLog.Verbose($"TestCleanupRules.TerrainChanged(copy={CoreLog.Shown(copy)}, now={CoreLog.Shown(now)})");
         bool changed = copy == null ? now != null : now == null || copy.Length != now.Length;
         for (int i = 0; !changed && copy != null && now != null && i < copy.Length; i++) changed = copy[i] != now[i];
-        { var returnedAt31 = changed; if (CoreLog.On) CoreLog.Verbose($"TestCleanupRules.TerrainChanged: returns {CoreLog.Shown(returnedAt31)} (line 31)"); return returnedAt31; }
+        { var returnedAt44 = changed; if (CoreLog.On) CoreLog.Verbose($"TestCleanupRules.TerrainChanged: returns {CoreLog.Shown(returnedAt44)} (line 44)"); return returnedAt44; }
     }
 }
