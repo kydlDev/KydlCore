@@ -74,7 +74,7 @@ namespace KydlCore.Core
         {
             string text = value == null ? "null" : value.ToString();
             text = text.Replace("\r\n", " | ").Replace("\n", " | ").Replace("\r", " | ").Replace("CHECK OFF", "CHECK_OFF");
-            return text.Length <= 160 ? text : text.Substring(0, 160) + "... (" + text.Length + " chars)";
+            return text.Length <= 160 ? text : $"{text.Substring(0, 160)}... ({text.Length} chars)";
         }
     }
 }

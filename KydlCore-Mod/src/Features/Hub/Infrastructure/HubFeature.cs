@@ -20,7 +20,7 @@ internal sealed class HubFeature : IFeature
     public bool Start()
     {
         bool tabs = KyItemsTab.Init();
-        ModLog.Verbose("HubFeature: started (KydlCore tabs " + tabs + ")");
+        ModLog.Verbose($"HubFeature: started (KydlCore tabs {tabs})");
         return tabs;
     }
 
@@ -29,7 +29,7 @@ internal sealed class HubFeature : IFeature
         HubHost.Close("KydlCore stopping");
         KyWindows.CloseAll("KydlCore stopping");
         bool closed = !KyHub.IsOpen;
-        ModLog.Verbose("HubFeature: stopped (hub closed " + closed + ")");
+        ModLog.Verbose($"HubFeature: stopped (hub closed {closed})");
         return closed;
     }
 }

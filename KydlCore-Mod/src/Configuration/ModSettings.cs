@@ -55,8 +55,8 @@ internal static class ModSettings
         ConfigTools.ApplyCommaFix(c, savedLines);    // after every Bind: "3,5" typed by hand means 3.5, not 35
         ConfigTools.DropRemoved(c);
 
-        HubKey.SettingChanged += (s, e) => ModLog.Info("Config: HubKey = " + HubKey.Value + " (read on every key check, so the change applies at once)");
-        ModLog.Verbose("Config: bound (hub key " + HubKey.Value + ", debug log " + DebugLog.Value + ")");
+        HubKey.SettingChanged += (s, e) => ModLog.Info($"Config: HubKey = {HubKey.Value} (read on every key check, so the change applies at once)");
+        ModLog.Verbose($"Config: bound (hub key {HubKey.Value}, debug log {DebugLog.Value})");
         return HubKey != null && KyItemsView != null && DebugLog != null;
     }
 }

@@ -16,7 +16,7 @@ public static class KyCategory
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static string For(string piece)
     {
-        ModLog.Verbose(ModContexts.For(Assembly.GetCallingAssembly()), "KyCategory: piece '" + piece + "' goes into the build menu category '" + Name + "'");
+        ModLog.Verbose(ModContexts.For(Assembly.GetCallingAssembly()), $"KyCategory: piece '{piece}' goes into the build menu category '{Name}'");
         return Name;
     }
 }

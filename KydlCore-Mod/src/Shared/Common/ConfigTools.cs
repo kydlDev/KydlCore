@@ -29,8 +29,8 @@ public static class ConfigTools
     {
         var ctx = ModContexts.For(Assembly.GetCallingAssembly());
         try { { var returnedAt31 = c != null && !string.IsNullOrEmpty(c.ConfigFilePath) && File.Exists(c.ConfigFilePath) ? File.ReadAllLines(c.ConfigFilePath) : null; if (CoreLog.On) ModLog.Verbose($"ConfigTools.Capture: returns {CoreLog.Shown(returnedAt31)} (line 31)"); return returnedAt31; } }
-        catch (IOException e) { ModLog.Warn(ctx, "Config comma check skipped (file not readable): " + e.Message); return null; }
-        catch (UnauthorizedAccessException e) { ModLog.Warn(ctx, "Config comma check skipped (no access): " + e.Message); return null; }
+        catch (IOException e) { ModLog.Warn(ctx, $"Config comma check skipped (file not readable): {e.Message}"); return null; }
+        catch (UnauthorizedAccessException e) { ModLog.Warn(ctx, $"Config comma check skipped (no access): {e.Message}"); return null; }
     }
 
     /// Call AFTER every Bind. Returns the number of float / double entries whose comma was read as the decimal point.
@@ -60,7 +60,7 @@ public static class ConfigTools
                         Convert.ToString(entry.BoxedValue, CultureInfo.InvariantCulture) + " (BepInEx had read " +
                         Convert.ToString(was, CultureInfo.InvariantCulture) + "). Please use a dot in the config file.");
         }
-        ModLog.Verbose(ctx, "ConfigTools: comma check done, " + fixedCount + " value(s) corrected");
+        ModLog.Verbose(ctx, $"ConfigTools: comma check done, {fixedCount} value(s) corrected");
         return fixedCount;
     }
 
@@ -78,10 +78,10 @@ public static class ConfigTools
             if (dict != null) { dropped = dict.Count; dict.Clear(); }
             else ModLog.Verbose(ctx, "ConfigTools: OrphanedEntries not found in this BepInEx, old entries stay in the file");
             c.Save();
-            if (dropped > 0) ModLog.Info(ctx, "Config: " + dropped + " entry(ies) that are no longer settings were removed from the file");
+            if (dropped > 0) ModLog.Info(ctx, $"Config: {dropped} entry(ies) that are no longer settings were removed from the file");
         }
-        catch (TargetInvocationException e) { ModLog.Warn(ctx, "Config: old entries could not be removed: " + e.InnerException?.Message); }
-        catch (IOException e) { ModLog.Warn(ctx, "Config: the file could not be saved after removing old entries: " + e.Message); }
+        catch (TargetInvocationException e) { ModLog.Warn(ctx, $"Config: old entries could not be removed: {e.InnerException?.Message}"); }
+        catch (IOException e) { ModLog.Warn(ctx, $"Config: the file could not be saved after removing old entries: {e.Message}"); }
         return dropped;
     }
 }

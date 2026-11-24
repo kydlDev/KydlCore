@@ -22,7 +22,7 @@ internal static class InGameTests
     static string Startup_ConfigBound()
     {
         if (ModSettings.HubKey == null) return "FAIL: ModSettings.Bind did not run (HubKey is null)";
-        return "PASS: config bound (no EnableAll: KydlCore is always on), hub key " + ModSettings.HubKey.Value + ", debug log " + (ModSettings.DebugLog != null && ModSettings.DebugLog.Value ? "on" : "off");
+        return $"PASS: config bound (no EnableAll: KydlCore is always on), hub key {ModSettings.HubKey.Value}, debug log {(ModSettings.DebugLog != null && ModSettings.DebugLog.Value ? "on" : "off")}";
     }
 
     /// PLAN T-022a: is Valheim's font NotoSansSC-Regular among the loaded Font objects (the same lookup UiKit.LoadFonts uses: Font.name, exact)?
@@ -48,8 +48,8 @@ internal static class InGameTests
         string detail = total + " Font objects loaded; NotoSansSC-Regular " + Has(names, "NotoSansSC-Regular") + ", NotoSansSC-Thin " + Has(names, "NotoSansSC-Thin")
                       + ", Norse " + Has(names, "Norse") + ", Norsebold " + Has(names, "Norsebold") + ", NotoEmoji-Regular " + Has(names, "NotoEmoji-Regular")
                       + "; Noto / Norse fonts by name: " + (related.Count == 0 ? "none" : string.Join(", ", related.ToArray()));
-        ModLog.Verbose("InGameTests: " + detail);
-        return names.Contains("NotoSansSC-Regular") ? "PASS: " + detail : "FAIL: NotoSansSC-Regular is not a loaded Font: " + detail;
+        ModLog.Verbose($"InGameTests: {detail}");
+        return names.Contains("NotoSansSC-Regular") ? $"PASS: {detail}" : $"FAIL: NotoSansSC-Regular is not a loaded Font: {detail}";
     }
 
     static string Has(HashSet<string> names, string name) { return names.Contains(name) ? "yes" : "NO"; }
@@ -61,9 +61,9 @@ internal static class InGameTests
     {
         int n = 0;
         foreach (var doc in Object.FindObjectsByType<UnityEngine.UIElements.UIDocument>(FindObjectsSortMode.None))
-            if (doc != null && doc.gameObject.name == "Kydl_UI_" + Plugin.UiOwner) n++;
-        ModLog.Verbose("InGameTests: KC-01 " + n + " Kydl_UI_" + Plugin.UiOwner + " UIDocument(s)");
-        return n <= 1 ? "PASS: " + n + " Kydl_UI_" + Plugin.UiOwner + " UIDocument(s)" : "FAIL: " + n + " Kydl_UI_" + Plugin.UiOwner + " UIDocuments, expected at most 1";
+            if (doc != null && doc.gameObject.name == $"Kydl_UI_{Plugin.UiOwner}") n++;
+        ModLog.Verbose($"InGameTests: KC-01 {n} Kydl_UI_{Plugin.UiOwner} UIDocument(s)");
+        return n <= 1 ? $"PASS: {n} Kydl_UI_{Plugin.UiOwner} UIDocument(s)" : $"FAIL: {n} Kydl_UI_{Plugin.UiOwner} UIDocuments, expected at most 1";
     }
 
     /// KC-02: row 1 of the hub = every loaded plugin whose GUID starts with com.kydldev. (read from the hub model; SKIP while the hub was never opened).
@@ -75,7 +75,7 @@ internal static class InGameTests
         foreach (var info in BepInEx.Bootstrap.Chainloader.PluginInfos.Values)
             if (info != null && info.Metadata != null && Ui.HubModel.IsHubGuid(info.Metadata.GUID)) loaded++;
         ModLog.Check("KC-02 row-1 tabs", shown, loaded, 0, "mods");
-        return shown == loaded ? "PASS: " + shown + " mod(s) in row 1 = " + loaded + " loaded com.kydldev.* plugin(s)" : "FAIL: " + shown + " mod(s) in row 1, " + loaded + " loaded com.kydldev.* plugin(s)";
+        return shown == loaded ? $"PASS: {shown} mod(s) in row 1 = {loaded} loaded com.kydldev.* plugin(s)" : $"FAIL: {shown} mod(s) in row 1, {loaded} loaded com.kydldev.* plugin(s)";
     }
 
     /// KC-03: every mod in the hub has at least one tab (its own, or the automatic Settings); KydlCore has "settings" and has "ky-items" exactly when the registry has entries.
@@ -84,14 +84,14 @@ internal static class InGameTests
         var model = KyHub.Model;
         if (model.ModCount == 0) return "SKIP: the hub was not opened yet: press F6 once, then PageDown";
         foreach (string mod in model.ModGuids())
-            if (model.TabIds(mod).Length == 0) return "FAIL: " + mod + " has no tab in row 2";
+            if (model.TabIds(mod).Length == 0) return $"FAIL: {mod} has no tab in row 2";
         var core = new List<string>(model.TabIds(Plugin.ModGuid));
         // HasTab, not a list lookup: since 1.1.1 the Settings tab is shown as one tab per config category, so TabIds holds part ids, not "settings" itself
         bool hasItems = model.HasTab(Plugin.ModGuid, KyItemsTab.ItemsId), wantItems = KyItems.All.Count > 0;
-        ModLog.Verbose("InGameTests: KC-03 KydlCore tabs " + string.Join(", ", core.ToArray()) + ", registry " + KyItems.All.Count);
-        if (!model.HasTab(Plugin.ModGuid, KyItemsTab.SettingsId)) return "FAIL: KydlCore has no 'settings' tab (" + string.Join(", ", core.ToArray()) + ")";
-        return hasItems == wantItems ? "PASS: all " + model.ModCount + " mod(s) have a tab; KydlCore tabs " + string.Join(", ", core.ToArray())
-                                     : "FAIL: ky-items tab " + (hasItems ? "shown" : "missing") + " but the registry has " + KyItems.All.Count + " entr" + (KyItems.All.Count == 1 ? "y" : "ies");
+        ModLog.Verbose($"InGameTests: KC-03 KydlCore tabs {string.Join(", ", core.ToArray())}, registry {KyItems.All.Count}");
+        if (!model.HasTab(Plugin.ModGuid, KyItemsTab.SettingsId)) return $"FAIL: KydlCore has no 'settings' tab ({string.Join(", ", core.ToArray())})";
+        return hasItems == wantItems ? $"PASS: all {model.ModCount} mod(s) have a tab; KydlCore tabs {string.Join(", ", core.ToArray())}"
+                                     : $"FAIL: ky-items tab {(hasItems ? "shown" : "missing")} but the registry has {KyItems.All.Count} entr{(KyItems.All.Count == 1 ? "y" : "ies")}";
     }
 
     /// KC-04: the KY-Items registry has read the game and found at least every prefab Jotunn registered for a com.kydldev.* mod (one per prefab name).
@@ -105,8 +105,8 @@ internal static class InGameTests
         int have = KyItems.All.Count;
         ModLog.CheckRange("KC-04 KY-Items entries (at least the Jotunn ones)", have, names.Count, double.PositiveInfinity, "prefabs");
         if (!KyItems.Ready) return "FAIL: the registry is not Ready 5 s after the world loaded";
-        foreach (string n in names) if (KyItems.Find(n) == null) return "FAIL: '" + n + "' is registered by Jotunn for a com.kydldev.* mod but is not in the registry";
-        return "PASS: " + have + " entr" + (have == 1 ? "y" : "ies") + " (" + names.Count + " from Jotunn); " + CountNoIcon() + " without an icon";
+        foreach (string n in names) if (KyItems.Find(n) == null) return $"FAIL: '{n}' is registered by Jotunn for a com.kydldev.* mod but is not in the registry";
+        return $"PASS: {have} entr{(have == 1 ? "y" : "ies")} ({names.Count} from Jotunn); {CountNoIcon()} without an icon";
     }
 
     /// KC-05: KyUi opens and closes a window of a mod (D-072): IsOpen / AnyOpen follow, onClosed runs once, a same-id window replaces the old one.
@@ -130,8 +130,8 @@ internal static class InGameTests
         second.Close();
         bool done = !KyUi.IsOpen(guid, id) && closed == 2 && KyUi.AnyOpen == wasOpen;
         ModLog.Check("KC-05 KyUi window", closed, 2, 0, "onClosed calls");
-        if (openAfter && replaced && refused && done) return "PASS: window opened, replaced by the same id, closed once; onClosed ran 2 times, any-open back to " + wasOpen;
-        return "FAIL: openAfter " + openAfter + ", replaced " + replaced + ", blankIdRefused " + refused + ", closedClean " + done + " (onClosed " + closed + ")";
+        if (openAfter && replaced && refused && done) return $"PASS: window opened, replaced by the same id, closed once; onClosed ran 2 times, any-open back to {wasOpen}";
+        return $"FAIL: openAfter {openAfter}, replaced {replaced}, blankIdRefused {refused}, closedClean {done} (onClosed {closed})";
     }
 
     static string CountNoIcon()
@@ -145,7 +145,7 @@ internal static class InGameTests
     static string World_PlayerPresent()
     {
         var p = Player.m_localPlayer;
-        ModLog.Verbose("InGameTests: World_PlayerPresent player " + (p != null ? p.GetPlayerName() : "null"));
-        return p != null ? "PASS: " + p.GetPlayerName() + " at " + p.transform.position.ToString("F1") : "FAIL: no local player 5 s after the world loaded";
+        ModLog.Verbose($"InGameTests: World_PlayerPresent player {(p != null ? p.GetPlayerName() : "null")}");
+        return p != null ? $"PASS: {p.GetPlayerName()} at {p.transform.position.ToString("F1")}" : "FAIL: no local player 5 s after the world loaded";
     }
 }

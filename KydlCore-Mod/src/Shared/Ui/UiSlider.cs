@@ -73,7 +73,7 @@ public sealed class UiSlider
 
         _hit.RegisterCallback<PointerDownEvent>(e => { if (!_enabled) return; _hit.CapturePointer(e.pointerId); FromX(e.localPosition.x); e.StopPropagation(); });
         _hit.RegisterCallback<PointerMoveEvent>(e => { if (_hit.HasPointerCapture(e.pointerId)) FromX(e.localPosition.x); });
-        _hit.RegisterCallback<PointerUpEvent>(e => { if (!_hit.HasPointerCapture(e.pointerId)) return; _hit.ReleasePointer(e.pointerId); UiLog.Verbose("UiSlider: set to " + Text(_value)); });
+        _hit.RegisterCallback<PointerUpEvent>(e => { if (!_hit.HasPointerCapture(e.pointerId)) return; _hit.ReleasePointer(e.pointerId); UiLog.Verbose($"UiSlider: set to {Text(_value)}"); });
         _value = Mathf.Clamp(value, _min, _max);
         Show();
     }
@@ -92,7 +92,7 @@ public sealed class UiSlider
         {
             if (e.button != 0 || !_enabled) { if (UiLog.On) UiLog.Verbose("UiSlider.AddMark: returns (line 94)"); return; }
             e.StopPropagation();
-            UiLog.Verbose("UiSlider: mark " + (fraction * 100f).ToString("0", CultureInfo.InvariantCulture) + "% clicked");
+            UiLog.Verbose($"UiSlider: mark {(fraction * 100f).ToString("0", CultureInfo.InvariantCulture)}% clicked");
             Set(Mathf.Lerp(_min, _max, fraction));
         });
         _marks.Add(hit);
@@ -124,8 +124,8 @@ public sealed class UiSlider
     {
         float typed;
         string t = (_input.value ?? "").Trim().Replace(',', '.').TrimEnd('m', 'x', '°', ' ');
-        if (float.TryParse(t, NumberStyles.Float, CultureInfo.InvariantCulture, out typed)) { Set(typed); UiLog.Verbose("UiSlider: typed " + Text(_value)); }
-        else { UiLog.Verbose("UiSlider: input '" + _input.value + "' is not a number, kept " + Text(_value)); Show(); }
+        if (float.TryParse(t, NumberStyles.Float, CultureInfo.InvariantCulture, out typed)) { Set(typed); UiLog.Verbose($"UiSlider: typed {Text(_value)}"); }
+        else { UiLog.Verbose($"UiSlider: input '{_input.value}' is not a number, kept {Text(_value)}"); Show(); }
     }
 
     /// Puts the handle on `v` (clamped) without calling the change callback. Expected outcome: Value equals the clamped v.

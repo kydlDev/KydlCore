@@ -31,19 +31,19 @@ internal static class FlightFiles
     /// <returns>The file's path, or null when it could not be written (the reason is logged).</returns>
     internal static string Write(string reason, string text)
     {
-        string path = Path.Combine(Dir(), DateTime.Now.ToString("yyyyMMdd-HHmmss-fff") + "_" + TriggerRules.Slug(reason) + ".txt");
+        string path = Path.Combine(Dir(), $"{DateTime.Now.ToString("yyyyMMdd-HHmmss-fff")}_{TriggerRules.Slug(reason)}.txt");
         try
         {
             File.WriteAllText(path, text, new UTF8Encoding(false));
         }
         catch (IOException e)
         {
-            ModLog.Warn("FlightRecorder: could not write " + path + ": " + e.Message);
+            ModLog.Warn($"FlightRecorder: could not write {path}: {e.Message}");
             return null;
         }
         catch (UnauthorizedAccessException e)
         {
-            ModLog.Warn("FlightRecorder: no permission to write " + path + ": " + e.Message);
+            ModLog.Warn($"FlightRecorder: no permission to write {path}: {e.Message}");
             return null;
         }
 
@@ -72,11 +72,11 @@ internal static class FlightFiles
         }
         catch (IOException e)
         {
-            ModLog.Warn("FlightRecorder: old dumps not removed: " + e.Message);
+            ModLog.Warn($"FlightRecorder: old dumps not removed: {e.Message}");
         }
         catch (UnauthorizedAccessException e)
         {
-            ModLog.Warn("FlightRecorder: no permission to remove old dumps: " + e.Message);
+            ModLog.Warn($"FlightRecorder: no permission to remove old dumps: {e.Message}");
         }
 
         { var returnedAt82 = removed; if (CoreLog.Due("FlightFiles.Prune:82", 2d)) ModLog.Every("FlightFiles.Prune:82", 2d, $"FlightFiles.Prune: returns {CoreLog.Shown(returnedAt82)} (line 82)"); return returnedAt82; }

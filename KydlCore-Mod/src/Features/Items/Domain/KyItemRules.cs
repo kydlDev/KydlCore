@@ -36,7 +36,7 @@ internal static class KyItemRules
         if (colon <= 0 || colon == lower.Length - 1 || lower.IndexOf(':', colon + 1) >= 0) { var returnedAt36 = OperationResponse<string>.Rejected(BadShape); if (CoreLog.IsOn()) CoreLog.Verbose($"KyItemRules.ValidateId: returns {CoreLog.Shown(returnedAt36)} (line 36)"); return returnedAt36; }
         string ns = lower.Substring(0, colon), item = lower.Substring(colon + 1);
         string expected = ModId(modGuid);
-        if (ns != expected) { var returnedAt39 = OperationResponse<string>.Rejected("the id namespace '" + ns + "' is not the owning mod '" + expected + "'"); if (CoreLog.IsOn()) CoreLog.Verbose($"KyItemRules.ValidateId: returns {CoreLog.Shown(returnedAt39)} (line 39)"); return returnedAt39; }
+        if (ns != expected) { var returnedAt39 = OperationResponse<string>.Rejected($"the id namespace '{ns}' is not the owning mod '{expected}'"); if (CoreLog.IsOn()) CoreLog.Verbose($"KyItemRules.ValidateId: returns {CoreLog.Shown(returnedAt39)} (line 39)"); return returnedAt39; }
         foreach (char ch in item)
             if (!((ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || ch == '_' || ch == '-' || ch == '.')) { var returnedAt41 = OperationResponse<string>.Rejected(BadChars); if (CoreLog.IsOn()) CoreLog.Verbose($"KyItemRules.ValidateId: returns {CoreLog.Shown(returnedAt41)} (line 41)"); return returnedAt41; }
         { var returnedAt42 = OperationResponse<string>.Success(lower); if (CoreLog.IsOn()) CoreLog.Verbose($"KyItemRules.ValidateId: returns {CoreLog.Shown(returnedAt42)} (line 42)"); return returnedAt42; }

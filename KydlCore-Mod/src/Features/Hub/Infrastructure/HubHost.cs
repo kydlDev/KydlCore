@@ -55,7 +55,7 @@ internal static class HubHost
     {
         SyncMods();
         if (mod != null && !KyHub.Model.Select(mod, tab))
-            ModLog.Warn("HubHost: no mod '" + mod + "' / tab '" + tab + "' in the hub - showing the last page");
+            ModLog.Warn($"HubHost: no mod '{mod}' / tab '{tab}' in the hub - showing the last page");
         if (IsOpen) { Stack.BringToFront(WindowId); ModLog.Verbose("HubHost: already open, selection changed"); return; }
         var root = UiKit.Root;
         if (root == null) { ModLog.Warn("HubHost: UI Toolkit is not available, the hub cannot open"); return; }
@@ -64,7 +64,7 @@ internal static class HubHost
         root.Add(_view.Root);
         Stack.Open(WindowId);
         _openedAt = Time.time;
-        ModLog.Verbose("HubHost: opened, " + KyHub.Model.ModCount + " mod(s), page " + KyHub.Model.SelectedMod + " / " + KyHub.Model.SelectedTab);
+        ModLog.Verbose($"HubHost: opened, {KyHub.Model.ModCount} mod(s), page {KyHub.Model.SelectedMod} / {KyHub.Model.SelectedTab}");
     }
 
     static string OpenFor() { return (Time.time - _openedAt).ToString("F1"); }      // own method: Time.time cannot be compiled outside Unity, so Close() with nothing open stays unit-testable
@@ -77,7 +77,7 @@ internal static class HubHost
         _view = null;
         DisposeConfig();
         Stack.Close(WindowId);
-        ModLog.Verbose("HubHost: closed (" + why + ") after " + OpenFor() + " s open");
+        ModLog.Verbose($"HubHost: closed ({why}) after {OpenFor()} s open");
     }
 
     /// <summary>KyTab.Refresh: build the page again when it is the one on screen.</summary>
@@ -97,7 +97,7 @@ internal static class HubHost
             if (!HubModel.IsHubGuid(guid)) continue;
             KyHub.Model.AddMod(guid, KyHub.TitleOf(guid) ?? info.Metadata.Name);
         }
-        ModLog.Verbose("HubHost: mods listed " + before + " -> " + KyHub.Model.ModCount);
+        ModLog.Verbose($"HubHost: mods listed {before} -> {KyHub.Model.ModCount}");
         SplitSettings();
     }
 
@@ -120,7 +120,7 @@ internal static class HubHost
             var names = new List<string>();
             foreach (ConfigGroups.Group g in groups) names.Add(g.Name);
             KyHub.Model.SplitTab(guid, HubModel.AutoTabId, names);
-            ModLog.Verbose("HubHost: Settings of " + guid + " shown as " + (names.Count < 2 ? "one tab" : names.Count + " tabs (" + string.Join(", ", names.ToArray()) + ")"));
+            ModLog.Verbose($"HubHost: Settings of {guid} shown as {(names.Count < 2 ? "one tab" : $"{names.Count} tabs ({string.Join(", ", names.ToArray())})")}");
         }
     }
 
@@ -154,7 +154,7 @@ internal static class HubHost
         }
         catch (Exception e)
         {
-            ModLog.Error("HubHost: the '" + part + "' settings page of " + mod + " failed: " + e);
+            ModLog.Error($"HubHost: the '{part}' settings page of {mod} failed: {e}");
             return null;
         }
     }
@@ -187,7 +187,7 @@ internal static class HubHost
         PluginInfo info;
         if (!Chainloader.PluginInfos.TryGetValue(mod, out info) || info.Instance == null)
         {
-            ModLog.Warn("HubHost: no loaded plugin '" + mod + "' for its Settings page");
+            ModLog.Warn($"HubHost: no loaded plugin '{mod}' for its Settings page");
             return null;
         }
         try
@@ -197,7 +197,7 @@ internal static class HubHost
         }
         catch (Exception e)
         {
-            ModLog.Error("HubHost: the Settings page of " + mod + " failed: " + e);
+            ModLog.Error($"HubHost: the Settings page of {mod} failed: {e}");
             return null;
         }
     }

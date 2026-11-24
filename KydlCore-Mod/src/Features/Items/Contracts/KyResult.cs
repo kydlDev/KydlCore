@@ -16,5 +16,5 @@ public sealed class KyResult
     internal static KyResult Ok(string id, string reason = "") { return new KyResult { Accepted = true, Id = id ?? "", Reason = reason ?? "" }; }
     internal static KyResult Rejected(string id, string reason) { return new KyResult { Accepted = false, Id = id ?? "", Reason = reason ?? "" }; }
     /// <summary>"accepted &lt;id&gt;" / "rejected &lt;id&gt;: &lt;reason&gt;".</summary>
-    public override string ToString() { return (Accepted ? "accepted " : "rejected ") + Id + (string.IsNullOrEmpty(Reason) ? "" : ": " + Reason); }
+    public override string ToString() { return (Accepted ? "accepted " : "rejected ") + Id + (string.IsNullOrEmpty(Reason) ? "" : $": {Reason}"); }
 }

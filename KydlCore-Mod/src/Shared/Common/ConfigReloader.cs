@@ -35,7 +35,7 @@ public sealed class ConfigReloader : IDisposable
         {
             var entry = e != null ? e.ChangedSetting : null;
             if (entry == null) { if (CoreLog.On) ModLog.Verbose("ConfigReloader.ConfigReloader: returns (line 112)"); return; }
-            ModLog.Info(_ctx, "Config: [" + entry.Definition.Section + "] " + entry.Definition.Key + " = " + entry.BoxedValue + " (applied live)");
+            ModLog.Info(_ctx, $"Config: [{entry.Definition.Section}] {entry.Definition.Key} = {entry.BoxedValue} (applied live)");
         };
         try
         {
@@ -48,10 +48,10 @@ public sealed class ConfigReloader : IDisposable
             _watcher.Created += (s, e) => _changed = true;
             _watcher.Renamed += (s, e) => _changed = true;     // some editors save to a temp file and rename it over the config
             _watcher.EnableRaisingEvents = true;
-            ModLog.Verbose(_ctx, "ConfigReloader: watching " + path);
+            ModLog.Verbose(_ctx, $"ConfigReloader: watching {path}");
         }
-        catch (ArgumentException e) { ModLog.Warn(_ctx, "Config file watcher not started (bad path; edits to the .cfg need a restart): " + e.Message); }
-        catch (IOException e) { ModLog.Warn(_ctx, "Config file watcher not started (edits to the .cfg need a restart): " + e.Message); }
+        catch (ArgumentException e) { ModLog.Warn(_ctx, $"Config file watcher not started (bad path; edits to the .cfg need a restart): {e.Message}"); }
+        catch (IOException e) { ModLog.Warn(_ctx, $"Config file watcher not started (edits to the .cfg need a restart): {e.Message}"); }
     }
 
     public bool Watching => _watcher != null && _watcher.EnableRaisingEvents;
@@ -71,8 +71,8 @@ public sealed class ConfigReloader : IDisposable
         }
         catch (IOException e)
         {
-            if (++_retries <= 3) { _reloadAt = Time.realtimeSinceStartup + 1f; ModLog.Verbose(_ctx, "ConfigReloader: file locked, retry " + _retries + ": " + e.Message); }
-            else ModLog.Warn(_ctx, "Config reload failed: " + e.Message);
+            if (++_retries <= 3) { _reloadAt = Time.realtimeSinceStartup + 1f; ModLog.Verbose(_ctx, $"ConfigReloader: file locked, retry {_retries}: {e.Message}"); }
+            else ModLog.Warn(_ctx, $"Config reload failed: {e.Message}");
             return false;
         }
     }

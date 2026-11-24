@@ -20,7 +20,7 @@ public static class UiControls
     /// A gold (primary) or dark push button; logs every press. The KydlCore build also dims it while it is pressed and draws a thin red border while the pointer is over it (D-048).
     public static Button Button(string text, Action onClick, bool primary = false)
     {
-        var b = new Button(UiLog.Wrap(() => { UiLog.Verbose("Ui: button '" + text + "' pressed"); onClick?.Invoke(); })) { text = text };
+        var b = new Button(UiLog.Wrap(() => { UiLog.Verbose($"Ui: button '{text}' pressed"); onClick?.Invoke(); })) { text = text };
         Color bg = primary ? UiKit.GoldDim : UiKit.PanelLight, hot = primary ? UiKit.Gold : UiKit.PanelHover;
         b.style.backgroundColor = bg;
         b.style.color = primary ? UiKit.OnDark : UiKit.Text;
@@ -37,7 +37,7 @@ public static class UiControls
         };
         b.RegisterCallback<PointerEnterEvent>(e => { hovered = true; show(); });
         b.RegisterCallback<PointerLeaveEvent>(e => { hovered = false; pressed = false; show(); });
-        b.RegisterCallback<PointerDownEvent>(e => { pressed = true; show(); UiLog.Verbose("Ui: button '" + text + "' down, dimmed " + (PressDim * 100f).ToString("0") + "% for at least " + PressFeedbackMs + " ms"); });
+        b.RegisterCallback<PointerDownEvent>(e => { pressed = true; show(); UiLog.Verbose($"Ui: button '{text}' down, dimmed {(PressDim * 100f).ToString("0")}% for at least {PressFeedbackMs} ms"); });
         b.RegisterCallback<PointerUpEvent>(e => b.schedule.Execute(() => { pressed = false; show(); }).StartingIn(PressFeedbackMs));
         { var returnedAt43 = b; if (UiLog.On) UiLog.Verbose($"UiControls.Button: returns {UiLog.Shown(returnedAt43)} (line 43)"); return returnedAt43; }
     }
@@ -45,7 +45,7 @@ public static class UiControls
     /// A button that looks like an input field (dark, text on the left): the closed drop-down.
     public static Button Field(string text, Action onClick)
     {
-        var b = new Button(UiLog.Wrap(() => { UiLog.Verbose("Ui: field '" + text + "' opened"); onClick?.Invoke(); })) { text = text };
+        var b = new Button(UiLog.Wrap(() => { UiLog.Verbose($"Ui: field '{text}' opened"); onClick?.Invoke(); })) { text = text };
         b.style.backgroundColor = UiKit.Track; b.style.color = UiKit.ValueColor; b.style.fontSize = UiKit.FontSize;
         UiKit.Borders(b, 1, UiKit.Border); UiKit.Radius(b, 4); UiKit.Pad(b, 5, 10);
         b.style.unityTextAlign = TextAnchor.MiddleLeft;
@@ -169,7 +169,7 @@ public static class UiControls
         {
             if (e.button != 0) { if (UiLog.On) UiLog.Verbose("UiControls.Toggle: returns (line 171)"); return; }
             state = !state; Show();
-            UiLog.Verbose("Ui: switch '" + text + "' " + (state ? "on" : "off"));
+            UiLog.Verbose($"Ui: switch '{text}' {(state ? "on" : "off")}");
             changed?.Invoke(state);
         }));
         Show();
@@ -220,12 +220,12 @@ public static class UiControls
         {
             float typed;
             string t = (input.value ?? "").Trim().Replace(',', '.');
-            if (float.TryParse(t, NumberStyles.Float, CultureInfo.InvariantCulture, out typed)) { Set(typed, "typed"); UiLog.Verbose("Ui: slider typed " + v.ToString(format)); }
-            else { UiLog.Verbose("Ui: slider input '" + input.value + "' is not a number, kept " + v.ToString(format)); Show(); }
+            if (float.TryParse(t, NumberStyles.Float, CultureInfo.InvariantCulture, out typed)) { Set(typed, "typed"); UiLog.Verbose($"Ui: slider typed {v.ToString(format)}"); }
+            else { UiLog.Verbose($"Ui: slider input '{input.value}' is not a number, kept {v.ToString(format)}"); Show(); }
         }
         hit.RegisterCallback<PointerDownEvent>(e => { hit.CapturePointer(e.pointerId); FromX(e.localPosition.x); e.StopPropagation(); });
         hit.RegisterCallback<PointerMoveEvent>(e => { if (hit.HasPointerCapture(e.pointerId)) FromX(e.localPosition.x); });
-        hit.RegisterCallback(Owned<PointerUpEvent>(e => { if (!hit.HasPointerCapture(e.pointerId)) return; hit.ReleasePointer(e.pointerId); UiLog.Verbose("Ui: slider set to " + v.ToString(format)); }));
+        hit.RegisterCallback(Owned<PointerUpEvent>(e => { if (!hit.HasPointerCapture(e.pointerId)) return; hit.ReleasePointer(e.pointerId); UiLog.Verbose($"Ui: slider set to {v.ToString(format)}"); }));
         input.RegisterCallback<FocusInEvent>(e => editing = true);
         input.RegisterCallback(Owned<FocusOutEvent>(e => { editing = false; Commit(); }));
         input.RegisterCallback(Owned<KeyDownEvent>(e =>
@@ -247,7 +247,7 @@ public static class UiControls
         Button b = null;
         string cur = current;
         VisualElement openList = null;   // the list of this field while it is open
-        b = Field(label(current) + "  ▾", () =>
+        b = Field($"{label(current)}  ▾", () =>
         {
             // the list goes into UiKit.Root (it carries the font); the panel's own visualTree has none (T-56R: empty lines in game)
             var root = UiKit.Root;
@@ -277,8 +277,8 @@ public static class UiControls
                 item.RegisterCallback(Owned<PointerDownEvent>(e =>
                 {
                     if (e.button != 0) { if (UiLog.On) UiLog.Verbose("UiControls.Dropdown: returns (line 280)"); return; }
-                    cur = opt; b.text = label(opt) + "  ▾"; shade.RemoveFromHierarchy();
-                    UiLog.Verbose("Ui: drop-down chose '" + opt + "'");
+                    cur = opt; b.text = $"{label(opt)}  ▾"; shade.RemoveFromHierarchy();
+                    UiLog.Verbose($"Ui: drop-down chose '{opt}'");
                     chosen?.Invoke(opt);
                 }));
                 scroll.Content.Add(item);
@@ -289,7 +289,7 @@ public static class UiControls
             openList = shade;
             int at = options.IndexOf(cur);
             if (at > 3) scroll.ScrollTo((at - 3) * ItemHeight);
-            UiLog.Verbose("Ui: drop-down opened with " + options.Count + " option(s), current '" + cur + "'");
+            UiLog.Verbose($"Ui: drop-down opened with {options.Count} option(s), current '{cur}'");
         });
         // A list is a sibling of the window in UiKit.Root, not a child of it: when the window that owns this field is removed (Escape, X, a game menu
         // took over) the list must go with it, or it stays on screen over the world (user test 2026-10-24, WhipItUp D-077 F-4). Fixed here, for every mod.
@@ -327,7 +327,7 @@ public static class UiControls
         void Apply(bool fromField)
         {
             if (UiLog.On) UiLog.Verbose($"UiControls.Apply(fromField={UiLog.Shown(fromField)})");
-            string h = "#" + ColorUtility.ToHtmlStringRGB(c);
+            string h = $"#{ColorUtility.ToHtmlStringRGB(c)}";
             preview.style.backgroundColor = c;
             // T-65 (user: the Red / Green / Blue sliders did not slide like the spacing one): `field.value = h` inside a drag sends its change
             // event LATER (UI Toolkit queues events sent while one is handled), so the hex box rebuilt the sliders
@@ -353,13 +353,13 @@ public static class UiControls
             s.RegisterCallback(Owned<PointerDownEvent>(e => { c = pc; RebuildSliders(); Apply(false); }));
             pal.Add(s);
         }
-        field = TextField("#" + ColorUtility.ToHtmlStringRGB(c), 7, v =>
+        field = TextField($"#{ColorUtility.ToHtmlStringRGB(c)}", 7, v =>
         {
             Color p;
-            if (v.TrimStart('#').Length != 6 || !ColorUtility.TryParseHtmlString(v.StartsWith("#") ? v : "#" + v, out p)) { if (UiLog.On) UiLog.Verbose("UiControls.ColorPicker: returns (line 360)"); return; }
-            if (ColorUtility.ToHtmlStringRGB(p) == ColorUtility.ToHtmlStringRGB(c)) { UiLog.Verbose("Ui: colour hex " + v + " = current colour, sliders kept"); return; }
+            if (v.TrimStart('#').Length != 6 || !ColorUtility.TryParseHtmlString(v.StartsWith("#") ? v : $"#{v}", out p)) { if (UiLog.On) UiLog.Verbose("UiControls.ColorPicker: returns (line 360)"); return; }
+            if (ColorUtility.ToHtmlStringRGB(p) == ColorUtility.ToHtmlStringRGB(c)) { UiLog.Verbose($"Ui: colour hex {v} = current colour, sliders kept"); return; }
             c = p; RebuildSliders(); Apply(true);
-            UiLog.Verbose("Ui: colour typed " + v + ", sliders set");
+            UiLog.Verbose($"Ui: colour typed {v}, sliders set");
         });
         field.style.width = 130; field.style.flexGrow = 0;
         var hexRow = Row("Hex", field); field.style.flexGrow = 0;

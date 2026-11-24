@@ -8,5 +8,5 @@ public readonly struct PlayerId
     public PlayerId(long id, string name) { Id = id; Name = name ?? ""; }
     public bool IsNobody => Id == 0;
     public static readonly PlayerId Nobody = new(0, "");
-    public override string ToString() { return IsNobody ? "nobody" : Name + " (" + Id + ")"; }
+    public override string ToString() { return IsNobody ? "nobody" : $"{Name} ({Id})"; }
 }

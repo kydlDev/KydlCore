@@ -27,5 +27,5 @@ public readonly struct ValidationResult
     /// Valid when `condition` holds, else Ignored with `reason`.
     public static ValidationResult IgnoreUnless(bool condition, string reason) { return condition ? Valid : Ignore(reason); }
 
-    public override string ToString() { return IsValid ? "Valid" : Status + ": " + Reason; }
+    public override string ToString() { return IsValid ? "Valid" : $"{Status}: {Reason}"; }
 }

@@ -28,7 +28,7 @@ public static class UiInputLock
         if (_harmony != null) { var returnedAt28 = _patched > 0; if (CoreLog.On) ModLog.Verbose($"UiInputLock.Install: returns {CoreLog.Shown(returnedAt28)} (line 28)"); return returnedAt28; }
         try
         {
-            _harmony = new Harmony(modGuid + ".uilock");
+            _harmony = new Harmony($"{modGuid}.uilock");
             var vis = AccessTools.Method(typeof(TextInput), "IsVisible");
             if (vis != null) { _harmony.Patch(vis, postfix: new HarmonyMethod(typeof(UiInputLock), nameof(VisiblePostfix))); _patched++; }
             else KydlCore.Ui.UiLog.Warn("UiInputLock: TextInput.IsVisible not found - the player can still move while a menu is open");
@@ -38,10 +38,10 @@ public static class UiInputLock
                 _harmony.Patch(m, postfix: new HarmonyMethod(typeof(UiInputLock), nameof(ScrollPostfix)));
                 _patched++;
             }
-            KydlCore.Ui.UiLog.Verbose("UiInputLock: " + _patched + " game method(s) patched (TextInput.IsVisible + ZInput.GetMouseScrollWheel)");
+            KydlCore.Ui.UiLog.Verbose($"UiInputLock: {_patched} game method(s) patched (TextInput.IsVisible + ZInput.GetMouseScrollWheel)");
         }
-        catch (HarmonyException e) { KydlCore.Ui.UiLog.Warn("UiInputLock: patching failed: " + e.Message); }
-        catch (System.Exception e) { KydlCore.Ui.UiLog.Warn("UiInputLock: install failed: " + e.Message); }
+        catch (HarmonyException e) { KydlCore.Ui.UiLog.Warn($"UiInputLock: patching failed: {e.Message}"); }
+        catch (System.Exception e) { KydlCore.Ui.UiLog.Warn($"UiInputLock: install failed: {e.Message}"); }
         return _patched > 0;
     }
 
@@ -51,7 +51,7 @@ public static class UiInputLock
         Holders.Add(who);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        KydlCore.Ui.UiLog.Verbose("UiInputLock: held by '" + who + "' (" + Holders.Count + " holder(s))");
+        KydlCore.Ui.UiLog.Verbose($"UiInputLock: held by '{who}' ({Holders.Count} holder(s))");
         return Holders.Contains(who);
     }
 
@@ -60,7 +60,7 @@ public static class UiInputLock
     {
         int before = Holders.Count;
         Holders.Remove(who);
-        if (before != Holders.Count) KydlCore.Ui.UiLog.Verbose("UiInputLock: released by '" + who + "' (" + Holders.Count + " holder(s) left)");
+        if (before != Holders.Count) KydlCore.Ui.UiLog.Verbose($"UiInputLock: released by '{who}' ({Holders.Count} holder(s) left)");
         return !Holders.Contains(who);
     }
 

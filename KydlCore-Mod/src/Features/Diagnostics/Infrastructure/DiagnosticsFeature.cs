@@ -19,14 +19,14 @@ internal sealed class DiagnosticsFeature : IFeature
     public bool Start()
     {
         bool started = FlightHost.Start();
-        ModLog.Verbose("DiagnosticsFeature: started (flight recorder " + (started ? "recording" : "NOT recording") + ")");
+        ModLog.Verbose($"DiagnosticsFeature: started (flight recorder {(started ? "recording" : "NOT recording")})");
         return started;
     }
 
     public bool Stop()
     {
         bool stopped = FlightHost.Stop();
-        ModLog.Verbose("DiagnosticsFeature: stopped (flight recorder off " + stopped + ")");
+        ModLog.Verbose($"DiagnosticsFeature: stopped (flight recorder off {stopped})");
         return stopped;
     }
 }

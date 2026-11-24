@@ -39,12 +39,12 @@ public static class KyUi
     /// </summary>
     public static KyWindow Open(string modGuid, string id, Func<VisualElement> build, Action onClosed = null)
     {
-        if (build == null) { ModLog.Warn("KyUi.Open: refused (guid '" + modGuid + "', id '" + id + "', no window builder)"); return null; }
+        if (build == null) { ModLog.Warn($"KyUi.Open: refused (guid '{modGuid}', id '{id}', no window builder)"); return null; }
         VisualElement window;
         try { window = global::KydlCore.Ui.UiLog.Within(modGuid, build); }
         // Stryker disable once all : the only effect of the handler is the warning (the null result is tested)
-        catch (Exception e) { ModLog.Warn("KyUi.Open: the window builder of '" + modGuid + "' / '" + id + "' threw " + e.GetType().Name + ": " + e.Message); return null; }
-        ModLog.Verbose("KyUi.Open: built '" + id + "' of '" + modGuid + "' as that mod (window " + (window == null ? "null" : "given") + ")");
+        catch (Exception e) { ModLog.Warn($"KyUi.Open: the window builder of '{modGuid}' / '{id}' threw {e.GetType().Name}: {e.Message}"); return null; }
+        ModLog.Verbose($"KyUi.Open: built '{id}' of '{modGuid}' as that mod (window {(window == null ? "null" : "given")})");
         return KyWindows.Add(modGuid, id, window, onClosed);
     }
 

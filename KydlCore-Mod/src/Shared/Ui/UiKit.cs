@@ -84,7 +84,7 @@ public static class UiKit
             settings.match = 1f;                                              // by height: ultrawide screens get the same text size as 16:9
             settings.sortingOrder = 500;
             Settings = settings;
-            var go = new GameObject("Kydl_UI_" + Owner);
+            var go = new GameObject($"Kydl_UI_{Owner}");
             if (Application.isPlaying) Object.DontDestroyOnLoad(go);
             _doc = go.AddComponent<UIDocument>();
             _doc.panelSettings = settings;
@@ -96,11 +96,11 @@ public static class UiKit
             Font(root, false);
             root.style.color = Text;
             root.style.fontSize = FontSize;
-            UiLog.Verbose("UiKit: UI Toolkit panel made (scale with screen " + Screen.width + "x" + Screen.height + " from 1920x1080, " + fonts + ")");
+            UiLog.Verbose($"UiKit: UI Toolkit panel made (scale with screen {Screen.width}x{Screen.height} from 1920x1080, {fonts})");
         }
         catch (System.Exception e)
         {
-            UiLog.Error("UiKit: UI Toolkit could not be started - the menus of this mod are not available: " + e);
+            UiLog.Error($"UiKit: UI Toolkit could not be started - the menus of this mod are not available: {e}");
             _doc = null;
         }
     }
@@ -126,7 +126,7 @@ public static class UiKit
         if (_bodyFont == null)
         {
             _bodyFont = norse != null ? norse : any;
-            UiLog.Warn("UiKit: font '" + TextFontName + "' is not loaded; using " + (_bodyFont != null ? "'" + _bodyFont.name + "'" : "no font (engine default)"));
+            UiLog.Warn($"UiKit: font '{TextFontName}' is not loaded; using {(_bodyFont != null ? $"'{_bodyFont.name}'" : "no font (engine default)")}");
         }
         _titleFont = _bodyFont;
         { var returnedAt132 = MakeAssets(emoji); if (UiLog.On) UiLog.Verbose($"UiKit.LoadFonts: returns {UiLog.Shown(returnedAt132)} (line 132)"); return returnedAt132; }
@@ -140,10 +140,10 @@ public static class UiKit
         var emojiAsset = MakeAsset(emoji, null);
         _bodyAsset = MakeAsset(_bodyFont, emojiAsset);
         _titleAsset = _titleFont == _bodyFont ? _bodyAsset : MakeAsset(_titleFont, emojiAsset);
-        { var returnedAt143 = "text font " + Describe(_bodyFont, _bodyAsset) + ", title font " + Describe(_titleFont, _titleAsset) + ", emoji font " + Describe(emoji, emojiAsset); if (UiLog.On) UiLog.Verbose($"UiKit.MakeAssets: returns {UiLog.Shown(returnedAt143)} (line 143)"); return returnedAt143; }
+        { var returnedAt143 = $"text font {Describe(_bodyFont, _bodyAsset)}, title font {Describe(_titleFont, _titleAsset)}, emoji font {Describe(emoji, emojiAsset)}"; if (UiLog.On) UiLog.Verbose($"UiKit.MakeAssets: returns {UiLog.Shown(returnedAt143)} (line 143)"); return returnedAt143; }
     }
 
-    static string Describe(Font f, FontAsset a) { return f == null ? "MISSING" : "'" + f.name + "'" + (a != null ? " (font asset made)" : " (legacy font, no emoji fallback)"); }
+    static string Describe(Font f, FontAsset a) { return f == null ? "MISSING" : $"'{f.name}'{(a != null ? " (font asset made)" : " (legacy font, no emoji fallback)")}"; }
 
     /// A TextCore font asset made from a game font, with `fallback` for the glyphs it does not have (emoji). null = the legacy font is used.
     static FontAsset MakeAsset(Font f, FontAsset fallback)
@@ -152,8 +152,8 @@ public static class UiKit
         try
         {
             var a = FontAsset.CreateFontAsset(f);
-            if (a == null) { UiLog.Warn("UiKit: font asset from '" + f.name + "' could not be made"); return null; }
-            a.name = "Kydl_" + f.name;
+            if (a == null) { UiLog.Warn($"UiKit: font asset from '{f.name}' could not be made"); return null; }
+            a.name = $"Kydl_{f.name}";
             if (fallback != null)
             {
                 if (a.fallbackFontAssetTable == null) a.fallbackFontAssetTable = new List<FontAsset>();
@@ -161,7 +161,7 @@ public static class UiKit
             }
             { var returnedAt162 = a; if (UiLog.On) UiLog.Verbose($"UiKit.MakeAsset: returns {UiLog.Shown(returnedAt162)} (line 162)"); return returnedAt162; }
         }
-        catch (System.Exception e) { UiLog.Warn("UiKit: font asset from '" + f.name + "' failed (" + e.GetType().FullName + "): " + e.Message + " - that font is skipped"); return null; }
+        catch (System.Exception e) { UiLog.Warn($"UiKit: font asset from '{f.name}' failed ({e.GetType().FullName}): {e.Message} - that font is skipped"); return null; }
     }
 
     /// Puts the text font (or the title font) on an element.
@@ -319,7 +319,7 @@ public static class UiKit
         w.style.width = 760; w.style.maxWidth = Length.Percent(60);
         w.style.height = Length.Percent(WindowHeight);
         w.style.right = Length.Percent(5); w.style.left = StyleKeyword.Auto; w.style.top = Length.Percent(WindowTop);
-        UiLog.Verbose("UiKit: window '" + title + "' opened 5% from the right edge, " + WindowTop.ToString("0") + "% from the top, " + WindowHeight.ToString("0") + "% of the screen high");
+        UiLog.Verbose($"UiKit: window '{title}' opened 5% from the right edge, {WindowTop.ToString("0")}% from the top, {WindowHeight.ToString("0")}% of the screen high");
         w.style.backgroundColor = Panel;
         Radius(w, 8);
         Borders(w, 2, Border);
@@ -376,7 +376,7 @@ public static class UiKit
             if (!dragging) { if (UiLog.On) UiLog.Verbose("UiKit.Drag: returns (line 376)"); return; }
             dragging = false;
             handle.ReleasePointer(e.pointerId);
-            UiLog.Verbose("UiKit: window moved to " + target.resolvedStyle.left.ToString("0") + ", " + target.resolvedStyle.top.ToString("0"));
+            UiLog.Verbose($"UiKit: window moved to {target.resolvedStyle.left.ToString("0")}, {target.resolvedStyle.top.ToString("0")}");
         });
     }
 }

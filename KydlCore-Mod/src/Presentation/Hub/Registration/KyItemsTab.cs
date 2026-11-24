@@ -30,7 +30,7 @@ internal static class KyItemsTab
         KyItems.Changed -= Sync;
         KyItems.Changed += Sync;
         Sync();
-        ModLog.Verbose("KyItemsTab: Settings tab " + (settings != null ? "registered" : "FAILED") + ", following KyItems.Changed");
+        ModLog.Verbose($"KyItemsTab: Settings tab {(settings != null ? "registered" : "FAILED")}, following KyItems.Changed");
         return settings != null;
     }
 
@@ -47,7 +47,7 @@ internal static class KyItemsTab
         int count = KyItems.All.Count(wanted);
         if (count > 0) KyHub.AddTab(Plugin.ModGuid, id, title, () => Build(wanted, id), order);
         else KyHub.RemoveTab(Plugin.ModGuid, id);
-        ModLog.Verbose("KyItemsTab: " + (count > 0 ? title + " tab shown (" + count + " prefab(s))" : "no entries, " + title + " tab hidden"));
+        ModLog.Verbose($"KyItemsTab: {(count > 0 ? $"{title} tab shown ({count} prefab(s))" : $"no entries, {title} tab hidden")}");
         if (count > 0) HubHost.Refresh(Plugin.ModGuid, id);
     }
 
@@ -61,7 +61,7 @@ internal static class KyItemsTab
         bool grid = Grid;
         page.Add(Header(UiControls.Note(shown.Count + " prefab(s) of " + groups.Count + " source(s). " + (id == MaterialsId
             ? "Ingredients, gatherables and world deposits the KydlDev mods contribute."
-            : "Items and pieces the KydlDev mods contribute; pieces in the '" + KyItems.CategoryName + "' build category are included.")), grid, id));
+            : $"Items and pieces the KydlDev mods contribute; pieces in the '{KyItems.CategoryName}' build category are included.")), grid, id));
         foreach (var group in groups)
         {
             page.Add(UiControls.Heading(group.Key));
@@ -69,7 +69,7 @@ internal static class KyItemsTab
             else foreach (KyEntry entry in group) page.Add(Row(entry));
         }
         ConfigPage.ScaleFonts(page);
-        ModLog.Verbose("KyItemsTab: " + id + " page built (" + (grid ? "grid" : "list") + "), " + shown.Count + " prefab(s) in " + groups.Count + " group(s)");
+        ModLog.Verbose($"KyItemsTab: {id} page built ({(grid ? "grid" : "list")}), {shown.Count} prefab(s) in {groups.Count} group(s)");
         return page;
     }
 
@@ -91,7 +91,7 @@ internal static class KyItemsTab
     {
         if (ModSettings.KyItemsView == null) { if (CoreLog.Due("KyItemsTab.ToggleView:92", 2d)) ModLog.Every("KyItemsTab.ToggleView:92", 2d, "KyItemsTab.ToggleView: returns false (line 92)"); return false; }
         ModSettings.KyItemsView.Value = Grid ? ItemsView.List : ItemsView.Grid;
-        ModLog.Info("KyItemsTab: view " + ModSettings.KyItemsView.Value);
+        ModLog.Info($"KyItemsTab: view {ModSettings.KyItemsView.Value}");
         HubHost.Refresh(Plugin.ModGuid, ItemsId);
         HubHost.Refresh(Plugin.ModGuid, MaterialsId);
         { var returnedAt97 = Grid; if (CoreLog.Due("KyItemsTab.ToggleView:97", 2d)) ModLog.Every("KyItemsTab.ToggleView:97", 2d, $"KyItemsTab.ToggleView: returns {CoreLog.Shown(returnedAt97)} (line 97)"); return returnedAt97; }
@@ -130,7 +130,7 @@ internal static class KyItemsTab
         var name = UiKit.Label(entry.DisplayName, UiKit.NameSize, UiKit.NameColor);
         name.style.flexGrow = 1; name.style.whiteSpace = WhiteSpace.NoWrap;
         r.Add(name);
-        r.Add(UiKit.Label(entry.Kind + "  " + (string.IsNullOrEmpty(entry.Id) ? entry.Prefab : entry.Id), UiKit.SmallSize, UiKit.TextDim));
+        r.Add(UiKit.Label($"{entry.Kind}  {(string.IsNullOrEmpty(entry.Id) ? entry.Prefab : entry.Id)}", UiKit.SmallSize, UiKit.TextDim));
         { var returnedAt134 = r; if (CoreLog.Due("KyItemsTab.Row:134", 2d)) ModLog.Every("KyItemsTab.Row:134", 2d, $"KyItemsTab.Row: returns {CoreLog.Shown(returnedAt134)} (line 134)"); return returnedAt134; }
     }
 }

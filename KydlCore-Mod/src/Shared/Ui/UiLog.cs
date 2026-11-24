@@ -12,11 +12,11 @@ namespace KydlCore.Ui;
 public static class UiLog
 {
     // Stryker disable once all : the default sink only writes to the Unity console (Unity itself, not reachable from the unit tests)
-    public static Action<string> VerboseSink = s => UnityEngine.Debug.Log("[Kydl UI] " + s);
+    public static Action<string> VerboseSink = s => UnityEngine.Debug.Log($"[Kydl UI] {s}");
     // Stryker disable once all : the default sink only writes to the Unity console (Unity itself, not reachable from the unit tests)
-    public static Action<string> WarnSink = s => UnityEngine.Debug.LogWarning("[Kydl UI] " + s);
+    public static Action<string> WarnSink = s => UnityEngine.Debug.LogWarning($"[Kydl UI] {s}");
     // Stryker disable once all : the default sink only writes to the Unity console (Unity itself, not reachable from the unit tests)
-    public static Action<string> ErrorSink = s => UnityEngine.Debug.LogError("[Kydl UI] " + s);
+    public static Action<string> ErrorSink = s => UnityEngine.Debug.LogError($"[Kydl UI] {s}");
 
     /// <summary>The plugin GUID of the mod whose UI code is running right now (null = none). Read it in a sink; set it only through <see cref="Within{T}"/> / <see cref="Wrap"/>.</summary>
     public static string Owner;
@@ -36,7 +36,7 @@ public static class UiLog
     {
         string text = value == null ? "null" : value.ToString();
         text = text.Replace("\r\n", " | ").Replace("\n", " | ").Replace("\r", " | ").Replace("CHECK OFF", "CHECK_OFF");
-        return text.Length <= 160 ? text : text.Substring(0, 160) + "... (" + text.Length + " chars)";
+        return text.Length <= 160 ? text : $"{text.Substring(0, 160)}... ({text.Length} chars)";
     }
 
     public static void Verbose(string s) { VerboseSink?.Invoke(s); }

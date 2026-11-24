@@ -26,7 +26,7 @@ public sealed class KyTab
     // Stryker disable once Block : the body only calls the game-side window (nothing to see while no hub is open)
     public void Refresh()
     {
-        ModLog.Verbose("KyHub: Refresh " + ModGuid + " / " + Id);
+        ModLog.Verbose($"KyHub: Refresh {ModGuid} / {Id}");
         // Stryker disable once all : only does something while the hub window is open (game)
         HubHost.Refresh(ModGuid, Id);
     }

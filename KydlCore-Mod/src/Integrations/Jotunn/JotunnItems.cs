@@ -30,7 +30,7 @@ internal sealed class JotunnItems : IKyGameSide
             PieceManager.OnPiecesRegistered += () => refresh("Jotunn registered the pieces");
             ModLog.Verbose("JotunnItems: waiting for Jotunn's OnItemsRegistered / OnPiecesRegistered");
         }
-        catch (TypeLoadException e) { ModLog.Warn("JotunnItems: Jotunn's registered events are not available (" + e.Message + ")"); hooked = !hooked; }
+        catch (TypeLoadException e) { ModLog.Warn($"JotunnItems: Jotunn's registered events are not available ({e.Message})"); hooked = !hooked; }
         return hooked;
     }
 
@@ -39,7 +39,7 @@ internal sealed class JotunnItems : IKyGameSide
         get
         {
             try { return PieceManager.Instance.GetPieceCategory(KyItems.CategoryName); }      // null while no mod has registered it
-            catch (Exception e) { ModLog.Verbose("JotunnItems: the '" + KyItems.CategoryName + "' build category could not be read (" + e.GetType().FullName + "): " + e.Message + " - no category"); return null; }
+            catch (Exception e) { ModLog.Verbose($"JotunnItems: the '{KyItems.CategoryName}' build category could not be read ({e.GetType().FullName}): {e.Message} - no category"); return null; }
         }
     }
 
@@ -53,9 +53,9 @@ internal sealed class JotunnItems : IKyGameSide
             foreach (var cp in ModRegistry.GetPieces())
                 if (cp != null && cp.PiecePrefab != null && cp.SourceMod != null) found.Add(new KyFound(cp.PiecePrefab, cp.SourceMod.GUID, cp.SourceMod.Name, KyKind.Piece));
         }
-        catch (TypeLoadException e) { ModLog.Warn("JotunnItems: Jotunn's ModRegistry is not available (" + e.Message + ")"); }
-        catch (MissingMethodException e) { ModLog.Warn("JotunnItems: Jotunn's ModRegistry is not available (" + e.Message + ")"); }
-        ModLog.Verbose("JotunnItems: legacy scan found " + found.Count + " prefab(s) of any mod (the registry keeps the com.kydldev.* ones)");
+        catch (TypeLoadException e) { ModLog.Warn($"JotunnItems: Jotunn's ModRegistry is not available ({e.Message})"); }
+        catch (MissingMethodException e) { ModLog.Warn($"JotunnItems: Jotunn's ModRegistry is not available ({e.Message})"); }
+        ModLog.Verbose($"JotunnItems: legacy scan found {found.Count} prefab(s) of any mod (the registry keeps the com.kydldev.* ones)");
         return found;
     }
 
@@ -69,7 +69,7 @@ internal sealed class JotunnItems : IKyGameSide
             if (table == null) { var returnedAt69 = new List<GameObject>(); if (CoreLog.Due("JotunnItems.PiecesIn:69", 2d)) ModLog.Every("JotunnItems.PiecesIn:69", 2d, $"JotunnItems.PiecesIn: returns {CoreLog.Shown(returnedAt69)} (line 69)"); return returnedAt69; }
             return table.m_pieces.Where(p => p != null && p.GetComponent<Piece>() != null && p.GetComponent<Piece>().m_category == category).ToList();
         }
-        catch (NullReferenceException e) { ModLog.Verbose("JotunnItems: the hammer's pieces could not be read: " + e.Message); return new List<GameObject>(); }
+        catch (NullReferenceException e) { ModLog.Verbose($"JotunnItems: the hammer's pieces could not be read: {e.Message}"); return new List<GameObject>(); }
     }
 
     public KyResult Register(KyContribution c, string id)
@@ -92,19 +92,19 @@ internal sealed class JotunnItems : IKyGameSide
                     cfg.Requirements = Requirements(c.Recipe);
                 }
                 bool added = ItemManager.Instance.AddItem(new CustomItem(c.Prefab, true, cfg));
-                ModLog.Verbose("JotunnItems: item '" + id + "' " + (added ? "added" : "NOT added") + " to the game");
+                ModLog.Verbose($"JotunnItems: item '{id}' {(added ? "added" : "NOT added")} to the game");
                 return added ? KyResult.Ok(id) : KyResult.Rejected(id, "Jotunn did not add the item (name taken?)");
             }
             var pcfg = new PieceConfig { PieceTable = "Hammer", Category = KyItems.CategoryName };
             if (c.Recipe != null) { pcfg.CraftingStation = c.Recipe.CraftingStation ?? ""; pcfg.Requirements = Requirements(c.Recipe); }
             bool placed = PieceManager.Instance.AddPiece(new CustomPiece(c.Prefab, true, pcfg));
-            ModLog.Verbose("JotunnItems: piece '" + id + "' " + (placed ? "added to the hammer, category " + KyItems.CategoryName : "NOT added"));
+            ModLog.Verbose($"JotunnItems: piece '{id}' {(placed ? $"added to the hammer, category {KyItems.CategoryName}" : "NOT added")}");
             return placed ? KyResult.Ok(id) : KyResult.Rejected(id, "Jotunn did not add the piece (name taken?)");
         }
         catch (Exception e)       // last resort: Jotunn throws different types for a broken prefab; the reason names it and the contribution is refused
         {
-            ModLog.Warn("JotunnItems: '" + id + "' could not be added to the game: " + e);
-            return KyResult.Rejected(id, e.GetType().Name + ": " + e.Message);
+            ModLog.Warn($"JotunnItems: '{id}' could not be added to the game: {e}");
+            return KyResult.Rejected(id, $"{e.GetType().Name}: {e.Message}");
         }
     }
 

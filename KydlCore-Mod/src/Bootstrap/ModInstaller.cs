@@ -31,8 +31,8 @@ internal sealed class ModInstaller
         Add(new ItemsFeature());          // the hub's KY-Items tab follows the registry
         Add(new HubFeature());
         OperationResponse<int> r = Features.Refresh();
-        if (!r.IsSuccess) ModLog.Error("ModInstaller: " + r.Reason);
-        ModLog.Verbose("ModInstaller: " + Features.Count + " feature(s) - " + r);
+        if (!r.IsSuccess) ModLog.Error($"ModInstaller: {r.Reason}");
+        ModLog.Verbose($"ModInstaller: {Features.Count} feature(s) - {r}");
         return r.IsSuccess;
     }
 
@@ -40,7 +40,7 @@ internal sealed class ModInstaller
     internal bool Uninstall()
     {
         OperationResponse<int> r = Features.StopAll();
-        if (!r.IsSuccess) ModLog.Warn("ModInstaller: " + r.Reason);
+        if (!r.IsSuccess) ModLog.Warn($"ModInstaller: {r.Reason}");
         if (Current == this) Current = null;
         { var returnedAt45 = r.IsSuccess; if (CoreLog.On) ModLog.Verbose($"ModInstaller.Uninstall: returns {CoreLog.Shown(returnedAt45)} (line 45)"); return returnedAt45; }
     }
@@ -48,6 +48,6 @@ internal sealed class ModInstaller
     void Add(IFeature feature)
     {
         OperationResponse<int> r = Features.Add(feature);
-        if (!r.IsSuccess) ModLog.Error("ModInstaller: feature not added - " + r.Reason);
+        if (!r.IsSuccess) ModLog.Error($"ModInstaller: feature not added - {r.Reason}");
     }
 }

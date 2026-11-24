@@ -32,7 +32,7 @@ internal static class KyWindows
         {
             if (open) UiInputLock.Hold(LockName);
             else UiInputLock.Release(LockName);
-            ModLog.Verbose("KyWindows: any window open " + open + ", input lock " + (open ? "held" : "released"));
+            ModLog.Verbose($"KyWindows: any window open {open}, input lock {(open ? "held" : "released")}");
         };
     }
 
@@ -41,11 +41,11 @@ internal static class KyWindows
         string full = KyWindowId.Make(modGuid, id);
         if (full == null || window == null)
         {
-            ModLog.Warn("KyUi.Open: refused (guid '" + modGuid + "', id '" + id + "', window " + (window == null ? "null" : "given") + ")");
+            ModLog.Warn($"KyUi.Open: refused (guid '{modGuid}', id '{id}', window {(window == null ? "null" : "given")})");
             return null;
         }
         var root = UiKit.Root;
-        if (root == null) { ModLog.Warn("KyUi.Open: the UI is not available yet, '" + full + "' not opened"); return null; }
+        if (root == null) { ModLog.Warn($"KyUi.Open: the UI is not available yet, '{full}' not opened"); return null; }
         EnsureWired();
         if (Windows.ContainsKey(full)) Remove(full, "replaced by a new window with the same id");
 
@@ -54,7 +54,7 @@ internal static class KyWindows
         root.Add(window);
         Windows[full] = w;
         Stack.Open(full);
-        ModLog.Verbose("KyWindows: opened '" + full + "' (" + Stack.Count + " window(s) open)");
+        ModLog.Verbose($"KyWindows: opened '{full}' ({Stack.Count} window(s) open)");
         return w;
     }
 
@@ -65,11 +65,11 @@ internal static class KyWindows
         if (full == null || !Windows.TryGetValue(full, out w)) { if (CoreLog.Due("KyWindows.Remove:65", 2d)) ModLog.Every("KyWindows.Remove:65", 2d, "KyWindows.Remove: returns false (line 65)"); return false; }
         Windows.Remove(full);
         try { w.Element.RemoveFromHierarchy(); }
-        catch (Exception e) { ModLog.Warn("KyWindows: removing '" + full + "' from the UI failed (" + e.GetType().FullName + "): " + e.Message + " - the window is dropped from the stack anyway"); }
+        catch (Exception e) { ModLog.Warn($"KyWindows: removing '{full}' from the UI failed ({e.GetType().FullName}): {e.Message} - the window is dropped from the stack anyway"); }
         Stack.Close(full);
-        ModLog.Verbose("KyWindows: closed '" + full + "' (" + why + "), " + Stack.Count + " window(s) left");
+        ModLog.Verbose($"KyWindows: closed '{full}' ({why}), {Stack.Count} window(s) left");
         try { if (w.OnClosed != null) w.OnClosed(); }
-        catch (Exception e) { ModLog.Error("KyWindows: onClosed of '" + full + "' failed: " + e); }
+        catch (Exception e) { ModLog.Error($"KyWindows: onClosed of '{full}' failed: {e}"); }
         return !Windows.ContainsKey(full);
     }
 
@@ -78,7 +78,7 @@ internal static class KyWindows
     {
         KyWindow w;
         if (full == null || !Windows.TryGetValue(full, out w)) { if (CoreLog.Due("KyWindows.Front:80", 2d)) ModLog.Every("KyWindows.Front:80", 2d, "KyWindows.Front: returns false (line 80)"); return false; }
-        if (Stack.Top != full) { Stack.BringToFront(full); w.Element.BringToFront(); ModLog.Verbose("KyWindows: '" + full + "' brought to the front"); }
+        if (Stack.Top != full) { Stack.BringToFront(full); w.Element.BringToFront(); ModLog.Verbose($"KyWindows: '{full}' brought to the front"); }
         return Stack.Top == full;
     }
 

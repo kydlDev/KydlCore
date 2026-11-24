@@ -49,7 +49,7 @@ public class Plugin : BaseUnityPlugin
         KydlCore.Core.CoreLog.Sink = ModLog.Verbose;                                        // the pure code logs through ModLog (rule 8, 2026-11-20)
         KydlCore.Core.CoreLog.DebugOn = () => ModSettings.DebugLog != null && ModSettings.DebugLog.Value;
         KydlCore.Ui.UiLog.DebugOn = KydlCore.Core.CoreLog.DebugOn;          // the UI kit's own debug lines follow the same switch; the kit cannot use CoreLog (it is copied alone into Unity)
-        ModLog.Info(ModName + " " + ModVersion + " loaded (dll built " + File.GetLastWriteTime(Assembly.GetExecutingAssembly().Location).ToString("yyyy-MM-dd HH:mm:ss") + ")");
+        ModLog.Info($"{ModName} {ModVersion} loaded (dll built {File.GetLastWriteTime(Assembly.GetExecutingAssembly().Location).ToString("yyyy-MM-dd HH:mm:ss")})");
 
         // The shared UI kit (KydlCore.Ui) lives in this DLL only (D-040): Core sets its log sinks, its panel owner and the input lock ONCE.
         // A mod moved onto Core never sets them itself (the last writer would take over). Debug lines only with the debug switch on.
@@ -64,9 +64,9 @@ public class Plugin : BaseUnityPlugin
         // the features (hub, KY-Items) start through the FeatureRegistry (MIGRATION_DECISIONS A4); KydlCore's are always on (B12)
         _installer = new ModInstaller();
         bool installed = _installer.Install();
-        ModLog.Verbose("Plugin: UI owner '" + global::KydlCore.Ui.UiKit.Owner + "' (root object Kydl_UI_" + global::KydlCore.Ui.UiKit.Owner + "), input lock " + (UiInputLock.Install(ModGuid) ? "installed" : "NOT installed") + " (the character does not move while a Core window is open)");
+        ModLog.Verbose($"Plugin: UI owner '{(global::KydlCore.Ui.UiKit.Owner)}' (root object Kydl_UI_{(global::KydlCore.Ui.UiKit.Owner)}), input lock {(UiInputLock.Install(ModGuid) ? "installed" : "NOT installed")} (the character does not move while a Core window is open)");
         new Harmony(ModGuid).PatchAll(Assembly.GetExecutingAssembly());
-        ModLog.Verbose("Plugin: Awake finished (architecture " + Core.Architecture.Tag + ", Harmony patches applied, features " + (installed ? "started" : "had failures") + ", bundle " + (Bundle != null ? "loaded" : "none") + ")");
+        ModLog.Verbose($"Plugin: Awake finished (architecture {Core.Architecture.Tag}, Harmony patches applied, features {(installed ? "started" : "had failures")}, bundle {(Bundle != null ? "loaded" : "none")})");
     }
 
     // 1) embedded in the DLL (Kydl.Mod.targets embeds Assets\<bundle>; read fully into memory: LoadFromStream breaks once the stream
@@ -76,21 +76,21 @@ public class Plugin : BaseUnityPlugin
         var asm = Assembly.GetExecutingAssembly();
         foreach (var res in asm.GetManifestResourceNames())
         {
-            if (res != BundleName && !res.EndsWith("." + BundleName)) continue;
+            if (res != BundleName && !res.EndsWith($".{BundleName}")) continue;
             using (var stream = asm.GetManifestResourceStream(res))
             using (var ms = new MemoryStream())
             {
                 if (stream != null) stream.CopyTo(ms);
                 var b = AssetBundle.LoadFromMemory(ms.ToArray());
-                if (b != null) { ModLog.Verbose("Plugin: bundle '" + BundleName + "' loaded from the DLL (" + b.GetAllAssetNames().Length + " asset(s))"); return b; }
-                ModLog.Warn("Plugin: the embedded bundle '" + res + "' could not be loaded");
+                if (b != null) { ModLog.Verbose($"Plugin: bundle '{BundleName}' loaded from the DLL ({b.GetAllAssetNames().Length} asset(s))"); return b; }
+                ModLog.Warn($"Plugin: the embedded bundle '{res}' could not be loaded");
             }
         }
         var path = Path.Combine(Path.GetDirectoryName(asm.Location) ?? "", BundleName);
-        if (!File.Exists(path)) { ModLog.Verbose("Plugin: no bundle '" + BundleName + "' (not embedded, not at " + path + ") - fine until the mod has assets"); return null; }
+        if (!File.Exists(path)) { ModLog.Verbose($"Plugin: no bundle '{BundleName}' (not embedded, not at {path}) - fine until the mod has assets"); return null; }
         var fromFile = AssetBundle.LoadFromFile(path);
-        if (fromFile == null) ModLog.Warn("Plugin: bundle file " + path + " could not be loaded");
-        else ModLog.Verbose("Plugin: bundle loaded from " + path);
+        if (fromFile == null) ModLog.Warn($"Plugin: bundle file {path} could not be loaded");
+        else ModLog.Verbose($"Plugin: bundle loaded from {path}");
         return fromFile;
     }
 

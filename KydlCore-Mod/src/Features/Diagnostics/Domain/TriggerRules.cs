@@ -93,6 +93,6 @@ internal static class TriggerRules
     {
         if (CoreLog.IsOn()) CoreLog.Verbose($"TriggerRules.Short(text={CoreLog.Shown(text)}, max={CoreLog.Shown(max)})");
         string first = (text ?? "").Split('\n')[0].TrimEnd('\r');
-        { var returnedAt96 = first.Length <= max ? first : first.Substring(0, Math.Max(0, max)) + "..."; if (CoreLog.IsOn()) CoreLog.Verbose($"TriggerRules.Short: returns {CoreLog.Shown(returnedAt96)} (line 96)"); return returnedAt96; }
+        { var returnedAt96 = first.Length <= max ? first : $"{first.Substring(0, Math.Max(0, max))}..."; if (CoreLog.IsOn()) CoreLog.Verbose($"TriggerRules.Short: returns {CoreLog.Shown(returnedAt96)} (line 96)"); return returnedAt96; }
     }
 }

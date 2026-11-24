@@ -27,7 +27,7 @@ public static class TestWorldCleanup
             template = new HashSet<ZDOID>();
             foreach (var v in views) if (v != null && v.IsValid()) template.Add(v.GetZDO().m_uid);
             domain.SetData(TemplateKey, template);
-            ModLog.Info(ctx, "TestWorldCleanup: template snapshot of " + template.Count + " object(s) taken at the first test");
+            ModLog.Info(ctx, $"TestWorldCleanup: template snapshot of {template.Count} object(s) taken at the first test");
         }
         var removed = new int[6];
         foreach (var v in views)
@@ -44,8 +44,8 @@ public static class TestWorldCleanup
         int total = removed[1] + removed[2] + removed[3] + removed[4] + removed[5];
         string text = "cleanup: removed " + total + " (drops " + removed[(int)CleanupKind.Drop] + ", creatures " + removed[(int)CleanupKind.Creature] + ", logs " + removed[(int)CleanupKind.Log]
             + ", stumps " + removed[(int)CleanupKind.Stump] + ", pieces " + removed[(int)CleanupKind.Piece] + ")";
-        text += ", terrain " + TestTerrainRestore.Run(ctx, spot) + " restored";
-        if (total > 0) ModLog.Info(ctx, "TestWorldCleanup: " + text);
+        text += $", terrain {TestTerrainRestore.Run(ctx, spot)} restored";
+        if (total > 0) ModLog.Info(ctx, $"TestWorldCleanup: {text}");
         { var returnedAt49 = text; if (CoreLog.On) ModLog.Verbose(ctx, $"TestWorldCleanup.Run: returns {CoreLog.Shown(returnedAt49)} (line 49)"); return returnedAt49; }
     }
 

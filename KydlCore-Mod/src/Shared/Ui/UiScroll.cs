@@ -105,7 +105,7 @@ public sealed class UiScroll
         {
             if (!dragging) { if (UiLog.On) UiLog.Verbose("UiScroll.Drag: returns (line 107)"); return; }
             dragging = false; _thumb.ReleasePointer(e.pointerId);
-            UiLog.Verbose("UiScroll '" + _name + "': dragged to " + _offset.ToString("0") + " of " + Max.ToString("0"));
+            UiLog.Verbose($"UiScroll '{_name}': dragged to {_offset.ToString("0")} of {Max.ToString("0")}");
         });
         // a click on the track pages up / down
         _bar.RegisterCallback<PointerDownEvent>(e =>

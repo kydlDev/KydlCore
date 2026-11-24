@@ -30,7 +30,7 @@ internal static class KyPageView
         {
             KyPage page;
             try { page = build(); }
-            catch (Exception e) { ModLog.Warn("KyPageView: the page builder threw " + e.GetType().Name + ": " + e.Message); return; }
+            catch (Exception e) { ModLog.Warn($"KyPageView: the page builder threw {e.GetType().Name}: {e.Message}"); return; }
             if (page == null) return;
             if (!PageRules.NeedsRebuild(shown, page.State)) { UpdateTexts(live, page); { if (CoreLog.On) ModLog.Verbose("KyPageView.Host: returns (line 35)"); return; } }
             shown = page.State ?? "";
@@ -59,7 +59,7 @@ internal static class KyPageView
                 else if (sl != null) host.Add(UiControls.Row(sl.Label, UiControls.Slider(sl.Min, sl.Max, sl.Value, sl.Format, v => { if (sl.Changed != null) sl.Changed(v); })));
                 else if (tx != null) host.Add(UiControls.Row(tx.Label, UiControls.TextField(tx.Value, tx.MaxLength, v => { if (tx.Changed != null) tx.Changed(v); })));
                 else if (li != null) AddList(host, li);
-                else if (h != null) { VisualElement el = null; try { el = h.Build != null ? h.Build() : null; } catch (Exception e) { ModLog.Warn("KyPageView: a hosted element threw " + e.GetType().Name + ": " + e.Message); } if (el != null) host.Add(el); }
+                else if (h != null) { VisualElement el = null; try { el = h.Build != null ? h.Build() : null; } catch (Exception e) { ModLog.Warn($"KyPageView: a hosted element threw {e.GetType().Name}: {e.Message}"); } if (el != null) host.Add(el); }
                 else if (k != null) host.Add(ColumnsLine(k));
                 else if (t != null) AddTable(host, t, rebuild, live);
                 else if (v != null) host.Add(ValueLine(v));
@@ -173,7 +173,7 @@ internal static class KyPageView
     {
         if (CoreLog.Due("KyPageView.AddList", 2d)) ModLog.Every("KyPageView.AddList", 2d, $"KyPageView.AddList(host={CoreLog.Shown(host)}, list={CoreLog.Shown(list)})");
         if (list.Label.Length > 0) host.Add(Cell(list.Label, -1f, UiKit.TextDim));
-        foreach (var item in list.Items) host.Add(Cell("\u2022 " + item, -1f, UiKit.Text));
+        foreach (var item in list.Items) host.Add(Cell($"\u2022 {item}", -1f, UiKit.Text));
     }
 
     static VisualElement ColumnsLine(KyColumnsRow row)

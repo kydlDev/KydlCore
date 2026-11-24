@@ -72,7 +72,7 @@ public sealed class Tunable<T>
     public Tunable<T> SetFromConfigOf(string mod)
     {
         External = true;
-        ModLog.Verbose(_ctx, "Tunable: " + Section + "." + Name + " is set from the config of " + mod);
+        ModLog.Verbose(_ctx, $"Tunable: {Section}.{Name} is set from the config of {mod}");
         return this;
     }
 
@@ -83,12 +83,12 @@ public sealed class Tunable<T>
         {
             var clamped = Clamp(value);
             // Stryker disable once all : only decides whether a debug line is written (the logger itself is tested in ModLogTests)
-            if (!Equals(clamped, value)) ModLog.Verbose(_ctx, "Tunable: " + Section + "." + Name + " = " + value + " is outside " + Min + ".." + Max + ", using " + clamped);
+            if (!Equals(clamped, value)) ModLog.Verbose(_ctx, $"Tunable: {Section}.{Name} = {value} is outside {Min}..{Max}, using {clamped}");
             value = clamped;
             if (Equals(_value, value)) return;
             var was = _value;
             _value = value;
-            ModLog.Verbose(_ctx, "Tunable: " + Section + "." + Name + " = " + value + " (was " + was + ", fixed value " + _fixed + ")");
+            ModLog.Verbose(_ctx, $"Tunable: {Section}.{Name} = {value} (was {was}, fixed value {_fixed})");
             SettingChanged?.Invoke(this, EventArgs.Empty);
         }
     }
@@ -98,5 +98,5 @@ public sealed class Tunable<T>
 
     public event EventHandler SettingChanged;
 
-    public override string ToString() { return Section + "." + Name + " = " + _value; }
+    public override string ToString() { return $"{Section}.{Name} = {_value}"; }
 }

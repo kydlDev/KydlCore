@@ -118,7 +118,7 @@ internal static partial class FlightHost
             _listener = null;
         }
 
-        ModLog.Verbose("FlightRecorder: stopped (" + (_gate != null ? _gate.Written : 0) + " dump(s) written this game start)");
+        ModLog.Verbose($"FlightRecorder: stopped ({(_gate != null ? _gate.Written : 0)} dump(s) written this game start)");
         return !_started;
     }
 
@@ -164,7 +164,7 @@ internal static partial class FlightHost
             e.Gone = false;
             e.LastTime = -1;
             _book.Start(key, e.Mod, e.Label, Now);
-            _book.Note(new FlightNote(Now, e.Mod, "tracking " + e.Label + " (" + key + ")"));
+            _book.Note(new FlightNote(Now, e.Mod, $"tracking {e.Label} ({key})"));
             { var returnedAt168 = _book.IsTracked(key); if (CoreLog.Due("Entry.Track:168", 2d)) ModLog.Every("Entry.Track:168", 2d, $"Entry.Track: returns {CoreLog.Shown(returnedAt168)} (line 168)"); return returnedAt168; }
         }
     }
@@ -211,7 +211,7 @@ internal static partial class FlightHost
     }
 
     static string Key(Component target, bool hasId, ZDOID id) =>
-        hasId ? "zdo " + id : "obj " + target.GetInstanceID().ToString(CultureInfo.InvariantCulture);
+        hasId ? $"zdo {id}" : $"obj {target.GetInstanceID().ToString(CultureInfo.InvariantCulture)}";
 
     static void WarnFullOnce(string mod, string label)
     {
@@ -221,7 +221,7 @@ internal static partial class FlightHost
         }
 
         _fullWarned = true;
-        ModLog.Warn("FlightRecorder: already " + MaxTracked + " objects tracked - " + mod + " / " + label + " and later ones are not recorded (untrack objects you no longer need)");
+        ModLog.Warn($"FlightRecorder: already {MaxTracked} objects tracked - {mod} / {label} and later ones are not recorded (untrack objects you no longer need)");
     }
 
     // ---- sampling (main thread) -----------------------------------------------------------------------------------------------------
@@ -246,11 +246,11 @@ internal static partial class FlightHost
             }
             catch (NullReferenceException e)
             {
-                WarnSoon("FlightRecorder: a sample failed (an object went away while it was read): " + e.Message);
+                WarnSoon($"FlightRecorder: a sample failed (an object went away while it was read): {e.Message}");
             }
             catch (Exception e)          // last resort: the recorder must never break KydlCore's Update
             {
-                WarnSoon("FlightRecorder: a sample failed: " + e);
+                WarnSoon($"FlightRecorder: a sample failed: {e}");
             }
         }
 
@@ -302,7 +302,7 @@ internal static partial class FlightHost
             foreach (var g in gone)
             {
                 _book.MarkGone(g.Key, now);
-                _book.Note(new FlightNote(now, g.Value, "gone: " + g.Key + " (no object and no saved data left)"));
+                _book.Note(new FlightNote(now, g.Value, $"gone: {g.Key} (no object and no saved data left)"));
             }
 
             if (_book.Prune(now, GoneKeepSeconds) > 0)
@@ -329,7 +329,7 @@ internal static partial class FlightHost
             _book.Start(kv.Key, kv.Value.Mod, kv.Value.Label, now);
         }
 
-        _book.Note(new FlightNote(now, "KydlCore", "recording restarted: window " + Window() + " s, sample every " + Interval().ToString("0.##", CultureInfo.InvariantCulture) + " s"));
+        _book.Note(new FlightNote(now, "KydlCore", $"recording restarted: window {Window()} s, sample every {Interval().ToString("0.##", CultureInfo.InvariantCulture)} s"));
     }
 
     static bool TrySample(Entry e, double now, out FlightSample sample)

@@ -29,7 +29,7 @@ public static partial class ModLog
     public static bool State(string what, string from, string to, string reason)
     {
         var c = ModContexts.For(Assembly.GetCallingAssembly());
-        string text = "STATE " + (what ?? "?") + ": " + (from ?? "-") + " -> " + (to ?? "-") + (string.IsNullOrEmpty(reason) ? "" : " (" + reason + ")");
+        string text = $"STATE {(what ?? "?")}: {(from ?? "-")} -> {(to ?? "-")}{(string.IsNullOrEmpty(reason) ? "" : $" ({reason})")}";
         Verbose(c, text);
         RaiseNote(c, text);
         return !string.Equals(from, to, StringComparison.Ordinal);
@@ -43,7 +43,7 @@ public static partial class ModLog
     public static string Decision(string what, string outcome, string inputs)
     {
         var c = ModContexts.For(Assembly.GetCallingAssembly());
-        string text = "DECISION " + (what ?? "?") + " -> " + (outcome ?? "(none)") + (string.IsNullOrEmpty(inputs) ? "" : " (" + inputs + ")");
+        string text = $"DECISION {(what ?? "?")} -> {(outcome ?? "(none)")}{(string.IsNullOrEmpty(inputs) ? "" : $" ({inputs})")}";
         Verbose(c, text);
         RaiseNote(c, text);
         return outcome;
@@ -61,7 +61,7 @@ public static partial class ModLog
         bool due = TakeDue(c, key, seconds);
         if (due)
         {
-            string text = "STATUS " + (key ?? "?") + ": " + (message ?? "");
+            string text = $"STATUS {(key ?? "?")}: {(message ?? "")}";
             Verbose(c, text);
             RaiseNote(c, text);
         }

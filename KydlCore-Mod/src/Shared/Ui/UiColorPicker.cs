@@ -24,7 +24,7 @@ public sealed class UiColorPicker
     float _h, _s;               // kept separately: at brightness 0 the colour alone has no hue / saturation
 
     /// <summary>The colour as "#RRGGBB".</summary>
-    public string Hex { get { return "#" + ColorUtility.ToHtmlStringRGB(_c); } }
+    public string Hex { get { return $"#{ColorUtility.ToHtmlStringRGB(_c)}"; } }
     /// <summary>The colour.</summary>
     public Color Color { get { return _c; } }
 
@@ -49,7 +49,7 @@ public sealed class UiColorPicker
             sw.style.backgroundColor = pc; UiKit.Radius(sw, 4); UiKit.Borders(sw, 1, UiKit.Border);
             sw.RegisterCallback<PointerEnterEvent>(e => UiKit.Borders(sw, 2, UiKit.Gold));
             sw.RegisterCallback<PointerLeaveEvent>(e => UiKit.Borders(sw, 1, UiKit.Border));
-            sw.RegisterCallback<PointerDownEvent>(e => { if (e.button != 0) return; UiLog.Verbose("UiColorPicker: swatch " + p); SetColor(pc, true, true); });
+            sw.RegisterCallback<PointerDownEvent>(e => { if (e.button != 0) return; UiLog.Verbose($"UiColorPicker: swatch {p}"); SetColor(pc, true, true); });
             pal.Add(sw);
         }
         Root.Add(pal);
@@ -77,7 +77,7 @@ public sealed class UiColorPicker
         float v = Mathf.Clamp01(percent / 100f);
         var c = Color.HSVToRGB(_h, _s, v); c.a = 1f;
         _c = c;
-        UiLog.Verbose("UiColorPicker: brightness " + percent.ToString("0") + "% -> " + Hex);
+        UiLog.Verbose($"UiColorPicker: brightness {percent.ToString("0")}% -> {Hex}");
         Show(false, true);
         _changed?.Invoke(Hex);
     }
@@ -95,9 +95,9 @@ public sealed class UiColorPicker
     void OnHexTyped(string text)
     {
         Color p;
-        if (text == null || text.TrimStart('#').Length != 6 || !ColorUtility.TryParseHtmlString(text.StartsWith("#") ? text : "#" + text, out p)) { if (UiLog.On) UiLog.Verbose("UiColorPicker.OnHexTyped: returns (line 99)"); return; }
+        if (text == null || text.TrimStart('#').Length != 6 || !ColorUtility.TryParseHtmlString(text.StartsWith("#") ? text : $"#{text}", out p)) { if (UiLog.On) UiLog.Verbose("UiColorPicker.OnHexTyped: returns (line 99)"); return; }
         if (ColorUtility.ToHtmlStringRGB(p) == ColorUtility.ToHtmlStringRGB(_c)) { if (UiLog.On) UiLog.Verbose("UiColorPicker.OnHexTyped: returns (line 100)"); return; }
-        UiLog.Verbose("UiColorPicker: hex typed " + text);
+        UiLog.Verbose($"UiColorPicker: hex typed {text}");
         SetColor(p, false, true);
     }
 

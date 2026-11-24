@@ -26,7 +26,7 @@ public sealed class CommandDispatcher
         Func<ICommand<TResult>, OperationResponse<TResult>> route = c => handler.Handle((TCommand)c);
         bool replaced = _handlers.ContainsKey(typeof(TCommand));
         _handlers[typeof(TCommand)] = route;
-        Trace("CommandDispatcher: " + (replaced ? "replaced" : "registered") + " the handler of " + typeof(TCommand).Name + " (" + _handlers.Count + " command types)");
+        Trace($"CommandDispatcher: {(replaced ? "replaced" : "registered")} the handler of {typeof(TCommand).Name} ({_handlers.Count} command types)");
         { var returnedAt30 = Handles(typeof(TCommand)); if (CoreLog.On) CoreLog.Verbose($"CommandDispatcher.Register: returns {CoreLog.Shown(returnedAt30)} (line 30)"); return returnedAt30; }
     }
 
@@ -39,27 +39,27 @@ public sealed class CommandDispatcher
         if (command == null) { var returnedAt39 = Done<TResult>("null", OperationResponse<TResult>.Failed("no command given")); if (CoreLog.On) CoreLog.Verbose($"CommandDispatcher.Dispatch: returns {CoreLog.Shown(returnedAt39)} (line 39)"); return returnedAt39; }
         var type = command.GetType();
         object entry;
-        if (!_handlers.TryGetValue(type, out entry)) { var returnedAt42 = Done(type.Name, OperationResponse<TResult>.Failed("no handler registered for " + type.Name)); if (CoreLog.On) CoreLog.Verbose($"CommandDispatcher.Dispatch: returns {CoreLog.Shown(returnedAt42)} (line 42)"); return returnedAt42; }
+        if (!_handlers.TryGetValue(type, out entry)) { var returnedAt42 = Done(type.Name, OperationResponse<TResult>.Failed($"no handler registered for {type.Name}")); if (CoreLog.On) CoreLog.Verbose($"CommandDispatcher.Dispatch: returns {CoreLog.Shown(returnedAt42)} (line 42)"); return returnedAt42; }
         var route = entry as Func<ICommand<TResult>, OperationResponse<TResult>>;
-        if (route == null) { var returnedAt44 = Done(type.Name, OperationResponse<TResult>.Failed("the handler of " + type.Name + " answers another result type")); if (CoreLog.On) CoreLog.Verbose($"CommandDispatcher.Dispatch: returns {CoreLog.Shown(returnedAt44)} (line 44)"); return returnedAt44; }
+        if (route == null) { var returnedAt44 = Done(type.Name, OperationResponse<TResult>.Failed($"the handler of {type.Name} answers another result type")); if (CoreLog.On) CoreLog.Verbose($"CommandDispatcher.Dispatch: returns {CoreLog.Shown(returnedAt44)} (line 44)"); return returnedAt44; }
         try
         {
             { var returnedAt47 = Done(type.Name, route(command)); if (CoreLog.On) CoreLog.Verbose($"CommandDispatcher.Dispatch: returns {CoreLog.Shown(returnedAt47)} (line 47)"); return returnedAt47; }
         }
         catch (InvalidCastException e)
         {
-            { var returnedAt51 = Done(type.Name, OperationResponse<TResult>.Failed("handler of " + type.Name + " got the wrong command type: " + e.Message)); if (CoreLog.On) CoreLog.Verbose($"CommandDispatcher.Dispatch: returns {CoreLog.Shown(returnedAt51)} (line 51)"); return returnedAt51; }
+            { var returnedAt51 = Done(type.Name, OperationResponse<TResult>.Failed($"handler of {type.Name} got the wrong command type: {e.Message}")); if (CoreLog.On) CoreLog.Verbose($"CommandDispatcher.Dispatch: returns {CoreLog.Shown(returnedAt51)} (line 51)"); return returnedAt51; }
         }
         catch (Exception e)       // last resort: a handler bug must not escape into the game loop; the reason names the exception
         {
-            { var returnedAt55 = Done(type.Name, OperationResponse<TResult>.Failed("handler of " + type.Name + " threw " + e.GetType().Name + ": " + e.Message)); if (CoreLog.On) CoreLog.Verbose($"CommandDispatcher.Dispatch: returns {CoreLog.Shown(returnedAt55)} (line 55)"); return returnedAt55; }
+            { var returnedAt55 = Done(type.Name, OperationResponse<TResult>.Failed($"handler of {type.Name} threw {e.GetType().Name}: {e.Message}")); if (CoreLog.On) CoreLog.Verbose($"CommandDispatcher.Dispatch: returns {CoreLog.Shown(returnedAt55)} (line 55)"); return returnedAt55; }
         }
     }
 
     OperationResponse<TResult> Done<TResult>(string command, OperationResponse<TResult> response)
     {
         if (CoreLog.On) CoreLog.Verbose($"CommandDispatcher.Done(command={CoreLog.Shown(command)}, response={CoreLog.Shown(response)})");
-        Trace("CommandDispatcher: " + command + " -> " + response);
+        Trace($"CommandDispatcher: {command} -> {response}");
         { var returnedAt63 = response; if (CoreLog.On) CoreLog.Verbose($"CommandDispatcher.Done: returns {CoreLog.Shown(returnedAt63)} (line 63)"); return returnedAt63; }
     }
 

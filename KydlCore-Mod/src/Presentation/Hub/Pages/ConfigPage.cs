@@ -45,7 +45,7 @@ internal sealed partial class ConfigPage : IDisposable
         _file.SettingChanged += OnSettingChanged;
         Fill();
         _poll = _root.schedule.Execute(Poll).Every(PollMs);
-        ModLog.Verbose("ConfigPage: built for " + (file == null ? "(no file)" : file.ConfigFilePath));
+        ModLog.Verbose($"ConfigPage: built for {(file == null ? "(no file)" : file.ConfigFilePath)}");
     }
 
     /// <summary>The page; the hub puts it under the tab row.</summary>
@@ -122,7 +122,7 @@ internal sealed partial class ConfigPage : IDisposable
         }
         if (shown.Count == 0) _root.Add(UiControls.Note("This mod has no settings."));
         ScaleFonts(_root);
-        ModLog.Verbose("ConfigPage: " + shown.Count + " setting(s) shown");
+        ModLog.Verbose($"ConfigPage: {shown.Count} setting(s) shown");
     }
 
     bool InSections(string section)
@@ -151,7 +151,7 @@ internal sealed partial class ConfigPage : IDisposable
         if (locked) box.Add(UiControls.Note(serverLocked ? "Set by the server: only an admin can change this." : "Admin only: only the host / an admin can change this."));
         string text = entry.Description == null ? null : entry.Description.Description;
         if (!string.IsNullOrEmpty(text)) box.Add(UiControls.Note(text));
-        ModLog.Verbose("ConfigPage: control for " + entry.Definition.Section + " / " + key + " (" + entry.SettingType.Name + ")" + (locked ? " locked" : ""));
+        ModLog.Verbose($"ConfigPage: control for {entry.Definition.Section} / {key} ({entry.SettingType.Name}){(locked ? " locked" : "")}");
         return box;
     }
 

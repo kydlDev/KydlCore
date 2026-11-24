@@ -60,14 +60,14 @@ public static class TestArena
         {
             spot = LaneOf(ctx.Name);
             Spots[ctx.Name] = spot;
-            ModLog.Info(ctx, "TestArena: lab start " + _start.ToString("F0") + " -> test spot of " + ctx.Name + " " + spot.ToString("F0") + " (" + Flat(spot - _start).ToString("F0") + " m away)");
+            ModLog.Info(ctx, $"TestArena: lab start {_start.ToString("F0")} -> test spot of {ctx.Name} {spot.ToString("F0")} ({Flat(spot - _start).ToString("F0")} m away)");
         }
         string cleaned = TestWorldCleanup.Run(ctx, spot);
         Place(p, spot, Quaternion.identity);
         if (!p.InGodMode()) p.SetGodMode(true);
         float away = Flat(p.transform.position - _start);
         ModLog.Check(ctx, "TestArena: distance from the lab start", away, ArenaMetres, 1f, "m");
-        return "arena at " + spot.ToString("F0") + ", " + away.ToString("F0") + " m from the lab start, god mode " + p.InGodMode() + ", " + cleaned;
+        return $"arena at {spot.ToString("F0")}, {away.ToString("F0")} m from the lab start, god mode {p.InGodMode()}, {cleaned}";
     }
 
     /// A point `dx`, `dz` metres from the player AS IT STANDS NOW, pushed out to at least <see cref="MinSpawnMetres"/> and set on the ground. Throws when the
@@ -79,11 +79,11 @@ public static class TestArena
         var p = Player.m_localPlayer;
         var off = new Vector3(dx, 0f, dz);
         var fwd = p.GetLookDir(); fwd.y = 0f;
-        if (Vector3.Dot(off, fwd) <= 0f) throw new System.ArgumentException("offset (" + dx + ", " + dz + ") is not in front of the player - spawn in front (lessons D-172)");
+        if (Vector3.Dot(off, fwd) <= 0f) throw new System.ArgumentException($"offset ({dx}, {dz}) is not in front of the player - spawn in front (lessons D-172)");
         if (off.magnitude < MinSpawnMetres) off = off.normalized * MinSpawnMetres;
         var at = p.transform.position + off;
         at.y = ZoneSystem.instance.GetGroundHeight(at) + 0.3f;
-        ModLog.Verbose(ctx, "TestArena: spawn point " + off.magnitude.ToString("F1") + " m in front of the player at " + at.ToString("F0"));
+        ModLog.Verbose(ctx, $"TestArena: spawn point {off.magnitude.ToString("F1")} m in front of the player at {at.ToString("F0")}");
         return at;
     }
 
@@ -139,7 +139,7 @@ public static class TestArena
                 if (Floating.GetLiquidLevel(new Vector3(q.x, h, q.z)) - h > MaxWater) wet = true;
             }
             float score = (hi - lo) + (wet ? 1000f : 0f);
-            ModLog.Verbose(ctx, "TestArena: direction " + k + " uneven " + (hi - lo).ToString("F1") + " m, water " + wet);
+            ModLog.Verbose(ctx, $"TestArena: direction {k} uneven {(hi - lo).ToString("F1")} m, water {wet}");
             spots.Add(new System.Collections.Generic.KeyValuePair<float, Vector3>(score, new Vector3(c.x, zs.GetGroundHeight(c) + 0.2f, c.z)));
         }
         return spots.OrderBy(kv => kv.Key).Select(kv => kv.Value).ToArray();

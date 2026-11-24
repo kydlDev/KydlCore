@@ -21,9 +21,9 @@ internal static partial class FlightHost
         {
             if (_book == null) { if (CoreLog.On) ModLog.Verbose("FlightHost.LabResult: returns (line 22)"); return; }
             double now = Now;
-            string took = _testStart >= 0 ? " after " + (now - _testStart).ToString("0", CultureInfo.InvariantCulture) + " s" : "";
-            _book.Note(new FlightNote(now, "TestLab", "test " + test + ": " + (failed ? "FAILED" + took + " - " + TriggerRules.Short(why, 400) : "passed" + took)));
-            if (failed) PendingDumps.Enqueue(new KeyValuePair<string, string>("testlab", "TestLab failed: " + test + " - " + TriggerRules.Short(why, 200)));
+            string took = _testStart >= 0 ? $" after {(now - _testStart).ToString("0", CultureInfo.InvariantCulture)} s" : "";
+            _book.Note(new FlightNote(now, "TestLab", $"test {test}: {(failed ? $"FAILED{took} - {TriggerRules.Short(why, 400)}" : $"passed{took}")}"));
+            if (failed) PendingDumps.Enqueue(new KeyValuePair<string, string>("testlab", $"TestLab failed: {test} - {TriggerRules.Short(why, 200)}"));
         }
     }
 
@@ -49,8 +49,8 @@ internal static partial class FlightHost
         lock (Gate)
         {
             if (_book == null) { if (CoreLog.On) ModLog.Verbose("FlightHost.ModError: returns (line 51)"); return; }
-            _book.Note(new FlightNote(Now, source, "ERROR " + TriggerRules.Short(text, 400)));
-            PendingDumps.Enqueue(new KeyValuePair<string, string>("error:" + source, "error in " + source + ": " + TriggerRules.Short(text, 200)));
+            _book.Note(new FlightNote(Now, source, $"ERROR {TriggerRules.Short(text, 400)}"));
+            PendingDumps.Enqueue(new KeyValuePair<string, string>($"error:{source}", $"error in {source}: {TriggerRules.Short(text, 200)}"));
         }
     }
 
@@ -60,8 +60,8 @@ internal static partial class FlightHost
         lock (Gate)
         {
             if (_book == null) { if (CoreLog.On) ModLog.Verbose("FlightHost.OnCheckOff: returns (line 62)"); return; }
-            _book.Note(new FlightNote(Now, c.Name, "CHECK OFF: " + text));
-            PendingDumps.Enqueue(new KeyValuePair<string, string>("check-off:" + c.Name, "CHECK OFF in " + c.Name + ": " + TriggerRules.Short(text, 200)));
+            _book.Note(new FlightNote(Now, c.Name, $"CHECK OFF: {text}"));
+            PendingDumps.Enqueue(new KeyValuePair<string, string>($"check-off:{c.Name}", $"CHECK OFF in {c.Name}: {TriggerRules.Short(text, 200)}"));
         }
     }
 
@@ -86,18 +86,18 @@ internal static partial class FlightHost
             { if (CoreLog.On) ModLog.Verbose("FlightHost.DumpNow: returns null (line 86)"); return null; }
         }
 
-        string full = mod + ": " + (reason ?? "(no reason given)");
+        string full = $"{mod}: {(reason ?? "(no reason given)")}";
         if (Thread.CurrentThread.ManagedThreadId != _mainThread)
         {
-            lock (Gate) PendingDumps.Enqueue(new KeyValuePair<string, string>("manual:" + mod, full));
+            lock (Gate) PendingDumps.Enqueue(new KeyValuePair<string, string>($"manual:{mod}", full));
             { if (CoreLog.On) ModLog.Verbose("FlightHost.DumpNow: returns null (line 93)"); return null; }
         }
 
         double now = Now;
         Sample(now);              // the newest moment is in the dump
         _next = now + Interval();
-        Note(mod, "dump asked: " + reason);
-        { var returnedAt100 = WriteDump("manual:" + mod, full, now); if (CoreLog.On) ModLog.Verbose($"FlightHost.DumpNow: returns {CoreLog.Shown(returnedAt100)} (line 100)"); return returnedAt100; }
+        Note(mod, $"dump asked: {reason}");
+        { var returnedAt100 = WriteDump($"manual:{mod}", full, now); if (CoreLog.On) ModLog.Verbose($"FlightHost.DumpNow: returns {CoreLog.Shown(returnedAt100)} (line 100)"); return returnedAt100; }
     }
 
     static void DrainDumps(double now)
@@ -135,7 +135,7 @@ internal static partial class FlightHost
         if (path != null)
         {
             LastDumpPath = path;
-            ModLog.Info("FlightRecorder: dump written " + path + " (" + reason + ")");
+            ModLog.Info($"FlightRecorder: dump written {path} ({reason})");
         }
 
         { var returnedAt141 = path; if (CoreLog.Due("FlightHost.WriteDump:141", 2d)) ModLog.Every("FlightHost.WriteDump:141", 2d, $"FlightHost.WriteDump: returns {CoreLog.Shown(returnedAt141)} (line 141)"); return returnedAt141; }

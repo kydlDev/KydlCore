@@ -20,7 +20,7 @@ public sealed class ExpectedWarning : IDisposable
     internal ExpectedWarning(string text)
     {
         Text = text ?? "";
-        ModLog.Verbose("ExpectedWarning: scope created for a warning containing '" + Text + "'");
+        ModLog.Verbose($"ExpectedWarning: scope created for a warning containing '{Text}'");
     }
 
     /// <summary>The text a warning must contain to be taken as expected.</summary>

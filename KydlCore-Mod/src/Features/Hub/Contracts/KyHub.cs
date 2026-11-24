@@ -38,7 +38,7 @@ public static class KyHub
     {
         if (string.IsNullOrEmpty(modGuid) || string.IsNullOrEmpty(id) || build == null)
         {
-            ModLog.Warn("KyHub.AddTab: needs a mod GUID, a tab id and a page builder (got '" + modGuid + "', '" + id + "', " + (build == null ? "no builder" : "a builder") + ")");
+            ModLog.Warn($"KyHub.AddTab: needs a mod GUID, a tab id and a page builder (got '{modGuid}', '{id}', {(build == null ? "no builder" : "a builder")})");
             return null;
         }
         string key = Key(modGuid, id);
@@ -48,7 +48,7 @@ public static class KyHub
         if (!Tabs.TryGetValue(key, out tab)) { tab = new KyTab { ModGuid = modGuid, Id = id }; Tabs[key] = tab; }
         tab.Title = Model.TabTitle(modGuid, id);
         tab.Order = order;
-        ModLog.Verbose("KyHub: tab " + modGuid + " / " + id + " '" + tab.Title + "' order " + order);
+        ModLog.Verbose($"KyHub: tab {modGuid} / {id} '{tab.Title}' order {order}");
         return tab;
     }
 
@@ -59,7 +59,7 @@ public static class KyHub
     /// </summary>
     public static KyTab AddPage(string modGuid, string id, string title, Func<KyPage> build, int order = 0, int refreshSeconds = 2)
     {
-        if (build == null) { ModLog.Warn("KyHub.AddPage: needs a page builder (mod '" + modGuid + "', tab '" + id + "')"); return null; }
+        if (build == null) { ModLog.Warn($"KyHub.AddPage: needs a page builder (mod '{modGuid}', tab '{id}')"); return null; }
         return AddTab(modGuid, id, title, () => KyPageView.Host(build, refreshSeconds * 1000), order);
     }
 
@@ -95,11 +95,11 @@ public static class KyHub
     {
         if (string.IsNullOrEmpty(modGuid) || string.IsNullOrEmpty(group) || build == null)
         {
-            ModLog.Warn("KyHub.SetGroupPanel: needs a mod GUID, a tab name and a panel builder (got '" + modGuid + "', '" + group + "', " + (build == null ? "no builder" : "a builder") + ")");
+            ModLog.Warn($"KyHub.SetGroupPanel: needs a mod GUID, a tab name and a panel builder (got '{modGuid}', '{group}', {(build == null ? "no builder" : "a builder")})");
             return false;
         }
         GroupPanels[Key(modGuid, group)] = new GroupPanel { Build = build, Replaces = replaces, AtTop = atTop };
-        ModLog.Verbose("KyHub: panel at the " + (atTop ? "top" : "end") + " of the '" + group + "' tab of " + modGuid);
+        ModLog.Verbose($"KyHub: panel at the {(atTop ? "top" : "end")} of the '{group}' tab of {modGuid}");
         return GroupPanels.ContainsKey(Key(modGuid, group));
     }
 
@@ -111,7 +111,7 @@ public static class KyHub
     /// </summary>
     public static bool SetGroupPage(string modGuid, string group, Func<KyPage> build, bool atTop = true, int refreshSeconds = 2)
     {
-        if (build == null) { ModLog.Warn("KyHub.SetGroupPage: needs a page builder (mod '" + modGuid + "', tab '" + group + "')"); return false; }
+        if (build == null) { ModLog.Warn($"KyHub.SetGroupPage: needs a page builder (mod '{modGuid}', tab '{group}')"); return false; }
         return SetGroupPanel(modGuid, group, () => KyPageView.Host(build, refreshSeconds * 1000), null, atTop);
     }
 
@@ -119,7 +119,7 @@ public static class KyHub
     public static bool RemoveGroupPanel(string modGuid, string group)
     {
         bool removed = !string.IsNullOrEmpty(modGuid) && !string.IsNullOrEmpty(group) && GroupPanels.Remove(Key(modGuid, group));
-        ModLog.Verbose("KyHub: RemoveGroupPanel " + modGuid + " / " + group + (removed ? "" : " (was not there)"));
+        ModLog.Verbose($"KyHub: RemoveGroupPanel {modGuid} / {group}{(removed ? "" : " (was not there)")}");
         return removed;
     }
 
@@ -138,7 +138,7 @@ public static class KyHub
         string key = Key(modGuid, id);
         Builders.Remove(key);
         Tabs.Remove(key);
-        ModLog.Verbose("KyHub: RemoveTab " + modGuid + " / " + id + (removed ? "" : " (was not there)"));
+        ModLog.Verbose($"KyHub: RemoveTab {modGuid} / {id}{(removed ? "" : " (was not there)")}");
         return removed;
     }
 
@@ -153,17 +153,17 @@ public static class KyHub
     /// <summary>Sets the row-1 name of a mod (the default is the plugin's name). `icon` is reserved for later and not shown yet.</summary>
     public static void SetModTitle(string modGuid, string title, Sprite icon = null)
     {
-        if (!HubModel.IsHubGuid(modGuid)) { ModLog.Warn("KyHub.SetModTitle: '" + modGuid + "' is not a KydlDev mod GUID (com.kydldev.*)"); return; }
+        if (!HubModel.IsHubGuid(modGuid)) { ModLog.Warn($"KyHub.SetModTitle: '{modGuid}' is not a KydlDev mod GUID (com.kydldev.*)"); return; }
         Titles[modGuid] = title;
         if (Model.ModTitle(modGuid) != null) Model.AddMod(modGuid, title);
-        ModLog.Verbose("KyHub: title of " + modGuid + " is '" + title + "'");
+        ModLog.Verbose($"KyHub: title of {modGuid} is '{title}'");
     }
 
     // Stryker disable all : Open needs the running game (UI root, plugin list); tested in game
     /// <summary>Opens the hub (or brings it to the front) and shows a mod / tab; both null = where it was last. Needs the game UI: false when it is not there yet.</summary>
     public static void Open(string modGuid = null, string tabId = null)
     {
-        ModLog.Verbose("KyHub: Open " + (modGuid ?? "(last)") + " / " + (tabId ?? "(last)"));
+        ModLog.Verbose($"KyHub: Open {(modGuid ?? "(last)")} / {(tabId ?? "(last)")}");
         HubHost.Open(modGuid, tabId);
     }
     // Stryker restore all
@@ -183,7 +183,7 @@ public static class KyHub
     /// </summary>
     public static VisualElement ConfigEntries(BepInEx.Configuration.ConfigFile file, params string[] sections)
     {
-        ModLog.Verbose("KyHub: ConfigEntries for " + (file == null ? "(no file)" : file.ConfigFilePath) + ", " + (sections == null || sections.Length == 0 ? "all sections" : string.Join(", ", sections)));
+        ModLog.Verbose($"KyHub: ConfigEntries for {(file == null ? "(no file)" : file.ConfigFilePath)}, {(sections == null || sections.Length == 0 ? "all sections" : string.Join(", ", sections))}");
         if (file == null) return null;
         // Stryker disable all : needs a real ConfigFile and the UI; tested in game
         var page = new ConfigPage(file, sections);
@@ -206,7 +206,7 @@ public static class KyHub
         if (!Builders.TryGetValue(Key(modGuid, id), out build)) { if (CoreLog.On) ModLog.Verbose("GroupPanel.BuildPage: returns null (line 228)"); return null; }
         try { return global::KydlCore.Ui.UiLog.Within(modGuid, build); }     // the kit's log lines of this page belong to the mod (UiLog.Owner, D-071)
         // Stryker disable once all : the only effect of the handler is the error line (the null result is tested)
-        catch (Exception e) { ModLog.Error("KyHub: the page of " + modGuid + " / " + id + " failed: " + e); return null; }
+        catch (Exception e) { ModLog.Error($"KyHub: the page of {modGuid} / {id} failed: {e}"); return null; }
     }
 
     internal static void RaiseTabShown(string modGuid, string id)
@@ -216,9 +216,9 @@ public static class KyHub
         foreach (Action<string, string> h in handler.GetInvocationList())
         {
             try { h(modGuid, id); }
-            catch (Exception e) { ModLog.Error("KyHub: a TabShown handler failed: " + e); }
+            catch (Exception e) { ModLog.Error($"KyHub: a TabShown handler failed: {e}"); }
         }
     }
 
-    static string Key(string modGuid, string id) { return modGuid + "\n" + id; }
+    static string Key(string modGuid, string id) { return $"{modGuid}\n{id}"; }
 }

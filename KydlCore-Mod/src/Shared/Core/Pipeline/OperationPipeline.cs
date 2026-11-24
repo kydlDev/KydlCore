@@ -35,7 +35,7 @@ public sealed class OperationPipeline<TInput, TOutput>
     {
         if (CoreLog.On) CoreLog.Verbose($"OperationPipeline.Validate(name={CoreLog.Shown(name)}, check={CoreLog.Shown(check)})");
         if (check == null) throw new ArgumentNullException("check");
-        _names.Add(name ?? ("check " + (_checks.Count + 1)));
+        _names.Add(name ?? ($"check {(_checks.Count + 1)}"));
         _checks.Add(check);
         { var returnedAt40 = this; if (CoreLog.On) CoreLog.Verbose($"OperationPipeline.Validate: returns {CoreLog.Shown(returnedAt40)} (line 40)"); return returnedAt40; }
     }
@@ -49,11 +49,11 @@ public sealed class OperationPipeline<TInput, TOutput>
             var v = _checks[i](input);
             if (v.IsValid) continue;
             var stop = new OperationResponse<TOutput>(v.Status, default(TOutput), v.Reason);
-            if (Trace != null) Trace(_name + ": stopped at " + _names[i] + " - " + stop);
+            if (Trace != null) Trace($"{_name}: stopped at {_names[i]} - {stop}");
             { var returnedAt53 = stop; if (CoreLog.Due("OperationPipeline.Run:53", 2d)) CoreLog.Every("OperationPipeline.Run:53", 2d, $"OperationPipeline.Run: returns {CoreLog.Shown(returnedAt53)} (line 53)"); return returnedAt53; }
         }
         var r = _decide(input);
-        if (Trace != null) Trace(_name + ": " + _checks.Count + " checks passed - " + r);
+        if (Trace != null) Trace($"{_name}: {_checks.Count} checks passed - {r}");
         { var returnedAt57 = r; if (CoreLog.Due("OperationPipeline.Run:57", 2d)) CoreLog.Every("OperationPipeline.Run:57", 2d, $"OperationPipeline.Run: returns {CoreLog.Shown(returnedAt57)} (line 57)"); return returnedAt57; }
     }
 }

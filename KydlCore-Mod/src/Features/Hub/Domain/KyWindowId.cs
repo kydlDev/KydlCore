@@ -14,6 +14,6 @@ internal static class KyWindowId
     {
         if (CoreLog.Due("KyWindowId.Make", 2d)) CoreLog.Every("KyWindowId.Make", 2d, $"KyWindowId.Make(modGuid={CoreLog.Shown(modGuid)}, id={CoreLog.Shown(id)})");
         if (string.IsNullOrWhiteSpace(modGuid) || string.IsNullOrWhiteSpace(id)) { if (CoreLog.Due("KyWindowId.Make:16", 2d)) CoreLog.Every("KyWindowId.Make:16", 2d, "KyWindowId.Make: returns null (line 16)"); return null; }
-        { var returnedAt17 = modGuid.Trim() + ":" + id.Trim(); if (CoreLog.Due("KyWindowId.Make:17", 2d)) CoreLog.Every("KyWindowId.Make:17", 2d, $"KyWindowId.Make: returns {CoreLog.Shown(returnedAt17)} (line 17)"); return returnedAt17; }
+        { var returnedAt17 = $"{modGuid.Trim()}:{id.Trim()}"; if (CoreLog.Due("KyWindowId.Make:17", 2d)) CoreLog.Every("KyWindowId.Make:17", 2d, $"KyWindowId.Make: returns {CoreLog.Shown(returnedAt17)} (line 17)"); return returnedAt17; }
     }
 }

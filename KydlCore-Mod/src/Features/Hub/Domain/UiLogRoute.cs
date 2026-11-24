@@ -19,6 +19,6 @@ internal static class UiLogRoute
     internal static string Tag(string ownerName, string message)
     {
         if (CoreLog.IsOn()) CoreLog.Verbose($"UiLogRoute.Tag(ownerName={CoreLog.Shown(ownerName)}, message={CoreLog.Shown(message)})");
-        { var returnedAt22 = string.IsNullOrEmpty(ownerName) ? message : "[" + ownerName + "] " + message; if (CoreLog.IsOn()) CoreLog.Verbose($"UiLogRoute.Tag: returns {CoreLog.Shown(returnedAt22)} (line 22)"); return returnedAt22; }
+        { var returnedAt22 = string.IsNullOrEmpty(ownerName) ? message : $"[{ownerName}] {message}"; if (CoreLog.IsOn()) CoreLog.Verbose($"UiLogRoute.Tag: returns {CoreLog.Shown(returnedAt22)} (line 22)"); return returnedAt22; }
     }
 }

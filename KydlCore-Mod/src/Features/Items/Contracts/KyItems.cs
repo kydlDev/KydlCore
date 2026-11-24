@@ -75,16 +75,16 @@ public static class KyItems
         if (c.RegisterInGame)
         {
             KyResult game = Game.Register(c, id);
-            if (!game.Accepted) { Book.Remove(id); { var returnedAt78 = Refuse(id, "the game side refused it: " + game.Reason); if (CoreLog.On) ModLog.Verbose($"KyItems.Contribute: returns {CoreLog.Shown(returnedAt78)} (line 78)"); return returnedAt78; } }
+            if (!game.Accepted) { Book.Remove(id); { var returnedAt78 = Refuse(id, $"the game side refused it: {game.Reason}"); if (CoreLog.On) ModLog.Verbose($"KyItems.Contribute: returns {CoreLog.Shown(returnedAt78)} (line 78)"); return returnedAt78; } }
         }
         KyEntry entry = Make(c.Prefab, c.ModGuid, c.ModGuid, c.Kind, c.Tags, "Contribute");
         entry.Id = id;
         if (!string.IsNullOrEmpty(c.DisplayName)) entry.NameToken = c.DisplayName;
         Contributed.Add(entry);
         bool listed = Model.Add(entry);
-        ModLog.Verbose("KyItems: contribution '" + id + "' (" + c.Kind + " '" + c.Prefab.name + "') from " + c.ModGuid + (c.RegisterInGame ? ", added to the game" : "") + (listed ? "" : " (prefab already listed by a legacy source)"));
+        ModLog.Verbose($"KyItems: contribution '{id}' ({c.Kind} '{c.Prefab.name}') from {c.ModGuid}{(c.RegisterInGame ? ", added to the game" : "")}{(listed ? "" : " (prefab already listed by a legacy source)")}");
         try { if (c.OnRegistered != null) c.OnRegistered(c.Prefab); }
-        catch (Exception e) { ModLog.Warn("KyItems: the OnRegistered callback of '" + id + "' threw: " + e); }        // last resort: a mod's callback must not break the registry
+        catch (Exception e) { ModLog.Warn($"KyItems: the OnRegistered callback of '{id}' threw: {e}"); }        // last resort: a mod's callback must not break the registry
         if (Ready) RaiseChanged();
         { var returnedAt89 = KyResult.Ok(id, listed ? "" : "listed already"); if (CoreLog.On) ModLog.Verbose($"KyItems.Contribute: returns {CoreLog.Shown(returnedAt89)} (line 89)"); return returnedAt89; }
     }
@@ -100,7 +100,7 @@ public static class KyItems
             var next = new KyItemsModel();
             foreach (KyEntry x in Model.All) if (!ReferenceEquals(x, e)) next.Add(x);
             Model.ReplaceWith(next);
-            ModLog.Verbose("KyItems: contribution '" + id + "' withdrawn");
+            ModLog.Verbose($"KyItems: contribution '{id}' withdrawn");
             if (Ready) RaiseChanged();
         }
         { var returnedAt106 = FindById(id) == null && !Book.Contains(id); if (CoreLog.On) ModLog.Verbose($"KyItems.Withdraw: returns {CoreLog.Shown(returnedAt106)} (line 106)"); return returnedAt106; }
@@ -114,13 +114,13 @@ public static class KyItems
     {
         bool refused = prefab == null || string.IsNullOrEmpty(modGuid) || Explicit.Any(e => string.Equals(e.Prefab, prefab.name, StringComparison.OrdinalIgnoreCase));
         bool added = !refused;
-        if (refused) ModLog.Verbose("KyItems: Register refused (" + (prefab == null ? "no prefab" : prefab.name) + ", mod '" + modGuid + "')");
+        if (refused) ModLog.Verbose($"KyItems: Register refused ({(prefab == null ? "no prefab" : prefab.name)}, mod '{modGuid}')");
         else
         {
             KyEntry entry = Make(prefab, modGuid, modGuid, kind, tags, "Register");
             Explicit.Add(entry);
             added = Model.Add(entry);
-            ModLog.Verbose("KyItems: '" + prefab.name + "' registered by " + modGuid + " (legacy Register)" + (added ? "" : " (already found by another source)"));
+            ModLog.Verbose($"KyItems: '{prefab.name}' registered by {modGuid} (legacy Register){(added ? "" : " (already found by another source)")}");
             if (added && Ready) RaiseChanged();
         }
         { var returnedAt126 = added; if (CoreLog.On) ModLog.Verbose($"KyItems.Register: returns {CoreLog.Shown(returnedAt126)} (line 126)"); return returnedAt126; }
@@ -134,7 +134,7 @@ public static class KyItems
     {
         if (_hooked) { var returnedAt135 = _hooked; if (CoreLog.Due("KyItems.Init:135", 2d)) ModLog.Every("KyItems.Init:135", 2d, $"KyItems.Init: returns {CoreLog.Shown(returnedAt135)} (line 135)"); return returnedAt135; }
         _hooked = Game.Hook(Refresh);
-        ModLog.Verbose("KyItems: game side " + Game.GetType().Name + (_hooked ? " hooked" : " NOT hooked"));
+        ModLog.Verbose($"KyItems: game side {Game.GetType().Name}{(_hooked ? " hooked" : " NOT hooked")}");
         return _hooked;
     }
 
@@ -150,7 +150,7 @@ public static class KyItems
         Piece.PieceCategory? ky = Category;
         if (ky.HasValue)
             foreach (GameObject go in Game.PiecesIn(ky.Value))
-                if (next.Add(Make(go, "", "build category " + CategoryName, KyKind.Piece, null, "category"))) category++;
+                if (next.Add(Make(go, "", $"build category {CategoryName}", KyKind.Piece, null, "category"))) category++;
         bool changed = Model.ReplaceWith(next);
         bool first = !Ready;
         Ready = true;
@@ -161,7 +161,7 @@ public static class KyItems
 
     static KyResult Refuse(string id, string reason)
     {
-        ModLog.Warn("KyItems: contribution '" + id + "' rejected - " + reason);
+        ModLog.Warn($"KyItems: contribution '{id}' rejected - {reason}");
         return KyResult.Rejected(id, reason);
     }
 
@@ -177,16 +177,16 @@ public static class KyItems
             else if (piece != null) { token = piece.m_name; icon = piece.m_icon; }
             else icon = KyEntry.DepositIcon(go);
         }
-        catch (NullReferenceException e) { ModLog.Verbose("KyItems: name / icon of '" + go.name + "' could not be read: " + e.Message); }
-        ModLog.Verbose("KyItems: '" + go.name + "' (" + kind + ") from " + modName + " via " + source);
+        catch (NullReferenceException e) { ModLog.Verbose($"KyItems: name / icon of '{go.name}' could not be read: {e.Message}"); }
+        ModLog.Verbose($"KyItems: '{go.name}' ({kind}) from {modName} via {source}");
         return new KyEntry { Prefab = go.name, PrefabObject = go, ModGuid = guid ?? "", ModName = modName ?? "", Kind = kind, NameToken = token, Icon = icon, Tags = tags ?? new string[0], Source = source };
     }
 
     static void RaiseChanged()
     {
-        ModLog.Verbose("KyItems: Changed (" + Model.All.Count + " prefab(s))");
+        ModLog.Verbose($"KyItems: Changed ({Model.All.Count} prefab(s))");
         try { Changed?.Invoke(); }
-        catch (Exception e) { ModLog.Warn("KyItems: a Changed handler threw: " + e); }      // last resort: one consumer must not break the others
+        catch (Exception e) { ModLog.Warn($"KyItems: a Changed handler threw: {e}"); }      // last resort: one consumer must not break the others
     }
     // Stryker restore all
 }

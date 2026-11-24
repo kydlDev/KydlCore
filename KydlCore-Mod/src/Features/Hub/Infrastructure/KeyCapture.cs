@@ -40,7 +40,7 @@ internal static class KeyCapture
         _done = done;
         _cancelled = cancelled;
         _startFrame = Time.frameCount;
-        ModLog.Verbose("KeyCapture: waiting for a " + (withModifiers ? "shortcut" : "key"));
+        ModLog.Verbose($"KeyCapture: waiting for a {(withModifiers ? "shortcut" : "key")}");
     }
 
     /// <summary>Ends a running capture without a result (the page closed or was redrawn). Expected outcome: not active afterwards.</summary>
@@ -49,7 +49,7 @@ internal static class KeyCapture
         if (!Active) { if (CoreLog.Due("KeyCapture.Cancel:49", 2d)) ModLog.Every("KeyCapture.Cancel:49", 2d, "KeyCapture.Cancel: returns true (line 49)"); return true; }
         var cancelled = _cancelled;
         Clear();
-        ModLog.Verbose("KeyCapture: cancelled (" + why + ")");
+        ModLog.Verbose($"KeyCapture: cancelled ({why})");
         if (cancelled != null) cancelled();
         { var returnedAt54 = !Active; if (CoreLog.Due("KeyCapture.Cancel:54", 2d)) ModLog.Every("KeyCapture.Cancel:54", 2d, $"KeyCapture.Cancel: returns {CoreLog.Shown(returnedAt54)} (line 54)"); return returnedAt54; }
     }
@@ -81,7 +81,7 @@ internal static class KeyCapture
         }
         else
         {
-            ModLog.Verbose("KeyCapture: " + KeyCaptureRules.ShortcutText(main, mods));
+            ModLog.Verbose($"KeyCapture: {KeyCaptureRules.ShortcutText(main, mods)}");
             if (done != null) done(main, mods);
         }
         { if (CoreLog.Due("KeyCapture.Tick:87", 2d)) ModLog.Every("KeyCapture.Tick:87", 2d, "KeyCapture.Tick: returns true (line 87)"); return true; }

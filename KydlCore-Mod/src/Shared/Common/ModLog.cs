@@ -95,9 +95,9 @@ public static partial class ModLog
     {
         double off = actual - expected;
         bool inside = !double.IsNaN(actual) && Math.Abs(off) <= Math.Abs(tolerance);
-        string text = what + " = " + Num(actual) + Unit(unit) + " (expected " + Num(expected) + " +- " + Num(Math.Abs(tolerance)) + Unit(unit) + ")";
+        string text = $"{what} = {Num(actual)}{Unit(unit)} (expected {Num(expected)} +- {Num(Math.Abs(tolerance))}{Unit(unit)})";
         if (inside) CheckOk(c, what, text);
-        else { Warn(c, "CHECK OFF: " + text + ", off by " + Num(off) + Unit(unit)); RaiseCheckOff(c, text + ", off by " + Num(off) + Unit(unit)); }
+        else { Warn(c, $"CHECK OFF: {text}, off by {Num(off)}{Unit(unit)}"); RaiseCheckOff(c, $"{text}, off by {Num(off)}{Unit(unit)}"); }
         return inside;
     }
 
@@ -108,9 +108,9 @@ public static partial class ModLog
     internal static bool CheckRange(ModContext c, string what, double actual, double min, double max, string unit)
     {
         bool inside = !double.IsNaN(actual) && actual >= min && actual <= max;
-        string text = what + " = " + Num(actual) + Unit(unit) + " (expected " + Num(min) + " .. " + Num(max) + Unit(unit) + ")";
+        string text = $"{what} = {Num(actual)}{Unit(unit)} (expected {Num(min)} .. {Num(max)}{Unit(unit)})";
         if (inside) CheckOk(c, what, text);
-        else { Warn(c, "CHECK OFF: " + text); RaiseCheckOff(c, text); }
+        else { Warn(c, $"CHECK OFF: {text}"); RaiseCheckOff(c, text); }
         return inside;
     }
 
@@ -126,11 +126,11 @@ public static partial class ModLog
         if (OkSeen.TryGetValue(what, out e) && (now - e.Key) / (double)Stopwatch.Frequency < CheckOkSeconds) { OkSeen[what] = new KeyValuePair<long, int>(e.Key, e.Value + 1); return; }
         if (OkSeen.Count > 500) OkSeen.Clear();
         OkSeen[what] = new KeyValuePair<long, int>(now, 0);
-        Info(c, "CHECK ok: " + text + (e.Value > 0 ? " [" + e.Value + " more of this check ok in the last " + CheckOkSeconds.ToString("0") + " s not written]" : ""));
+        Info(c, $"CHECK ok: {text}{(e.Value > 0 ? $" [{e.Value} more of this check ok in the last {CheckOkSeconds.ToString("0")} s not written]" : "")}");
     }
 
     static string Num(double v) { return v.ToString("0.###", CultureInfo.InvariantCulture); }
-    static string Unit(string unit) { return string.IsNullOrEmpty(unit) ? "" : " " + unit; }
+    static string Unit(string unit) { return string.IsNullOrEmpty(unit) ? "" : $" {unit}"; }
 
     /// Is the calling mod's debug switch on? A failing reader counts as off (logging must never take the game down).
     public static bool DebugOn
@@ -160,7 +160,7 @@ public static partial class ModLog
         var LastWritten = c.LastWritten;
         if (level == LogLevel.Error) return false;
         // Stryker disable once String : the separator only matters if a level number could run into the text; the levels used (4, 16) can't
-        string key = (int)level + "|" + (message ?? "");
+        string key = $"{(int)level}|{(message ?? "")}";
         double now = Clock.Elapsed.TotalSeconds, last;
         lock (c.RepeatLock)
         {

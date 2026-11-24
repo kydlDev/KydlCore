@@ -29,5 +29,5 @@ public readonly struct OperationResponse<T>
     /// The same outcome with another value type (a rejected validation passed on by a pipeline). Expected outcome: same status and reason, default value.
     public OperationResponse<TOther> As<TOther>() { return new OperationResponse<TOther>(Status, default(TOther), Reason); }
 
-    public override string ToString() { return Reason.Length == 0 ? Status.ToString() : Status + ": " + Reason; }
+    public override string ToString() { return Reason.Length == 0 ? Status.ToString() : $"{Status}: {Reason}"; }
 }

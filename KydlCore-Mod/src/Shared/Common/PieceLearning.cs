@@ -74,7 +74,7 @@ public static class PieceLearning
         }
         catch (Exception e)
         {
-            ModLog.Warn("PieceLearning: Player.AddKnownPiece failed (" + e.GetType().Name + ": " + e.Message + "), using the popup directly");
+            ModLog.Warn($"PieceLearning: Player.AddKnownPiece failed ({e.GetType().Name}: {e.Message}), using the popup directly");
         }
 
         Recipes(p).Add(piece.m_name);

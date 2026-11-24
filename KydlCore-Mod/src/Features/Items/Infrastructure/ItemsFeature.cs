@@ -16,7 +16,7 @@ internal sealed class ItemsFeature : IFeature
     public bool Start()
     {
         bool hooked = KyItems.Init();
-        ModLog.Verbose("ItemsFeature: started (game side hooked " + hooked + ")");
+        ModLog.Verbose($"ItemsFeature: started (game side hooked {hooked})");
         return hooked;
     }
 

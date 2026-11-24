@@ -118,7 +118,7 @@ internal sealed partial class ConfigPage
         if (CoreLog.Due("ConfigPage.ColorEditor", 2d)) ModLog.Every("ConfigPage.ColorEditor", 2d, $"ConfigPage.ColorEditor(entry={CoreLog.Shown(entry)})");
         Color now = (Color)entry.BoxedValue;
         Action<string> set;
-        VisualElement picker = UiControls.ColorPicker("#" + ColorUtility.ToHtmlStringRGB(now), hex =>
+        VisualElement picker = UiControls.ColorPicker($"#{ColorUtility.ToHtmlStringRGB(now)}", hex =>
         {
             Color c;
             if (!ColorUtility.TryParseHtmlString(hex, out c)) { if (CoreLog.Due("ConfigPage.ColorEditor:375", 2d)) ModLog.Every("ConfigPage.ColorEditor:375", 2d, "ConfigPage.ColorEditor: returns (line 375)"); return; }
@@ -137,7 +137,7 @@ internal sealed partial class ConfigPage
         _writingEntry = entry;
         try { entry.BoxedValue = value; }
         finally { _writing = false; _writingEntry = null; }
-        ModLog.Verbose("ConfigPage: " + entry.Definition.Section + " / " + entry.Definition.Key + " = " + entry.GetSerializedValue());
+        ModLog.Verbose($"ConfigPage: {entry.Definition.Section} / {entry.Definition.Key} = {entry.GetSerializedValue()}");
     }
 
     static bool Range(ConfigEntryBase entry, out double min, out double max)

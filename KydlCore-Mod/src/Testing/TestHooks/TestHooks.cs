@@ -42,7 +42,7 @@ internal static class TestHooks
         int cards = page.Query(name: "kydl-item-card").ToList().Count;
         var button = page.Q<Button>("kydl-kyitems-view");
         int entries = KyItems.All.Count(e => e.Kind != KyKind.Material);
-        return (KydlCore.Presentation.Hub.Registration.KyItemsTab.Grid ? "grid" : "list") + ", cards " + cards + ", entries " + entries + ", one card each " + (cards == entries) + ", button " + (button != null ? button.text : "none");
+        return $"{(KydlCore.Presentation.Hub.Registration.KyItemsTab.Grid ? "grid" : "list")}, cards {cards}, entries {entries}, one card each {(cards == entries)}, button {(button != null ? button.text : "none")}";
     }
 
     [TestHook("kc.hubIsOpen")]
@@ -119,14 +119,14 @@ internal static class TestHooks
     static bool FlightDumpHas(string text)
     {
         string path = FlightRecorder.LastDumpPath;
-        if (string.IsNullOrEmpty(path) || !File.Exists(path)) { ModLog.Verbose("TestHooks.FlightDumpHas: returns false - no dump file of this game start (path '" + (path ?? "<none>") + "')"); return false; }
+        if (string.IsNullOrEmpty(path) || !File.Exists(path)) { ModLog.Verbose($"TestHooks.FlightDumpHas: returns false - no dump file of this game start (path '{(path ?? "<none>")}')"); return false; }
         try
         {
             bool has = File.ReadAllText(path).Contains(text);
-            ModLog.Verbose("TestHooks.FlightDumpHas: '" + text + "' in " + Path.GetFileName(path) + " = " + has);
+            ModLog.Verbose($"TestHooks.FlightDumpHas: '{text}' in {Path.GetFileName(path)} = {has}");
             return has;
         }
-        catch (IOException e) { ModLog.Warn("TestHooks.FlightDumpHas: reading " + path + " failed (" + e.GetType().FullName + "): " + e.Message + " - returns false"); return false; }
-        catch (UnauthorizedAccessException e) { ModLog.Warn("TestHooks.FlightDumpHas: no access to " + path + " (" + e.GetType().FullName + "): " + e.Message + " - returns false"); return false; }
+        catch (IOException e) { ModLog.Warn($"TestHooks.FlightDumpHas: reading {path} failed ({e.GetType().FullName}): {e.Message} - returns false"); return false; }
+        catch (UnauthorizedAccessException e) { ModLog.Warn($"TestHooks.FlightDumpHas: no access to {path} ({e.GetType().FullName}): {e.Message} - returns false"); return false; }
     }
 }

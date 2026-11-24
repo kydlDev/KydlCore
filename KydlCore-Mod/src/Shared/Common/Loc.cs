@@ -23,7 +23,7 @@ public static class Loc
         ctx.English = en ?? new Dictionary<string, string>();
         var loc = LocalizationManager.Instance.GetLocalization();
         loc.AddJsonFile("English", ToJson(ctx.English));
-        ModLog.Verbose(ctx, "Loc: " + ctx.English.Count + " English text(s) registered");
+        ModLog.Verbose(ctx, $"Loc: {ctx.English.Count} English text(s) registered");
         return ctx.English.Count == (en != null ? en.Count : 0);
     }
 
@@ -33,7 +33,7 @@ public static class Loc
     public static bool Register(Dictionary<string, string> en, Dictionary<string, string> de)
     {
         var ctx = ModContexts.For(Assembly.GetCallingAssembly());
-        if (de != null) ModLog.Verbose(ctx, "Loc: a German table (" + de.Count + " text(s)) was passed and is ignored - English only");
+        if (de != null) ModLog.Verbose(ctx, $"Loc: a German table ({de.Count} text(s)) was passed and is ignored - English only");
         return Register(ctx, en);
     }
 
@@ -54,7 +54,7 @@ public static class Loc
     static string Esc(string s) { return (s ?? "").Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n"); }
 
     /// "$key" for names / descriptions that Valheim localizes itself.
-    public static string Token(string key) { return "$" + key; }
+    public static string Token(string key) { return $"${key}"; }
 
     /// Localized text for a key, {0} {1} ... replaced by args (filled in here: Localize(text, words) left the {0} in hover texts).
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -64,9 +64,9 @@ public static class Loc
         var ctx = ModContexts.For(Assembly.GetCallingAssembly());
         var l = Localization.instance;
         string s;
-        if (l != null) s = l.Localize("$" + key);
+        if (l != null) s = l.Localize($"${key}");
         else if (!ctx.English.TryGetValue(key, out s)) s = key;
-        if (args != null) for (int i = 0; i < args.Length; i++) s = s.Replace("{" + i + "}", args[i]);
+        if (args != null) for (int i = 0; i < args.Length; i++) s = s.Replace($"{{{i}}}", args[i]);
         { var returnedAt70 = s; if (CoreLog.Due("Loc.T:70", 2d)) ModLog.Every("Loc.T:70", 2d, $"Loc.T: returns {CoreLog.Shown(returnedAt70)} (line 70)"); return returnedAt70; }
     }
 }
