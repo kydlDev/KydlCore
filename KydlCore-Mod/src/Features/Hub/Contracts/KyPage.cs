@@ -16,18 +16,21 @@ public sealed class KyPage
     /// <summary>A text that changes exactly when something SHOWN changes (e.g. the values joined). Empty = rebuilt on every refresh.</summary>
     public string State = "";
 
+    // read-only from outside (user 2026-11-24): a mod adds sections only through Section(...)
+    readonly List<KySection> _sections = new List<KySection>();
+
     /// <summary>The sections, top to bottom.</summary>
-    public List<KySection> Sections { get; private set; }
+    public IReadOnlyList<KySection> Sections => _sections;
 
     /// <summary>A new, empty page.</summary>
-    public KyPage() { Sections = new List<KySection>(); }
+    public KyPage() { }
 
     /// <summary>Adds a section with a heading (empty title = no heading) and returns it to add rows to.</summary>
     public KySection Section(string title)
     {
         if (CoreLog.On) ModLog.Verbose($"KyPage.Section(title={CoreLog.Shown(title)})");
         var s = new KySection(title);
-        Sections.Add(s);
-        { var returnedAt31 = s; if (CoreLog.On) ModLog.Verbose($"KyPage.Section: returns {CoreLog.Shown(returnedAt31)} (line 31)"); return returnedAt31; }
+        _sections.Add(s);
+        { var returnedAt34 = s; if (CoreLog.On) ModLog.Verbose($"KyPage.Section: returns {CoreLog.Shown(returnedAt34)} (line 34)"); return returnedAt34; }
     }
 }

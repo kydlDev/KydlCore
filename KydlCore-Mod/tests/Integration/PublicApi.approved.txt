@@ -249,7 +249,7 @@ sealed class KydlCore.Features.Hub.Contracts.KyNoteRow
 sealed class KydlCore.Features.Hub.Contracts.KyPage
   field KydlCore.Features.Hub.Contracts.KyPage::State : System.String
   method KydlCore.Features.Hub.Contracts.KySection KydlCore.Features.Hub.Contracts.KyPage::Section(System.String)
-  method System.Collections.Generic.List`1<KydlCore.Features.Hub.Contracts.KySection> KydlCore.Features.Hub.Contracts.KyPage::get_Sections()
+  method System.Collections.Generic.IReadOnlyList`1<KydlCore.Features.Hub.Contracts.KySection> KydlCore.Features.Hub.Contracts.KyPage::get_Sections()
   method System.Void KydlCore.Features.Hub.Contracts.KyPage::.ctor()
 abstract class KydlCore.Features.Hub.Contracts.KyRow
   method System.String KydlCore.Features.Hub.Contracts.KyRow::get_Label()
@@ -265,7 +265,7 @@ sealed class KydlCore.Features.Hub.Contracts.KySection
   method KydlCore.Features.Hub.Contracts.KySection KydlCore.Features.Hub.Contracts.KySection::TextBox(System.String,System.String,System.Int32,System.Action`1<System.String>)
   method KydlCore.Features.Hub.Contracts.KySection KydlCore.Features.Hub.Contracts.KySection::Toggle(System.String,System.Boolean,System.Action`1<System.Boolean>)
   method KydlCore.Features.Hub.Contracts.KySection KydlCore.Features.Hub.Contracts.KySection::Value(System.String,System.String,System.String)
-  method System.Collections.Generic.List`1<KydlCore.Features.Hub.Contracts.KyRow> KydlCore.Features.Hub.Contracts.KySection::get_Rows()
+  method System.Collections.Generic.IReadOnlyList`1<KydlCore.Features.Hub.Contracts.KyRow> KydlCore.Features.Hub.Contracts.KySection::get_Rows()
   method System.String KydlCore.Features.Hub.Contracts.KySection::get_Title()
 sealed class KydlCore.Features.Hub.Contracts.KySliderRow
   method System.Action`1<System.Single> KydlCore.Features.Hub.Contracts.KySliderRow::get_Changed()
