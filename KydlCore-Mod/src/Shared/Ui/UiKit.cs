@@ -129,7 +129,7 @@ public static class UiKit
             UiLog.Warn("UiKit: font '" + TextFontName + "' is not loaded; using " + (_bodyFont != null ? "'" + _bodyFont.name + "'" : "no font (engine default)"));
         }
         _titleFont = _bodyFont;
-        { var returnedAt133 = MakeAssets(emoji); if (UiLog.On) UiLog.Verbose($"UiKit.LoadFonts: returns {UiLog.Shown(returnedAt133)} (line 133)"); return returnedAt133; }
+        { var returnedAt132 = MakeAssets(emoji); if (UiLog.On) UiLog.Verbose($"UiKit.LoadFonts: returns {UiLog.Shown(returnedAt132)} (line 132)"); return returnedAt132; }
     }
 
     /// Font assets for the chosen text / title fonts, each with the emoji font as fallback; returns a log description.
@@ -140,7 +140,7 @@ public static class UiKit
         var emojiAsset = MakeAsset(emoji, null);
         _bodyAsset = MakeAsset(_bodyFont, emojiAsset);
         _titleAsset = _titleFont == _bodyFont ? _bodyAsset : MakeAsset(_titleFont, emojiAsset);
-        { var returnedAt144 = "text font " + Describe(_bodyFont, _bodyAsset) + ", title font " + Describe(_titleFont, _titleAsset) + ", emoji font " + Describe(emoji, emojiAsset); if (UiLog.On) UiLog.Verbose($"UiKit.MakeAssets: returns {UiLog.Shown(returnedAt144)} (line 144)"); return returnedAt144; }
+        { var returnedAt143 = "text font " + Describe(_bodyFont, _bodyAsset) + ", title font " + Describe(_titleFont, _titleAsset) + ", emoji font " + Describe(emoji, emojiAsset); if (UiLog.On) UiLog.Verbose($"UiKit.MakeAssets: returns {UiLog.Shown(returnedAt143)} (line 143)"); return returnedAt143; }
     }
 
     static string Describe(Font f, FontAsset a) { return f == null ? "MISSING" : "'" + f.name + "'" + (a != null ? " (font asset made)" : " (legacy font, no emoji fallback)"); }
@@ -148,7 +148,7 @@ public static class UiKit
     /// A TextCore font asset made from a game font, with `fallback` for the glyphs it does not have (emoji). null = the legacy font is used.
     static FontAsset MakeAsset(Font f, FontAsset fallback)
     {
-        if (f == null) { if (UiLog.On) UiLog.Verbose("UiKit.MakeAsset: returns null (line 152)"); return null; }
+        if (f == null) { if (UiLog.On) UiLog.Verbose("UiKit.MakeAsset: returns null (line 151)"); return null; }
         try
         {
             var a = FontAsset.CreateFontAsset(f);
@@ -159,9 +159,9 @@ public static class UiKit
                 if (a.fallbackFontAssetTable == null) a.fallbackFontAssetTable = new List<FontAsset>();
                 a.fallbackFontAssetTable.Add(fallback);
             }
-            { var returnedAt163 = a; if (UiLog.On) UiLog.Verbose($"UiKit.MakeAsset: returns {UiLog.Shown(returnedAt163)} (line 163)"); return returnedAt163; }
+            { var returnedAt162 = a; if (UiLog.On) UiLog.Verbose($"UiKit.MakeAsset: returns {UiLog.Shown(returnedAt162)} (line 162)"); return returnedAt162; }
         }
-        catch (System.Exception e) { UiLog.Warn("UiKit: font asset from '" + f.name + "' failed: " + e.Message); return null; }
+        catch (System.Exception e) { UiLog.Warn("UiKit: font asset from '" + f.name + "' failed (" + e.GetType().FullName + "): " + e.Message + " - that font is skipped"); return null; }
     }
 
     /// Puts the text font (or the title font) on an element.
@@ -221,12 +221,12 @@ public static class UiKit
         if (UiLog.On) UiLog.Verbose($"UiKit.SizeOf(role={UiLog.Shown(role)})");
         switch (role)
         {
-            case TextRole.Section: case TextRole.SectionMuted: { var returnedAt225 = SectionSize; if (UiLog.On) UiLog.Verbose($"UiKit.SizeOf: returns {UiLog.Shown(returnedAt225)} (line 225)"); return returnedAt225; }
-            case TextRole.Name: { var returnedAt226 = NameSize; if (UiLog.On) UiLog.Verbose($"UiKit.SizeOf: returns {UiLog.Shown(returnedAt226)} (line 226)"); return returnedAt226; }
-            case TextRole.Button: { var returnedAt227 = ButtonSize; if (UiLog.On) UiLog.Verbose($"UiKit.SizeOf: returns {UiLog.Shown(returnedAt227)} (line 227)"); return returnedAt227; }
-            case TextRole.Small: case TextRole.SmallNote: { var returnedAt228 = SmallSize; if (UiLog.On) UiLog.Verbose($"UiKit.SizeOf: returns {UiLog.Shown(returnedAt228)} (line 228)"); return returnedAt228; }
-            case TextRole.Chip: { var returnedAt229 = ChipSize; if (UiLog.On) UiLog.Verbose($"UiKit.SizeOf: returns {UiLog.Shown(returnedAt229)} (line 229)"); return returnedAt229; }
-            default: { var returnedAt230 = FontSize; if (UiLog.On) UiLog.Verbose($"UiKit.SizeOf: returns {UiLog.Shown(returnedAt230)} (line 230)"); return returnedAt230; }
+            case TextRole.Section: case TextRole.SectionMuted: { var returnedAt224 = SectionSize; if (UiLog.On) UiLog.Verbose($"UiKit.SizeOf: returns {UiLog.Shown(returnedAt224)} (line 224)"); return returnedAt224; }
+            case TextRole.Name: { var returnedAt225 = NameSize; if (UiLog.On) UiLog.Verbose($"UiKit.SizeOf: returns {UiLog.Shown(returnedAt225)} (line 225)"); return returnedAt225; }
+            case TextRole.Button: { var returnedAt226 = ButtonSize; if (UiLog.On) UiLog.Verbose($"UiKit.SizeOf: returns {UiLog.Shown(returnedAt226)} (line 226)"); return returnedAt226; }
+            case TextRole.Small: case TextRole.SmallNote: { var returnedAt227 = SmallSize; if (UiLog.On) UiLog.Verbose($"UiKit.SizeOf: returns {UiLog.Shown(returnedAt227)} (line 227)"); return returnedAt227; }
+            case TextRole.Chip: { var returnedAt228 = ChipSize; if (UiLog.On) UiLog.Verbose($"UiKit.SizeOf: returns {UiLog.Shown(returnedAt228)} (line 228)"); return returnedAt228; }
+            default: { var returnedAt229 = FontSize; if (UiLog.On) UiLog.Verbose($"UiKit.SizeOf: returns {UiLog.Shown(returnedAt229)} (line 229)"); return returnedAt229; }
         }
     }
 
@@ -236,12 +236,12 @@ public static class UiKit
         if (UiLog.On) UiLog.Verbose($"UiKit.ColorOf(role={UiLog.Shown(role)})");
         switch (role)
         {
-            case TextRole.Name: { var returnedAt240 = NameColor; if (UiLog.On) UiLog.Verbose($"UiKit.ColorOf: returns {UiLog.Shown(returnedAt240)} (line 240)"); return returnedAt240; }
-            case TextRole.Value: case TextRole.Section: { var returnedAt241 = ValueColor; if (UiLog.On) UiLog.Verbose($"UiKit.ColorOf: returns {UiLog.Shown(returnedAt241)} (line 241)"); return returnedAt241; }
-            case TextRole.Note: case TextRole.SmallNote: case TextRole.SectionMuted: { var returnedAt242 = TextDim; if (UiLog.On) UiLog.Verbose($"UiKit.ColorOf: returns {UiLog.Shown(returnedAt242)} (line 242)"); return returnedAt242; }
-            case TextRole.Good: { var returnedAt243 = Good; if (UiLog.On) UiLog.Verbose($"UiKit.ColorOf: returns {UiLog.Shown(returnedAt243)} (line 243)"); return returnedAt243; }
-            case TextRole.Bad: { var returnedAt244 = Bad; if (UiLog.On) UiLog.Verbose($"UiKit.ColorOf: returns {UiLog.Shown(returnedAt244)} (line 244)"); return returnedAt244; }
-            default: { var returnedAt245 = Text; if (UiLog.On) UiLog.Verbose($"UiKit.ColorOf: returns {UiLog.Shown(returnedAt245)} (line 245)"); return returnedAt245; }
+            case TextRole.Name: { var returnedAt239 = NameColor; if (UiLog.On) UiLog.Verbose($"UiKit.ColorOf: returns {UiLog.Shown(returnedAt239)} (line 239)"); return returnedAt239; }
+            case TextRole.Value: case TextRole.Section: { var returnedAt240 = ValueColor; if (UiLog.On) UiLog.Verbose($"UiKit.ColorOf: returns {UiLog.Shown(returnedAt240)} (line 240)"); return returnedAt240; }
+            case TextRole.Note: case TextRole.SmallNote: case TextRole.SectionMuted: { var returnedAt241 = TextDim; if (UiLog.On) UiLog.Verbose($"UiKit.ColorOf: returns {UiLog.Shown(returnedAt241)} (line 241)"); return returnedAt241; }
+            case TextRole.Good: { var returnedAt242 = Good; if (UiLog.On) UiLog.Verbose($"UiKit.ColorOf: returns {UiLog.Shown(returnedAt242)} (line 242)"); return returnedAt242; }
+            case TextRole.Bad: { var returnedAt243 = Bad; if (UiLog.On) UiLog.Verbose($"UiKit.ColorOf: returns {UiLog.Shown(returnedAt243)} (line 243)"); return returnedAt243; }
+            default: { var returnedAt244 = Text; if (UiLog.On) UiLog.Verbose($"UiKit.ColorOf: returns {UiLog.Shown(returnedAt244)} (line 244)"); return returnedAt244; }
         }
     }
 
@@ -251,7 +251,7 @@ public static class UiKit
     public static Label TextLabel(string text, TextRole role)
     {
         if (UiLog.On) UiLog.Verbose($"UiKit.TextLabel(text={UiLog.Shown(text)}, role={UiLog.Shown(role)})");
-        { var returnedAt255 = Label(text, SizeOf(role), ColorOf(role), role == TextRole.Section || role == TextRole.SectionMuted); if (UiLog.On) UiLog.Verbose($"UiKit.TextLabel: returns {UiLog.Shown(returnedAt255)} (line 255)"); return returnedAt255; }
+        { var returnedAt254 = Label(text, SizeOf(role), ColorOf(role), role == TextRole.Section || role == TextRole.SectionMuted); if (UiLog.On) UiLog.Verbose($"UiKit.TextLabel: returns {UiLog.Shown(returnedAt254)} (line 254)"); return returnedAt254; }
     }
 
     /// <summary>Gives an element the text size AND colour of a role. Returns the element.</summary>
@@ -259,7 +259,7 @@ public static class UiKit
     {
         if (UiLog.On) UiLog.Verbose($"UiKit.Style(element={UiLog.Shown(element)}, role={UiLog.Shown(role)})");
         element.style.fontSize = SizeOf(role); element.style.color = ColorOf(role);
-        { var returnedAt263 = element; if (UiLog.On) UiLog.Verbose($"UiKit.Style: returns {UiLog.Shown(returnedAt263)} (line 263)"); return returnedAt263; }
+        { var returnedAt262 = element; if (UiLog.On) UiLog.Verbose($"UiKit.Style: returns {UiLog.Shown(returnedAt262)} (line 262)"); return returnedAt262; }
     }
 
     /// <summary>Gives an element only the text COLOUR of a role (a value that turns good / bad, a line that is marked as changed). Returns the element.</summary>
@@ -267,7 +267,7 @@ public static class UiKit
     {
         if (UiLog.On) UiLog.Verbose($"UiKit.Tint(element={UiLog.Shown(element)}, role={UiLog.Shown(role)})");
         element.style.color = ColorOf(role);
-        { var returnedAt271 = element; if (UiLog.On) UiLog.Verbose($"UiKit.Tint: returns {UiLog.Shown(returnedAt271)} (line 271)"); return returnedAt271; }
+        { var returnedAt270 = element; if (UiLog.On) UiLog.Verbose($"UiKit.Tint: returns {UiLog.Shown(returnedAt270)} (line 270)"); return returnedAt270; }
     }
 
     /// <summary>Gives an element only the text SIZE of a role. Returns the element.</summary>
@@ -275,7 +275,7 @@ public static class UiKit
     {
         if (UiLog.On) UiLog.Verbose($"UiKit.Size(element={UiLog.Shown(element)}, role={UiLog.Shown(role)})");
         element.style.fontSize = SizeOf(role);
-        { var returnedAt279 = element; if (UiLog.On) UiLog.Verbose($"UiKit.Size: returns {UiLog.Shown(returnedAt279)} (line 279)"); return returnedAt279; }
+        { var returnedAt278 = element; if (UiLog.On) UiLog.Verbose($"UiKit.Size: returns {UiLog.Shown(returnedAt278)} (line 278)"); return returnedAt278; }
     }
 
     /// <summary>The text of a tab button of a mod's own tab row: its size, and its colour by state (selected / under the mouse / idle).</summary>
@@ -306,7 +306,7 @@ public static class UiKit
         l.pickingMode = PickingMode.Ignore;
         l.style.fontSize = size; l.style.color = color;
         if (title) Font(l, true);
-        { var returnedAt310 = l; if (UiLog.On) UiLog.Verbose($"UiKit.Label: returns {UiLog.Shown(returnedAt310)} (line 310)"); return returnedAt310; }
+        { var returnedAt309 = l; if (UiLog.On) UiLog.Verbose($"UiKit.Label: returns {UiLog.Shown(returnedAt309)} (line 309)"); return returnedAt309; }
     }
 
     // --- window ---------------------------------------------------------------------------------------------------------------
@@ -347,7 +347,7 @@ public static class UiKit
         var foot = Label(footer ?? "", SmallSize, TextDim);
         foot.style.alignSelf = Align.Center; foot.style.marginTop = 4; foot.style.marginBottom = 8; foot.style.flexShrink = 0;
         w.Add(foot);
-        { var returnedAt351 = w; if (UiLog.On) UiLog.Verbose($"UiKit.Window: returns {UiLog.Shown(returnedAt351)} (line 351)"); return returnedAt351; }
+        { var returnedAt350 = w; if (UiLog.On) UiLog.Verbose($"UiKit.Window: returns {UiLog.Shown(returnedAt350)} (line 350)"); return returnedAt350; }
     }
 
     /// Dragging `handle` moves `target` (kept on screen).
@@ -357,14 +357,14 @@ public static class UiKit
         Vector2 start = Vector2.zero, origin = Vector2.zero;
         handle.RegisterCallback<PointerDownEvent>(e =>
         {
-            if (e.button != 0 || e.target is Button) { if (UiLog.On) UiLog.Verbose("UiKit.Drag: returns (line 361)"); return; }
+            if (e.button != 0 || e.target is Button) { if (UiLog.On) UiLog.Verbose("UiKit.Drag: returns (line 360)"); return; }
             dragging = true; start = e.position; origin = new Vector2(target.layout.x, target.layout.y);   // placed by right %: take the laid-out position
             target.style.right = StyleKeyword.Auto;                                                        // from now on placed by left / top
             handle.CapturePointer(e.pointerId);
         });
         handle.RegisterCallback<PointerMoveEvent>(e =>
         {
-            if (!dragging) { if (UiLog.On) UiLog.Verbose("UiKit.Drag: returns (line 368)"); return; }
+            if (!dragging) { if (UiLog.On) UiLog.Verbose("UiKit.Drag: returns (line 367)"); return; }
             var p = origin + (Vector2)e.position - start;
             var parent = target.parent;
             float maxX = parent != null ? parent.resolvedStyle.width - 80f : 2000f, maxY = parent != null ? parent.resolvedStyle.height - 40f : 2000f;
@@ -373,7 +373,7 @@ public static class UiKit
         });
         handle.RegisterCallback<PointerUpEvent>(e =>
         {
-            if (!dragging) { if (UiLog.On) UiLog.Verbose("UiKit.Drag: returns (line 377)"); return; }
+            if (!dragging) { if (UiLog.On) UiLog.Verbose("UiKit.Drag: returns (line 376)"); return; }
             dragging = false;
             handle.ReleasePointer(e.pointerId);
             UiLog.Verbose("UiKit: window moved to " + target.resolvedStyle.left.ToString("0") + ", " + target.resolvedStyle.top.ToString("0"));

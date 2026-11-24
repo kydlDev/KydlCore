@@ -122,7 +122,7 @@ public static class KyHub
         }
         GroupPanels[Key(modGuid, group)] = new GroupPanel { Build = build, Replaces = replaces, AtTop = atTop };
         ModLog.Verbose("KyHub: panel at the " + (atTop ? "top" : "end") + " of the '" + group + "' tab of " + modGuid);
-        return true;
+        return GroupPanels.ContainsKey(Key(modGuid, group));
     }
 
     /// <summary>

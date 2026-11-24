@@ -14,6 +14,8 @@ namespace KydlCore.Features.Hub.Infrastructure;
 internal static class KeyCapture
 {
     static readonly KeyCode[] AllKeys = (KeyCode[])Enum.GetValues(typeof(KeyCode));
+    static readonly List<KeyCode> Pressed = new List<KeyCode>(8);
+    static readonly List<KeyCode> Held = new List<KeyCode>(6);
     static readonly KeyCode[] Modifiers = { KeyCode.LeftShift, KeyCode.RightShift, KeyCode.LeftControl, KeyCode.RightControl, KeyCode.LeftAlt, KeyCode.RightAlt };
 
     static Action<KeyCode, List<KeyCode>> _done;
@@ -44,29 +46,31 @@ internal static class KeyCapture
     /// <summary>Ends a running capture without a result (the page closed or was redrawn). Expected outcome: not active afterwards.</summary>
     internal static bool Cancel(string why)
     {
-        if (!Active) { if (CoreLog.Due("KeyCapture.Cancel:47", 2d)) ModLog.Every("KeyCapture.Cancel:47", 2d, "KeyCapture.Cancel: returns true (line 47)"); return true; }
+        if (!Active) { if (CoreLog.Due("KeyCapture.Cancel:49", 2d)) ModLog.Every("KeyCapture.Cancel:49", 2d, "KeyCapture.Cancel: returns true (line 49)"); return true; }
         var cancelled = _cancelled;
         Clear();
         ModLog.Verbose("KeyCapture: cancelled (" + why + ")");
         if (cancelled != null) cancelled();
-        { var returnedAt52 = !Active; if (CoreLog.Due("KeyCapture.Cancel:52", 2d)) ModLog.Every("KeyCapture.Cancel:52", 2d, $"KeyCapture.Cancel: returns {CoreLog.Shown(returnedAt52)} (line 52)"); return returnedAt52; }
+        { var returnedAt54 = !Active; if (CoreLog.Due("KeyCapture.Cancel:54", 2d)) ModLog.Every("KeyCapture.Cancel:54", 2d, $"KeyCapture.Cancel: returns {CoreLog.Shown(returnedAt54)} (line 54)"); return returnedAt54; }
     }
 
     /// <summary>Every frame (Plugin.Update, first). Expected outcome: true when this frame ended the capture.</summary>
     internal static bool Tick()
     {
-        if (!Active || Time.frameCount == _startFrame) { if (CoreLog.Due("KeyCapture.Tick:58", 2d)) ModLog.Every("KeyCapture.Tick:58", 2d, "KeyCapture.Tick: returns false (line 58)"); return false; }     // the click that started it is not the key
-        var pressed = new List<KeyCode>();
+        if (!Active || Time.frameCount == _startFrame) { if (CoreLog.Due("KeyCapture.Tick:60", 2d)) ModLog.Every("KeyCapture.Tick:60", 2d, "KeyCapture.Tick: returns false (line 60)"); return false; }     // the click that started it is not the key
+        var pressed = Pressed;         // reused every frame of a capture (rule 38: per-frame paths allocate nothing); Decide only reads it
+        pressed.Clear();
         foreach (KeyCode key in AllKeys)
             if (key != KeyCode.None && Input.GetKeyDown(key) && !pressed.Contains(key)) pressed.Add(key);
-        if (pressed.Count == 0) { if (CoreLog.Due("KeyCapture.Tick:62", 2d)) ModLog.Every("KeyCapture.Tick:62", 2d, "KeyCapture.Tick: returns false (line 62)"); return false; }
-        var held = new List<KeyCode>();
+        if (pressed.Count == 0) { if (CoreLog.Due("KeyCapture.Tick:65", 2d)) ModLog.Every("KeyCapture.Tick:65", 2d, "KeyCapture.Tick: returns false (line 65)"); return false; }
+        var held = Held;
+        held.Clear();
         foreach (KeyCode m in Modifiers) if (Input.GetKey(m)) held.Add(m);
 
         KeyCode main;
         List<KeyCode> mods;
         CaptureStep step = KeyCaptureRules.Decide(pressed, held, _withModifiers, out main, out mods);
-        if (step == CaptureStep.Waiting) { if (CoreLog.Due("KeyCapture.Tick:69", 2d)) ModLog.Every("KeyCapture.Tick:69", 2d, "KeyCapture.Tick: returns false (line 69)"); return false; }
+        if (step == CaptureStep.Waiting) { if (CoreLog.Due("KeyCapture.Tick:73", 2d)) ModLog.Every("KeyCapture.Tick:73", 2d, "KeyCapture.Tick: returns false (line 73)"); return false; }
         var done = _done;
         var cancelled = _cancelled;
         Clear();
@@ -80,7 +84,7 @@ internal static class KeyCapture
             ModLog.Verbose("KeyCapture: " + KeyCaptureRules.ShortcutText(main, mods));
             if (done != null) done(main, mods);
         }
-        { if (CoreLog.Due("KeyCapture.Tick:83", 2d)) ModLog.Every("KeyCapture.Tick:83", 2d, "KeyCapture.Tick: returns true (line 83)"); return true; }
+        { if (CoreLog.Due("KeyCapture.Tick:87", 2d)) ModLog.Every("KeyCapture.Tick:87", 2d, "KeyCapture.Tick: returns true (line 87)"); return true; }
     }
 
     static void Clear()

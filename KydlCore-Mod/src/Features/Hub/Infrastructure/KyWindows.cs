@@ -65,12 +65,12 @@ internal static class KyWindows
         if (full == null || !Windows.TryGetValue(full, out w)) { if (CoreLog.Due("KyWindows.Remove:65", 2d)) ModLog.Every("KyWindows.Remove:65", 2d, "KyWindows.Remove: returns false (line 65)"); return false; }
         Windows.Remove(full);
         try { w.Element.RemoveFromHierarchy(); }
-        catch (Exception e) { ModLog.Warn("KyWindows: removing '" + full + "' from the UI failed: " + e.Message); }
+        catch (Exception e) { ModLog.Warn("KyWindows: removing '" + full + "' from the UI failed (" + e.GetType().FullName + "): " + e.Message + " - the window is dropped from the stack anyway"); }
         Stack.Close(full);
         ModLog.Verbose("KyWindows: closed '" + full + "' (" + why + "), " + Stack.Count + " window(s) left");
         try { if (w.OnClosed != null) w.OnClosed(); }
         catch (Exception e) { ModLog.Error("KyWindows: onClosed of '" + full + "' failed: " + e); }
-        return true;
+        return !Windows.ContainsKey(full);
     }
 
     /// <summary>A click on a window (or KyWindow.BringToFront): in front of the others, in the stack and on screen.</summary>
@@ -79,7 +79,7 @@ internal static class KyWindows
         KyWindow w;
         if (full == null || !Windows.TryGetValue(full, out w)) { if (CoreLog.Due("KyWindows.Front:80", 2d)) ModLog.Every("KyWindows.Front:80", 2d, "KyWindows.Front: returns false (line 80)"); return false; }
         if (Stack.Top != full) { Stack.BringToFront(full); w.Element.BringToFront(); ModLog.Verbose("KyWindows: '" + full + "' brought to the front"); }
-        return true;
+        return Stack.Top == full;
     }
 
     /// <summary>Every frame (Plugin.Update): Escape closes ONLY the front window (the hub or a mod's). Returns whether a window was closed.</summary>

@@ -39,7 +39,7 @@ internal sealed class JotunnItems : IKyGameSide
         get
         {
             try { return PieceManager.Instance.GetPieceCategory(KyItems.CategoryName); }      // null while no mod has registered it
-            catch (Exception e) { ModLog.Verbose("JotunnItems: the '" + KyItems.CategoryName + "' build category could not be read: " + e.Message); return null; }
+            catch (Exception e) { ModLog.Verbose("JotunnItems: the '" + KyItems.CategoryName + "' build category could not be read (" + e.GetType().FullName + "): " + e.Message + " - no category"); return null; }
         }
     }
 
