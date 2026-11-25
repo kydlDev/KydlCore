@@ -30,7 +30,7 @@ public class Plugin : BaseUnityPlugin
     /// <summary>The mod's name (log source, cache folder).</summary>
     public const string ModName = "KydlCore";
     /// <summary>The version; equal to manifest.json and the newest CHANGELOG heading.</summary>
-    public const string ModVersion = "1.1.2";
+    public const string ModVersion = "1.1.3";
     /// <summary>The name of the embedded AssetBundle.</summary>
     public const string BundleName = "kydlcore";
     /// UiKit.Owner: the name part of the one UI root object ("Kydl_UI_" + owner).

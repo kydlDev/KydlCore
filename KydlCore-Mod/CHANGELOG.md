@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## 1.1.3
+- New for mod authors: ServerSync is part of KydlCore (namespace `KydlCore.ServerSync`: `ConfigSync`, `SyncedConfigEntry<T>`, `CustomSyncedValue<T>`). A config entry added with `AddConfigEntry` is synced from the server to every client, and admin-only entries need no Jotunn. A mod that uses it must require KydlCore 1.1.3.
+
 ## 1.1.2
 - New: KY-Items has a grid view (4 square icons per row with name and prefab) next to the list; switch at the top right, remembered in `[General] KY-Items View`.
 - New: a Materials tab in the KY hub for deposits and crafting ingredients (`KyKind.Material`).

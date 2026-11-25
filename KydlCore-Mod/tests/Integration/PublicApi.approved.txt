@@ -368,6 +368,70 @@ sealed class KydlCore.Features.Items.Contracts.KyResult
   method System.String KydlCore.Features.Items.Contracts.KyResult::ToString()
   method System.String KydlCore.Features.Items.Contracts.KyResult::get_Id()
   method System.String KydlCore.Features.Items.Contracts.KyResult::get_Reason()
+class KydlCore.ServerSync.ConfigSync
+  event KydlCore.ServerSync.ConfigSync::SourceOfTruthChanged : System.Action`1<System.Boolean>
+  field KydlCore.ServerSync.ConfigSync::AnnounceVersion : System.Boolean
+  field KydlCore.ServerSync.ConfigSync::CurrentVersion : System.String
+  field KydlCore.ServerSync.ConfigSync::DisplayName : System.String
+  field KydlCore.ServerSync.ConfigSync::MinimumRequiredVersion : System.String
+  field KydlCore.ServerSync.ConfigSync::ModRequired : System.Boolean
+  field KydlCore.ServerSync.ConfigSync::Name : System.String
+  field KydlCore.ServerSync.ConfigSync::ProcessingServerUpdate : System.Boolean
+  field KydlCore.ServerSync.ConfigSync::RequireExactVersion : System.Boolean
+  method KydlCore.ServerSync.SyncedConfigEntry`1<T> KydlCore.ServerSync.ConfigSync::AddConfigEntry(BepInEx.Configuration.ConfigEntry`1<T>)
+  method KydlCore.ServerSync.SyncedConfigEntry`1<T> KydlCore.ServerSync.ConfigSync::AddLockingConfigEntry(BepInEx.Configuration.ConfigEntry`1<T>)
+  method KydlCore.ServerSync.SyncedConfigEntry`1<T> KydlCore.ServerSync.ConfigSync::ConfigData(BepInEx.Configuration.ConfigEntry`1<T>)
+  method System.Boolean KydlCore.ServerSync.ConfigSync::get_InitialSyncDone()
+  method System.Boolean KydlCore.ServerSync.ConfigSync::get_IsAdmin()
+  method System.Boolean KydlCore.ServerSync.ConfigSync::get_IsLocked()
+  method System.Boolean KydlCore.ServerSync.ConfigSync::get_IsSourceOfTruth()
+  method System.Void KydlCore.ServerSync.ConfigSync::.ctor(System.String)
+  method System.Void KydlCore.ServerSync.ConfigSync::add_SourceOfTruthChanged(System.Action`1<System.Boolean>)
+  method System.Void KydlCore.ServerSync.ConfigSync::remove_SourceOfTruthChanged(System.Action`1<System.Boolean>)
+  method System.Void KydlCore.ServerSync.ConfigSync::set_IsLocked(System.Boolean)
+abstract class KydlCore.ServerSync.CustomSyncedValueBase
+  event KydlCore.ServerSync.CustomSyncedValueBase::ValueChanged : System.Action
+  field KydlCore.ServerSync.CustomSyncedValueBase::Identifier : System.String
+  field KydlCore.ServerSync.CustomSyncedValueBase::LocalBaseValue : System.Object
+  field KydlCore.ServerSync.CustomSyncedValueBase::Priority : System.Int32
+  field KydlCore.ServerSync.CustomSyncedValueBase::Type : System.Type
+  field KydlCore.ServerSync.CustomSyncedValueBase::localIsOwner : System.Boolean
+  method System.Object KydlCore.ServerSync.CustomSyncedValueBase::get_BoxedValue()
+  method System.Void KydlCore.ServerSync.CustomSyncedValueBase::.ctor(KydlCore.ServerSync.ConfigSync,System.String,System.Type,System.Int32)
+  method System.Void KydlCore.ServerSync.CustomSyncedValueBase::add_ValueChanged(System.Action)
+  method System.Void KydlCore.ServerSync.CustomSyncedValueBase::remove_ValueChanged(System.Action)
+  method System.Void KydlCore.ServerSync.CustomSyncedValueBase::set_BoxedValue(System.Object)
+sealed class KydlCore.ServerSync.CustomSyncedValue`1
+  method System.Void KydlCore.ServerSync.CustomSyncedValue`1::.ctor(KydlCore.ServerSync.ConfigSync,System.String,T,System.Int32)
+  method System.Void KydlCore.ServerSync.CustomSyncedValue`1::AssignLocalValue(T)
+  method System.Void KydlCore.ServerSync.CustomSyncedValue`1::set_Value(T)
+  method T KydlCore.ServerSync.CustomSyncedValue`1::get_Value()
+abstract class KydlCore.ServerSync.OwnConfigEntryBase
+  field KydlCore.ServerSync.OwnConfigEntryBase::LocalBaseValue : System.Object
+  field KydlCore.ServerSync.OwnConfigEntryBase::SynchronizedConfig : System.Boolean
+  method BepInEx.Configuration.ConfigEntryBase KydlCore.ServerSync.OwnConfigEntryBase::get_BaseConfig()
+  method System.Void KydlCore.ServerSync.OwnConfigEntryBase::.ctor()
+class KydlCore.ServerSync.SyncedConfigEntry`1
+  field KydlCore.ServerSync.SyncedConfigEntry`1::SourceConfig : BepInEx.Configuration.ConfigEntry`1<T>
+  method BepInEx.Configuration.ConfigEntryBase KydlCore.ServerSync.SyncedConfigEntry`1::get_BaseConfig()
+  method System.Void KydlCore.ServerSync.SyncedConfigEntry`1::.ctor(BepInEx.Configuration.ConfigEntry`1<T>)
+  method System.Void KydlCore.ServerSync.SyncedConfigEntry`1::AssignLocalValue(T)
+  method System.Void KydlCore.ServerSync.SyncedConfigEntry`1::set_Value(T)
+  method T KydlCore.ServerSync.SyncedConfigEntry`1::get_Value()
+class KydlCore.ServerSync.VersionCheck
+  field KydlCore.ServerSync.VersionCheck::AnnounceVersion : System.Boolean
+  field KydlCore.ServerSync.VersionCheck::ModRequired : System.Boolean
+  field KydlCore.ServerSync.VersionCheck::Name : System.String
+  field KydlCore.ServerSync.VersionCheck::RequireExactVersion : System.Boolean
+  method System.String KydlCore.ServerSync.VersionCheck::get_CurrentVersion()
+  method System.String KydlCore.ServerSync.VersionCheck::get_DisplayName()
+  method System.String KydlCore.ServerSync.VersionCheck::get_MinimumRequiredVersion()
+  method System.Void KydlCore.ServerSync.VersionCheck::.ctor(KydlCore.ServerSync.ConfigSync)
+  method System.Void KydlCore.ServerSync.VersionCheck::.ctor(System.String)
+  method System.Void KydlCore.ServerSync.VersionCheck::Initialize()
+  method System.Void KydlCore.ServerSync.VersionCheck::set_CurrentVersion(System.String)
+  method System.Void KydlCore.ServerSync.VersionCheck::set_DisplayName(System.String)
+  method System.Void KydlCore.ServerSync.VersionCheck::set_MinimumRequiredVersion(System.String)
 enum KydlCore.Ui.TextRole
   field KydlCore.Ui.TextRole::Bad : KydlCore.Ui.TextRole = 10
   field KydlCore.Ui.TextRole::Body : KydlCore.Ui.TextRole = 0

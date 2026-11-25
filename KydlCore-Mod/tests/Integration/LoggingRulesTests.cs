@@ -26,8 +26,9 @@ public class LoggingRulesTests
         public int Close;
     }
 
+    // /Harmony/ServerSync/ is the vendored third-party ServerSync library (blaxxun/Tykea, kept identical to upstream); user decision 2026-11-25: exempt from rule 8, like Sonar
     static IEnumerable<string> SourceFiles() => Directory.GetFiles(TestPaths.Src, "*.cs", SearchOption.AllDirectories)
-        .Where(f => !IsLogListener(f) && !f.Replace('\\', '/').Contains("/src/Testing/") && !LoggerFiles.Contains(Path.GetFileName(f)));
+        .Where(f => !IsLogListener(f) && !f.Replace('\\', '/').Contains("/src/Testing/") && !f.Replace('\\', '/').Contains("/Harmony/ServerSync/") && !LoggerFiles.Contains(Path.GetFileName(f)));
 
     // the loggers themselves (a logger that logs through itself loops)
     static readonly HashSet<string> LoggerFiles = new HashSet<string> { "CoreLog.cs", "ModLog.cs", "ModLog.Diagnostics.cs", "ModContext.cs", "ModContexts.cs", "UiLog.cs", "UiLogSinks.cs" };     // ModContexts.cs: split out of ModContext.cs (2026-11-24, one public type per file)
