@@ -45,6 +45,21 @@ enum KydlCore.Common.KyNetworkLevel
   field KydlCore.Common.KyNetworkLevel::ClientOnly : KydlCore.Common.KyNetworkLevel = 0
   field KydlCore.Common.KyNetworkLevel::EveryoneMustHave : KydlCore.Common.KyNetworkLevel = 1
   field KydlCore.Common.KyNetworkLevel::value__ : System.Int32
+static class KydlCore.Common.KyPrefabs
+  event KydlCore.Common.KyPrefabs::PrefabsRegistered : System.Action
+  event KydlCore.Common.KyPrefabs::VanillaPrefabsAvailable : System.Action
+  method System.Boolean KydlCore.Common.KyPrefabs::Add(UnityEngine.GameObject)
+  method System.Boolean KydlCore.Common.KyPrefabs::get_VanillaAvailable()
+  method System.Void KydlCore.Common.KyPrefabs::add_PrefabsRegistered(System.Action)
+  method System.Void KydlCore.Common.KyPrefabs::add_VanillaPrefabsAvailable(System.Action)
+  method System.Void KydlCore.Common.KyPrefabs::remove_PrefabsRegistered(System.Action)
+  method System.Void KydlCore.Common.KyPrefabs::remove_VanillaPrefabsAvailable(System.Action)
+  method T KydlCore.Common.KyPrefabs::Asset(System.String)
+  method UnityEngine.GameObject KydlCore.Common.KyPrefabs::Clone(System.String,System.String)
+  method UnityEngine.GameObject KydlCore.Common.KyPrefabs::Clone(System.String,UnityEngine.GameObject)
+  method UnityEngine.GameObject KydlCore.Common.KyPrefabs::CreateEmpty(System.String,System.Boolean)
+  method UnityEngine.GameObject KydlCore.Common.KyPrefabs::Get(System.String)
+  method UnityEngine.Transform KydlCore.Common.KyPrefabs::get_Holder()
 static class KydlCore.Common.Loc
   method System.Boolean KydlCore.Common.Loc::Register(System.Collections.Generic.Dictionary`2<System.String,System.String>)
   method System.Boolean KydlCore.Common.Loc::Register(System.Collections.Generic.Dictionary`2<System.String,System.String>,System.Collections.Generic.Dictionary`2<System.String,System.String>)
