@@ -47,6 +47,18 @@ abstract class KydlCore.Common.KyCommand
 static class KydlCore.Common.KyCommands
   field KydlCore.Common.KyCommands::KydlToolsGuid : System.String = com.kydldev.KydlTools
   method System.Boolean KydlCore.Common.KyCommands::Add(KydlCore.Common.KyCommand)
+sealed class KydlCore.Common.KyIconRequest
+  field KydlCore.Common.KyIconRequest::DistanceMultiplier : System.Single
+  field KydlCore.Common.KyIconRequest::FieldOfView : System.Single
+  field KydlCore.Common.KyIconRequest::Height : System.Int32
+  field KydlCore.Common.KyIconRequest::Rotation : UnityEngine.Quaternion
+  field KydlCore.Common.KyIconRequest::Target : UnityEngine.GameObject
+  field KydlCore.Common.KyIconRequest::Width : System.Int32
+  method System.Void KydlCore.Common.KyIconRequest::.ctor(UnityEngine.GameObject)
+static class KydlCore.Common.KyIcons
+  field KydlCore.Common.KyIcons::Isometric : UnityEngine.Quaternion
+  method UnityEngine.Sprite KydlCore.Common.KyIcons::Render(KydlCore.Common.KyIconRequest)
+  method UnityEngine.Sprite KydlCore.Common.KyIcons::Render(UnityEngine.GameObject)
 sealed class KydlCore.Common.KyKeyHint
   field KydlCore.Common.KyKeyHint::Button : System.String
   field KydlCore.Common.KyKeyHint::Hint : System.String
