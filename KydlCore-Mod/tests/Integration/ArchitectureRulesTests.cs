@@ -88,6 +88,10 @@ public class ArchitectureRulesTests
         Assert.That(proj, Does.Not.Match(@"shared\\Kydl\.(Core|Common|Ui)\b"), "no shared source is linked from Claude\\shared any more");
         Assert.That(plugin, Does.Contain("KyNetwork.Register(ModGuid, ModName, ModVersion, KyNetworkLevel.ClientOnly)"), "D-104: KydlCore = client-only level with equal versions through its own ServerSync (was Jotunn VersionCheckOnly + Patch)");
         Assert.That(plugin, Does.Not.Contain("NetworkCompatibility"), "D-104: no Jotunn network attribute");
+        Assert.That(plugin, Does.Not.Contain("Jotunn.Main.ModGuid"), "D-104: no hard Jotunn dependency (only the soft load-order one)");
+        Assert.That(proj, Does.Contain("<KydlNoJotunn>true</KydlNoJotunn>"), "D-104: KydlCore is built without the Jotunn reference");
+        var jotunnUses = Directory.GetFiles(Src, "*.cs", SearchOption.AllDirectories).Where(f => Regex.IsMatch(File.ReadAllText(f), @"^\s*using\s+Jotunn\b|(?<!"")\bJotunn\.(Main|Utils|Managers|Configs|Entities)\.", RegexOptions.Multiline)).ToList();
+        Assert.That(jotunnUses, Is.Empty, "D-104: no Jotunn code in KydlCore (Jotunn is only found by reflection when another mod brings it)");
         string settings = File.ReadAllText(Path.Combine(Src, "Configuration", "ModSettings.cs"));
         Assert.That(Regex.IsMatch(settings, @"Bind\(\s*""General""\s*,\s*""EnableAll"""), Is.False, "MIGRATION_DECISIONS B12: KydlCore can never be switched off");
     }

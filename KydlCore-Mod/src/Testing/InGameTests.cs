@@ -94,19 +94,18 @@ internal static class InGameTests
                                      : $"FAIL: ky-items tab {(hasItems ? "shown" : "missing")} but the registry has {KyItems.All.Count} entr{(KyItems.All.Count == 1 ? "y" : "ies")}";
     }
 
-    /// KC-04: the KY-Items registry has read the game and found at least every prefab Jotunn registered for a com.kydldev.* mod (one per prefab name).
+    /// KC-04: the KY-Items registry has read the game and found at least every prefab its game side knows for a com.kydldev.* mod (contributions + the legacy
+    /// Jotunn registry when another mod brings Jotunn; one per prefab name). No Jotunn reference since 1.2.0 (D-104).
     static string World_KC04_KyItemsCount()
     {
         var names = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
-        foreach (var ci in Jotunn.Utils.ModRegistry.GetItems())
-            if (ci != null && ci.ItemPrefab != null && ci.SourceMod != null && KyItems.IsUserGuid(ci.SourceMod.GUID)) names.Add(ci.ItemPrefab.name);
-        foreach (var cp in Jotunn.Utils.ModRegistry.GetPieces())
-            if (cp != null && cp.PiecePrefab != null && cp.SourceMod != null && KyItems.IsUserGuid(cp.SourceMod.GUID)) names.Add(cp.PiecePrefab.name);
+        foreach (var f in KyItems.Game.LegacyScan())
+            if (f.Prefab != null && KyItems.IsUserGuid(f.ModGuid)) names.Add(f.Prefab.name);
         int have = KyItems.All.Count;
-        ModLog.CheckRange("KC-04 KY-Items entries (at least the Jotunn ones)", have, names.Count, double.PositiveInfinity, "prefabs");
+        ModLog.CheckRange("KC-04 KY-Items entries (at least the game side's legacy ones)", have, names.Count, double.PositiveInfinity, "prefabs");
         if (!KyItems.Ready) return "FAIL: the registry is not Ready 5 s after the world loaded";
-        foreach (string n in names) if (KyItems.Find(n) == null) return $"FAIL: '{n}' is registered by Jotunn for a com.kydldev.* mod but is not in the registry";
-        return $"PASS: {have} entr{(have == 1 ? "y" : "ies")} ({names.Count} from Jotunn); {CountNoIcon()} without an icon";
+        foreach (string n in names) if (KyItems.Find(n) == null) return $"FAIL: '{n}' is registered (legacy, Jotunn) for a com.kydldev.* mod but is not in the registry";
+        return $"PASS: {have} entr{(have == 1 ? "y" : "ies")} ({names.Count} legacy); {CountNoIcon()} without an icon";
     }
 
     /// KC-05: KyUi opens and closes a window of a mod (D-072): IsOpen / AnyOpen follow, onClosed runs once, a same-id window replaces the old one.

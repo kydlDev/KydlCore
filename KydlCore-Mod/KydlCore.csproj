@@ -14,6 +14,8 @@
     <PackageId>KydlCore</PackageId>
     <!-- AssetBundle built by the Unity project (Valheim > Build AssetBundles); embedded into the DLL when assets\kydlcore exists -->
     <BundleName>kydlcore</BundleName>
+    <!-- D-104: KydlCore 1.2.0 is built WITHOUT Jotunn.dll (Claude\shared\Kydl.Mod.props skips the reference); Jotunn is only found by reflection -->
+    <KydlNoJotunn>true</KydlNoJotunn>
     <!-- Shared code (KydlCore.Core / .Common / .Ui, public) lives in src\Shared and is compiled here; every other mod references KydlCore.dll (Claude\shared\Kydl.Mod.props) -->
     <!-- spec layout (MIGRATION_DECISIONS A8): the DLL goes to assets\ only, no build\ folder -->
     <KydlBuildFolder>true</KydlBuildFolder>   <!-- MIGRATION: still also copied to build\ until every old-layout mod (its tests read KydlCore-Mod\build\KydlCore.dll) is ported; then false -->

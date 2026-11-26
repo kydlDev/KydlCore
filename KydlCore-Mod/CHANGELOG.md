@@ -1,5 +1,11 @@
 ﻿# Changelog
 
+## 1.2.0
+- Changed: KydlCore no longer needs Jotunn. It still works next to Jotunn when other mods bring it (Jotunn then loads first and keeps making the build categories).
+- New for mod authors (replacements for what the KydlDev mods used from Jotunn): `KyNetwork` (version check on joining a server and server-decided admin settings, through the built-in ServerSync), `ConfigurationManagerAttributes`, `ConfigOrder`, mod texts through the game's own localization (`Loc`), `KyPrefabs` (clone, add and find prefabs), the KY-Items game side (items, recipes and pieces added by KydlCore itself, the "KY-Items" Hammer tab made by KydlCore), `KyStatusEffects`, `KySkills` (skill numbers stay the same as with Jotunn, so skill levels are kept), `KyCommand` / `KyCommands` (console commands, only when KydlTools is loaded), `KyKeyHints` (key hints for a held item, keyboard and mouse), `KyIcons` (icons drawn from a prefab), `FeatureRules`, a public `GameClock`.
+- Changed for mod authors: a mod that requires KydlCore 1.2.0 no longer gets Jotunn through KydlCore; it must use these replacements or bring Jotunn itself.
+- Not tested in game.
+
 ## 1.1.3
 - New for mod authors: ServerSync is part of KydlCore (namespace `KydlCore.ServerSync`: `ConfigSync`, `SyncedConfigEntry<T>`, `CustomSyncedValue<T>`). A config entry added with `AddConfigEntry` is synced from the server to every client, and admin-only entries need no Jotunn. A mod that uses it must require KydlCore 1.1.3.
 

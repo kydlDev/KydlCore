@@ -17,7 +17,9 @@ namespace KydlCore.Bootstrap;
 /// Entry point. Order in Awake matters: log first, then the config (player settings), then text, then everything that uses them.
 /// </summary>
 [BepInPlugin(ModGuid, ModName, ModVersion)]
-[BepInDependency(Jotunn.Main.ModGuid)]
+// No Jotunn since 1.2.0 (D-104). A SOFT dependency only orders the load: when another mod brings Jotunn it loads first, so KyBuildCategory sees it
+// and leaves the build categories to it (both patching them would clash).
+[BepInDependency(Integrations.Valheim.KyBuildCategory.JotunnGuid, BepInDependency.DependencyFlags.SoftDependency)]
 public class Plugin : BaseUnityPlugin
 {
     // ModGuid never changes after the first release. ModVersion = manifest.json version_number = newest CHANGELOG heading (tests check it).
@@ -26,7 +28,7 @@ public class Plugin : BaseUnityPlugin
     /// <summary>The mod's name (log source, cache folder).</summary>
     public const string ModName = "KydlCore";
     /// <summary>The version; equal to manifest.json and the newest CHANGELOG heading.</summary>
-    public const string ModVersion = "1.1.3";
+    public const string ModVersion = "1.2.0";
     /// <summary>The name of the embedded AssetBundle.</summary>
     public const string BundleName = "kydlcore";
     /// UiKit.Owner: the name part of the one UI root object ("Kydl_UI_" + owner).
