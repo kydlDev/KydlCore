@@ -4,7 +4,7 @@ using System.Linq;
 using KydlCore.Common;
 using KydlCore.Features.Items.Domain;
 using KydlCore.Features.Items.Infrastructure;
-using KydlCore.Integrations.Jotunn;
+using KydlCore.Integrations.Valheim;
 using UnityEngine;
 using KydlCore.Core;
 
@@ -28,8 +28,8 @@ public static class KyItems
     static readonly List<KyEntry> Explicit = new List<KyEntry>();         // legacy Register calls
     static bool _hooked;
 
-    /// <summary>The game side (Jotunn adapter). Internal: swapped only by tests / a later adapter.</summary>
-    internal static IKyGameSide Game = new JotunnItems();
+    /// <summary>The game side (Valheim, no Jotunn since 1.2.0). Internal: swapped only by tests / a later adapter.</summary>
+    internal static IKyGameSide Game = new ValheimItems();
 
     /// <summary>True once the registry has read the game at least once (after the game registered the items / pieces). Before that the list is empty.</summary>
     public static bool Ready { get; private set; }
