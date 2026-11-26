@@ -60,6 +60,8 @@ static class KydlCore.Common.KyPrefabs
   method UnityEngine.GameObject KydlCore.Common.KyPrefabs::CreateEmpty(System.String,System.Boolean)
   method UnityEngine.GameObject KydlCore.Common.KyPrefabs::Get(System.String)
   method UnityEngine.Transform KydlCore.Common.KyPrefabs::get_Holder()
+static class KydlCore.Common.KyStatusEffects
+  method System.Boolean KydlCore.Common.KyStatusEffects::Add(StatusEffect)
 static class KydlCore.Common.Loc
   method System.Boolean KydlCore.Common.Loc::Register(System.Collections.Generic.Dictionary`2<System.String,System.String>)
   method System.Boolean KydlCore.Common.Loc::Register(System.Collections.Generic.Dictionary`2<System.String,System.String>,System.Collections.Generic.Dictionary`2<System.String,System.String>)

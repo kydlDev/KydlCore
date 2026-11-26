@@ -35,6 +35,7 @@ internal static class ObjectDBAwakeItems
     static void Postfix(ObjectDB __instance)
     {
         int applied = KydlCore.Integrations.Valheim.ValheimItems.OnObjectDB(__instance, true);
+        KyStatusEffects.PutInto(__instance);
         ModLog.Verbose($"ObjectDBAwakeItems: {applied} contribution(s) in ObjectDB ({__instance.m_items.Count} items, {__instance.m_recipes.Count} recipes)");
     }
 }
@@ -47,6 +48,7 @@ internal static class ObjectDBCopyItems
     static void Postfix(ObjectDB __instance)
     {
         int applied = KydlCore.Integrations.Valheim.ValheimItems.OnObjectDB(__instance, false);
+        KyStatusEffects.PutInto(__instance);
         ModLog.Verbose($"ObjectDBCopyItems: {applied} item contribution(s) in the menu ObjectDB ({__instance.m_items.Count} items)");
     }
 }
