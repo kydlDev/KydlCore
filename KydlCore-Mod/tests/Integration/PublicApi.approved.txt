@@ -96,6 +96,7 @@ static class KydlCore.Common.KyPrefabs
   method UnityEngine.Transform KydlCore.Common.KyPrefabs::get_Holder()
 static class KydlCore.Common.KySkills
   method Skills/SkillType KydlCore.Common.KySkills::Add(System.String,System.String,System.String,UnityEngine.Sprite,System.Single)
+  method System.Boolean KydlCore.Common.KySkills::SetIcon(Skills/SkillType,UnityEngine.Sprite)
 static class KydlCore.Common.KyStatusEffects
   method System.Boolean KydlCore.Common.KyStatusEffects::Add(StatusEffect)
 static class KydlCore.Common.Loc

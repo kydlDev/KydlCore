@@ -35,6 +35,20 @@ public static class KySkills
         return type;
     }
 
+    /// <summary>
+    /// Sets the icon of a skill added before (Jotunn read SkillConfig.Icon late, so mods filled it in after AddSkill, e.g. RidingCrop's rendered
+    /// crop icon). The game reads the definition when it draws the skills screen. Expected outcome: true when the skill is one of the mods' skills.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public static bool SetIcon(Skills.SkillType type, Sprite icon)
+    {
+        var ctx = ModContexts.For(Assembly.GetCallingAssembly());
+        bool known = Defs.TryGetValue(type, out Skills.SkillDef def);
+        if (known) def.m_icon = icon;
+        ModLog.Verbose(ctx, $"KySkills.SetIcon: {(int)type} icon={icon != null} -> {(known ? "set" : "not a mod skill, ignored")}");
+        return known;
+    }
+
     /// <summary>True when the number is one of the mods' skills (Skills patches).</summary>
     internal static bool IsCustom(Skills.SkillType type)
     {
