@@ -66,14 +66,14 @@ public sealed class UiSlider
         _input.RegisterCallback<FocusOutEvent>(e => { _editing = false; UiKit.Borders(inner, 1, UiKit.Border); Commit(); });
         _input.RegisterCallback<KeyDownEvent>(e =>
         {
-            if (e.keyCode != KeyCode.Return && e.keyCode != KeyCode.KeypadEnter) return;
+            if (e.keyCode != KeyCode.Return && e.keyCode != KeyCode.KeypadEnter) { if (UiLog.On) UiLog.Verbose("UiSlider.UiSlider: returns (line 70)"); return; }
             e.StopPropagation(); _editing = false; Commit(); _input.Blur();
         });
         Root.Add(_input);
 
         _hit.RegisterCallback<PointerDownEvent>(e => { if (!_enabled) return; _hit.CapturePointer(e.pointerId); FromX(e.localPosition.x); e.StopPropagation(); });
         _hit.RegisterCallback<PointerMoveEvent>(e => { if (_hit.HasPointerCapture(e.pointerId)) FromX(e.localPosition.x); });
-        _hit.RegisterCallback<PointerUpEvent>(e => { if (!_hit.HasPointerCapture(e.pointerId)) return; _hit.ReleasePointer(e.pointerId); UiLog.Verbose("UiSlider: set to " + Text(_value)); });
+        _hit.RegisterCallback<PointerUpEvent>(e => { if (!_hit.HasPointerCapture(e.pointerId)) return; _hit.ReleasePointer(e.pointerId); UiLog.Verbose($"UiSlider: set to {Text(_value)}"); });
         _value = Mathf.Clamp(value, _min, _max);
         Show();
     }
@@ -90,9 +90,9 @@ public sealed class UiSlider
         hit.RegisterCallback<PointerLeaveEvent>(e => dot.style.backgroundColor = UiKit.TextDim);
         hit.RegisterCallback<PointerDownEvent>(e =>
         {
-            if (e.button != 0 || !_enabled) return;
+            if (e.button != 0 || !_enabled) { if (UiLog.On) UiLog.Verbose("UiSlider.AddMark: returns (line 94)"); return; }
             e.StopPropagation();
-            UiLog.Verbose("UiSlider: mark " + (fraction * 100f).ToString("0", CultureInfo.InvariantCulture) + "% clicked");
+            UiLog.Verbose($"UiSlider: mark {(fraction * 100f).ToString("0", CultureInfo.InvariantCulture)}% clicked");
             Set(Mathf.Lerp(_min, _max, fraction));
         });
         _marks.Add(hit);
@@ -102,6 +102,7 @@ public sealed class UiSlider
 
     void Show()
     {
+        if (UiLog.On) UiLog.Verbose($"UiSlider.Show()");
         float t = _max > _min ? Mathf.InverseLerp(_min, _max, _value) : 0f;
         _fill.style.width = Length.Percent(t * 100f);
         _handle.style.left = Length.Percent(t * 100f);
@@ -110,8 +111,9 @@ public sealed class UiSlider
 
     void Set(float v)
     {
+        if (UiLog.On) UiLog.Verbose($"UiSlider.Set(v={UiLog.Shown(v)})");
         float nv = Mathf.Clamp(v, _min, _max);
-        if (Mathf.Approximately(nv, _value)) { Show(); return; }
+        if (Mathf.Approximately(nv, _value)) { Show(); { if (UiLog.On) UiLog.Verbose("UiSlider.Set: returns (line 117)"); return; } }
         _value = nv; Show();
         _changed?.Invoke(_value);
     }
@@ -122,25 +124,27 @@ public sealed class UiSlider
     {
         float typed;
         string t = (_input.value ?? "").Trim().Replace(',', '.').TrimEnd('m', 'x', '°', ' ');
-        if (float.TryParse(t, NumberStyles.Float, CultureInfo.InvariantCulture, out typed)) { Set(typed); UiLog.Verbose("UiSlider: typed " + Text(_value)); }
-        else { UiLog.Verbose("UiSlider: input '" + _input.value + "' is not a number, kept " + Text(_value)); Show(); }
+        if (float.TryParse(t, NumberStyles.Float, CultureInfo.InvariantCulture, out typed)) { Set(typed); UiLog.Verbose($"UiSlider: typed {Text(_value)}"); }
+        else { UiLog.Verbose($"UiSlider: input '{_input.value}' is not a number, kept {Text(_value)}"); Show(); }
     }
 
     /// Puts the handle on `v` (clamped) without calling the change callback. Expected outcome: Value equals the clamped v.
     public bool SetValueWithoutNotify(float v)
     {
+        if (UiLog.On) UiLog.Verbose($"UiSlider.SetValueWithoutNotify(v={UiLog.Shown(v)})");
         _value = Mathf.Clamp(v, _min, _max);
         Show();
-        return Mathf.Approximately(_value, Mathf.Clamp(v, _min, _max));
+        { var returnedAt138 = Mathf.Approximately(_value, Mathf.Clamp(v, _min, _max)); if (UiLog.On) UiLog.Verbose($"UiSlider.SetValueWithoutNotify: returns {UiLog.Shown(returnedAt138)} (line 138)"); return returnedAt138; }
     }
 
     /// New range; the value is clamped into it (no callback). Expected outcome: Min <= Value <= Max.
     public bool SetRange(float min, float max)
     {
+        if (UiLog.On) UiLog.Verbose($"UiSlider.SetRange(min={UiLog.Shown(min)}, max={UiLog.Shown(max)})");
         _min = Mathf.Min(min, max); _max = Mathf.Max(min, max);
         _value = Mathf.Clamp(_value, _min, _max);
         Show();
-        return _value >= _min && _value <= _max;
+        { var returnedAt148 = _value >= _min && _value <= _max; if (UiLog.On) UiLog.Verbose($"UiSlider.SetRange: returns {UiLog.Shown(returnedAt148)} (line 148)"); return returnedAt148; }
     }
 
     /// Greyed out and not draggable while false.

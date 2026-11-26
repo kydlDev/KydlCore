@@ -12,14 +12,32 @@ namespace KydlCore.Ui;
 public static class UiLog
 {
     // Stryker disable once all : the default sink only writes to the Unity console (Unity itself, not reachable from the unit tests)
-    public static Action<string> VerboseSink = s => UnityEngine.Debug.Log("[Kydl UI] " + s);
+    public static Action<string> VerboseSink = s => UnityEngine.Debug.Log($"[Kydl UI] {s}");
     // Stryker disable once all : the default sink only writes to the Unity console (Unity itself, not reachable from the unit tests)
-    public static Action<string> WarnSink = s => UnityEngine.Debug.LogWarning("[Kydl UI] " + s);
+    public static Action<string> WarnSink = s => UnityEngine.Debug.LogWarning($"[Kydl UI] {s}");
     // Stryker disable once all : the default sink only writes to the Unity console (Unity itself, not reachable from the unit tests)
-    public static Action<string> ErrorSink = s => UnityEngine.Debug.LogError("[Kydl UI] " + s);
+    public static Action<string> ErrorSink = s => UnityEngine.Debug.LogError($"[Kydl UI] {s}");
 
     /// <summary>The plugin GUID of the mod whose UI code is running right now (null = none). Read it in a sink; set it only through <see cref="Within{T}"/> / <see cref="Wrap"/>.</summary>
     public static string Owner;
+
+    /// <summary>
+    /// Whether the kit's own debug lines are written (PROJECT_RULES 8): KydlCore.Plugin.Awake sets it to KydlCore's [DebugLog] switch; null (Unity, tests) = off.
+    /// The kit uses this instead of KydlCore.Core.CoreLog so it stays self-contained: Shared/Ui is also copied alone into every mod's Unity project (KydlUiSync).
+    /// Internal: each assembly that compiles the kit has its own switch, the public API does not change.
+    /// </summary>
+    internal static Func<bool> DebugOn;
+
+    /// <summary>True when a debug line of the kit would be written: callers check it before building the text.</summary>
+    internal static bool On => VerboseSink != null && DebugOn != null && DebugOn();
+
+    /// <summary>A value as one short log text: line breaks become " | ", at most 160 characters, "CHECK OFF" written "CHECK_OFF" (same rule as CoreLog.Shown).</summary>
+    internal static string Shown(object value)
+    {
+        string text = value == null ? "null" : value.ToString();
+        text = text.Replace("\r\n", " | ").Replace("\n", " | ").Replace("\r", " | ").Replace("CHECK OFF", "CHECK_OFF");
+        return text.Length <= 160 ? text : $"{text.Substring(0, 160)}... ({text.Length} chars)";
+    }
 
     public static void Verbose(string s) { VerboseSink?.Invoke(s); }
     public static void Warn(string s) { WarnSink?.Invoke(s); }

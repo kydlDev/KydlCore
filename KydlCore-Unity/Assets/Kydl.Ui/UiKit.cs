@@ -67,6 +67,7 @@ public static class UiKit
     /// Throws the panel away (the Unity preview rebuilds it in every Play).
     internal static void Reset()
     {
+        if (UiLog.On) UiLog.Verbose($"UiKit.Reset()");
         if (_doc != null) Object.DestroyImmediate(_doc.gameObject);
         _doc = null;
     }
@@ -83,7 +84,7 @@ public static class UiKit
             settings.match = 1f;                                              // by height: ultrawide screens get the same text size as 16:9
             settings.sortingOrder = 500;
             Settings = settings;
-            var go = new GameObject("Kydl_UI_" + Owner);
+            var go = new GameObject($"Kydl_UI_{Owner}");
             if (Application.isPlaying) Object.DontDestroyOnLoad(go);
             _doc = go.AddComponent<UIDocument>();
             _doc.panelSettings = settings;
@@ -95,11 +96,11 @@ public static class UiKit
             Font(root, false);
             root.style.color = Text;
             root.style.fontSize = FontSize;
-            UiLog.Verbose("UiKit: UI Toolkit panel made (scale with screen " + Screen.width + "x" + Screen.height + " from 1920x1080, " + fonts + ")");
+            UiLog.Verbose($"UiKit: UI Toolkit panel made (scale with screen {Screen.width}x{Screen.height} from 1920x1080, {fonts})");
         }
         catch (System.Exception e)
         {
-            UiLog.Error("UiKit: UI Toolkit could not be started - the menus of this mod are not available: " + e);
+            UiLog.Error($"UiKit: UI Toolkit could not be started - the menus of this mod are not available: {e}");
             _doc = null;
         }
     }
@@ -125,46 +126,48 @@ public static class UiKit
         if (_bodyFont == null)
         {
             _bodyFont = norse != null ? norse : any;
-            UiLog.Warn("UiKit: font '" + TextFontName + "' is not loaded; using " + (_bodyFont != null ? "'" + _bodyFont.name + "'" : "no font (engine default)"));
+            UiLog.Warn($"UiKit: font '{TextFontName}' is not loaded; using {(_bodyFont != null ? $"'{_bodyFont.name}'" : "no font (engine default)")}");
         }
         _titleFont = _bodyFont;
-        return MakeAssets(emoji);
+        { var returnedAt132 = MakeAssets(emoji); if (UiLog.On) UiLog.Verbose($"UiKit.LoadFonts: returns {UiLog.Shown(returnedAt132)} (line 132)"); return returnedAt132; }
     }
 
     /// Font assets for the chosen text / title fonts, each with the emoji font as fallback; returns a log description.
     static string MakeAssets(Font emoji)
     {
+        if (UiLog.On) UiLog.Verbose($"UiKit.MakeAssets(emoji={UiLog.Shown(emoji)})");
         if (emoji == null) emoji = UnityEngine.Font.CreateDynamicFontFromOSFont(new[] { "Segoe UI Emoji", "Segoe UI Symbol", "Noto Emoji" }, 32);
         var emojiAsset = MakeAsset(emoji, null);
         _bodyAsset = MakeAsset(_bodyFont, emojiAsset);
         _titleAsset = _titleFont == _bodyFont ? _bodyAsset : MakeAsset(_titleFont, emojiAsset);
-        return "text font " + Describe(_bodyFont, _bodyAsset) + ", title font " + Describe(_titleFont, _titleAsset) + ", emoji font " + Describe(emoji, emojiAsset);
+        { var returnedAt143 = $"text font {Describe(_bodyFont, _bodyAsset)}, title font {Describe(_titleFont, _titleAsset)}, emoji font {Describe(emoji, emojiAsset)}"; if (UiLog.On) UiLog.Verbose($"UiKit.MakeAssets: returns {UiLog.Shown(returnedAt143)} (line 143)"); return returnedAt143; }
     }
 
-    static string Describe(Font f, FontAsset a) { return f == null ? "MISSING" : "'" + f.name + "'" + (a != null ? " (font asset made)" : " (legacy font, no emoji fallback)"); }
+    static string Describe(Font f, FontAsset a) { return f == null ? "MISSING" : $"'{f.name}'{(a != null ? " (font asset made)" : " (legacy font, no emoji fallback)")}"; }
 
     /// A TextCore font asset made from a game font, with `fallback` for the glyphs it does not have (emoji). null = the legacy font is used.
     static FontAsset MakeAsset(Font f, FontAsset fallback)
     {
-        if (f == null) return null;
+        if (f == null) { if (UiLog.On) UiLog.Verbose("UiKit.MakeAsset: returns null (line 151)"); return null; }
         try
         {
             var a = FontAsset.CreateFontAsset(f);
-            if (a == null) { UiLog.Warn("UiKit: font asset from '" + f.name + "' could not be made"); return null; }
-            a.name = "Kydl_" + f.name;
+            if (a == null) { UiLog.Warn($"UiKit: font asset from '{f.name}' could not be made"); return null; }
+            a.name = $"Kydl_{f.name}";
             if (fallback != null)
             {
                 if (a.fallbackFontAssetTable == null) a.fallbackFontAssetTable = new List<FontAsset>();
                 a.fallbackFontAssetTable.Add(fallback);
             }
-            return a;
+            { var returnedAt162 = a; if (UiLog.On) UiLog.Verbose($"UiKit.MakeAsset: returns {UiLog.Shown(returnedAt162)} (line 162)"); return returnedAt162; }
         }
-        catch (System.Exception e) { UiLog.Warn("UiKit: font asset from '" + f.name + "' failed: " + e.Message); return null; }
+        catch (System.Exception e) { UiLog.Warn($"UiKit: font asset from '{f.name}' failed ({e.GetType().FullName}): {e.Message} - that font is skipped"); return null; }
     }
 
     /// Puts the text font (or the title font) on an element.
     internal static void Font(VisualElement e, bool title)
     {
+        if (UiLog.On) UiLog.Verbose($"UiKit.Font(e={UiLog.Shown(e)}, title={UiLog.Shown(title)})");
         var asset = title ? _titleAsset : _bodyAsset;
         var font = title ? _titleFont : _bodyFont;
         if (asset != null) e.style.unityFontDefinition = FontDefinition.FromSDFFont(asset);
@@ -175,12 +178,14 @@ public static class UiKit
     /// <summary>Rounds all four corners of an element with radius r (px).</summary>
     public static void Radius(VisualElement e, float r)
     {
+        if (UiLog.On) UiLog.Verbose($"UiKit.Radius(e={UiLog.Shown(e)}, r={UiLog.Shown(r)})");
         e.style.borderTopLeftRadius = r; e.style.borderTopRightRadius = r; e.style.borderBottomLeftRadius = r; e.style.borderBottomRightRadius = r;
     }
 
     /// <summary>Gives an element a border of width w (px) and colour c on all four sides.</summary>
     public static void Borders(VisualElement e, float w, Color c)
     {
+        if (UiLog.On) UiLog.Verbose($"UiKit.Borders(e={UiLog.Shown(e)}, w={UiLog.Shown(w)}, c={UiLog.Shown(c)})");
         e.style.borderTopWidth = w; e.style.borderRightWidth = w; e.style.borderBottomWidth = w; e.style.borderLeftWidth = w;
         e.style.borderTopColor = c; e.style.borderRightColor = c; e.style.borderBottomColor = c; e.style.borderLeftColor = c;
     }
@@ -188,12 +193,14 @@ public static class UiKit
     /// <summary>Pads an element: v px above and below, h px left and right.</summary>
     public static void Pad(VisualElement e, float v, float h)
     {
+        if (UiLog.On) UiLog.Verbose($"UiKit.Pad(e={UiLog.Shown(e)}, v={UiLog.Shown(v)}, h={UiLog.Shown(h)})");
         e.style.paddingTop = v; e.style.paddingBottom = v; e.style.paddingLeft = h; e.style.paddingRight = h;
     }
 
     /// <summary>A short colour / position fade (0.12 s) on the named style properties, like FollowPlayer's buttons and switches.</summary>
     public static void Fade(VisualElement e, params string[] props)
     {
+        if (UiLog.On) UiLog.Verbose($"UiKit.Fade(e={UiLog.Shown(e)})");
         var names = new List<StylePropertyName>();
         foreach (var p in props) names.Add(new StylePropertyName(p));
         e.style.transitionProperty = names;
@@ -211,28 +218,30 @@ public static class UiKit
     /// <summary>The text size of a role, in px at the 1080p reference.</summary>
     public static int SizeOf(TextRole role)
     {
+        if (UiLog.On) UiLog.Verbose($"UiKit.SizeOf(role={UiLog.Shown(role)})");
         switch (role)
         {
-            case TextRole.Section: case TextRole.SectionMuted: return SectionSize;
-            case TextRole.Name: return NameSize;
-            case TextRole.Button: return ButtonSize;
-            case TextRole.Small: case TextRole.SmallNote: return SmallSize;
-            case TextRole.Chip: return ChipSize;
-            default: return FontSize;
+            case TextRole.Section: case TextRole.SectionMuted: { var returnedAt224 = SectionSize; if (UiLog.On) UiLog.Verbose($"UiKit.SizeOf: returns {UiLog.Shown(returnedAt224)} (line 224)"); return returnedAt224; }
+            case TextRole.Name: { var returnedAt225 = NameSize; if (UiLog.On) UiLog.Verbose($"UiKit.SizeOf: returns {UiLog.Shown(returnedAt225)} (line 225)"); return returnedAt225; }
+            case TextRole.Button: { var returnedAt226 = ButtonSize; if (UiLog.On) UiLog.Verbose($"UiKit.SizeOf: returns {UiLog.Shown(returnedAt226)} (line 226)"); return returnedAt226; }
+            case TextRole.Small: case TextRole.SmallNote: { var returnedAt227 = SmallSize; if (UiLog.On) UiLog.Verbose($"UiKit.SizeOf: returns {UiLog.Shown(returnedAt227)} (line 227)"); return returnedAt227; }
+            case TextRole.Chip: { var returnedAt228 = ChipSize; if (UiLog.On) UiLog.Verbose($"UiKit.SizeOf: returns {UiLog.Shown(returnedAt228)} (line 228)"); return returnedAt228; }
+            default: { var returnedAt229 = FontSize; if (UiLog.On) UiLog.Verbose($"UiKit.SizeOf: returns {UiLog.Shown(returnedAt229)} (line 229)"); return returnedAt229; }
         }
     }
 
     /// <summary>The text colour of a role.</summary>
     public static Color ColorOf(TextRole role)
     {
+        if (UiLog.On) UiLog.Verbose($"UiKit.ColorOf(role={UiLog.Shown(role)})");
         switch (role)
         {
-            case TextRole.Name: return NameColor;
-            case TextRole.Value: case TextRole.Section: return ValueColor;
-            case TextRole.Note: case TextRole.SmallNote: case TextRole.SectionMuted: return TextDim;
-            case TextRole.Good: return Good;
-            case TextRole.Bad: return Bad;
-            default: return Text;
+            case TextRole.Name: { var returnedAt239 = NameColor; if (UiLog.On) UiLog.Verbose($"UiKit.ColorOf: returns {UiLog.Shown(returnedAt239)} (line 239)"); return returnedAt239; }
+            case TextRole.Value: case TextRole.Section: { var returnedAt240 = ValueColor; if (UiLog.On) UiLog.Verbose($"UiKit.ColorOf: returns {UiLog.Shown(returnedAt240)} (line 240)"); return returnedAt240; }
+            case TextRole.Note: case TextRole.SmallNote: case TextRole.SectionMuted: { var returnedAt241 = TextDim; if (UiLog.On) UiLog.Verbose($"UiKit.ColorOf: returns {UiLog.Shown(returnedAt241)} (line 241)"); return returnedAt241; }
+            case TextRole.Good: { var returnedAt242 = Good; if (UiLog.On) UiLog.Verbose($"UiKit.ColorOf: returns {UiLog.Shown(returnedAt242)} (line 242)"); return returnedAt242; }
+            case TextRole.Bad: { var returnedAt243 = Bad; if (UiLog.On) UiLog.Verbose($"UiKit.ColorOf: returns {UiLog.Shown(returnedAt243)} (line 243)"); return returnedAt243; }
+            default: { var returnedAt244 = Text; if (UiLog.On) UiLog.Verbose($"UiKit.ColorOf: returns {UiLog.Shown(returnedAt244)} (line 244)"); return returnedAt244; }
         }
     }
 
@@ -241,33 +250,38 @@ public static class UiKit
     /// <summary>A text label (not clickable) in the size, colour and font of its role.</summary>
     public static Label TextLabel(string text, TextRole role)
     {
-        return Label(text, SizeOf(role), ColorOf(role), role == TextRole.Section || role == TextRole.SectionMuted);
+        if (UiLog.On) UiLog.Verbose($"UiKit.TextLabel(text={UiLog.Shown(text)}, role={UiLog.Shown(role)})");
+        { var returnedAt254 = Label(text, SizeOf(role), ColorOf(role), role == TextRole.Section || role == TextRole.SectionMuted); if (UiLog.On) UiLog.Verbose($"UiKit.TextLabel: returns {UiLog.Shown(returnedAt254)} (line 254)"); return returnedAt254; }
     }
 
     /// <summary>Gives an element the text size AND colour of a role. Returns the element.</summary>
     public static T Style<T>(T element, TextRole role) where T : VisualElement
     {
+        if (UiLog.On) UiLog.Verbose($"UiKit.Style(element={UiLog.Shown(element)}, role={UiLog.Shown(role)})");
         element.style.fontSize = SizeOf(role); element.style.color = ColorOf(role);
-        return element;
+        { var returnedAt262 = element; if (UiLog.On) UiLog.Verbose($"UiKit.Style: returns {UiLog.Shown(returnedAt262)} (line 262)"); return returnedAt262; }
     }
 
     /// <summary>Gives an element only the text COLOUR of a role (a value that turns good / bad, a line that is marked as changed). Returns the element.</summary>
     public static T Tint<T>(T element, TextRole role) where T : VisualElement
     {
+        if (UiLog.On) UiLog.Verbose($"UiKit.Tint(element={UiLog.Shown(element)}, role={UiLog.Shown(role)})");
         element.style.color = ColorOf(role);
-        return element;
+        { var returnedAt270 = element; if (UiLog.On) UiLog.Verbose($"UiKit.Tint: returns {UiLog.Shown(returnedAt270)} (line 270)"); return returnedAt270; }
     }
 
     /// <summary>Gives an element only the text SIZE of a role. Returns the element.</summary>
     public static T Size<T>(T element, TextRole role) where T : VisualElement
     {
+        if (UiLog.On) UiLog.Verbose($"UiKit.Size(element={UiLog.Shown(element)}, role={UiLog.Shown(role)})");
         element.style.fontSize = SizeOf(role);
-        return element;
+        { var returnedAt278 = element; if (UiLog.On) UiLog.Verbose($"UiKit.Size: returns {UiLog.Shown(returnedAt278)} (line 278)"); return returnedAt278; }
     }
 
     /// <summary>The text of a tab button of a mod's own tab row: its size, and its colour by state (selected / under the mouse / idle).</summary>
     public static void TabText(VisualElement tab, bool active, bool hover)
     {
+        if (UiLog.On) UiLog.Verbose($"UiKit.TabText(tab={UiLog.Shown(tab)}, active={UiLog.Shown(active)}, hover={UiLog.Shown(hover)})");
         tab.style.fontSize = ButtonSize;
         tab.style.color = active ? Gold : hover ? Text : TextDim;
     }
@@ -275,6 +289,7 @@ public static class UiKit
     /// <summary>A chip that offers a text colour to choose (a sign's text colour): its letter is shown in that colour, at the chip size.</summary>
     public static void ColourChip(VisualElement chip, Color choice)
     {
+        if (UiLog.On) UiLog.Verbose($"UiKit.ColourChip(chip={UiLog.Shown(chip)}, choice={UiLog.Shown(choice)})");
         chip.style.fontSize = ChipSize;
         chip.style.color = choice;
         chip.AddToClassList(ChipClass);
@@ -286,11 +301,12 @@ public static class UiKit
     /// <summary>A text label (not clickable) with a size and colour; title = the title font. KydlCore's own pages only: a mod uses <see cref="TextLabel"/>.</summary>
     public static Label Label(string text, float size, Color color, bool title = false)
     {
+        if (UiLog.On) UiLog.Verbose($"UiKit.Label(text={UiLog.Shown(text)}, size={UiLog.Shown(size)}, color={UiLog.Shown(color)}, title={UiLog.Shown(title)})");
         var l = new Label(text);
         l.pickingMode = PickingMode.Ignore;
         l.style.fontSize = size; l.style.color = color;
         if (title) Font(l, true);
-        return l;
+        { var returnedAt309 = l; if (UiLog.On) UiLog.Verbose($"UiKit.Label: returns {UiLog.Shown(returnedAt309)} (line 309)"); return returnedAt309; }
     }
 
     // --- window ---------------------------------------------------------------------------------------------------------------
@@ -303,7 +319,7 @@ public static class UiKit
         w.style.width = 760; w.style.maxWidth = Length.Percent(60);
         w.style.height = Length.Percent(WindowHeight);
         w.style.right = Length.Percent(5); w.style.left = StyleKeyword.Auto; w.style.top = Length.Percent(WindowTop);
-        UiLog.Verbose("UiKit: window '" + title + "' opened 5% from the right edge, " + WindowTop.ToString("0") + "% from the top, " + WindowHeight.ToString("0") + "% of the screen high");
+        UiLog.Verbose($"UiKit: window '{title}' opened 5% from the right edge, {WindowTop.ToString("0")}% from the top, {WindowHeight.ToString("0")}% of the screen high");
         w.style.backgroundColor = Panel;
         Radius(w, 8);
         Borders(w, 2, Border);
@@ -331,7 +347,7 @@ public static class UiKit
         var foot = Label(footer ?? "", SmallSize, TextDim);
         foot.style.alignSelf = Align.Center; foot.style.marginTop = 4; foot.style.marginBottom = 8; foot.style.flexShrink = 0;
         w.Add(foot);
-        return w;
+        { var returnedAt350 = w; if (UiLog.On) UiLog.Verbose($"UiKit.Window: returns {UiLog.Shown(returnedAt350)} (line 350)"); return returnedAt350; }
     }
 
     /// Dragging `handle` moves `target` (kept on screen).
@@ -341,14 +357,14 @@ public static class UiKit
         Vector2 start = Vector2.zero, origin = Vector2.zero;
         handle.RegisterCallback<PointerDownEvent>(e =>
         {
-            if (e.button != 0 || e.target is Button) return;
+            if (e.button != 0 || e.target is Button) { if (UiLog.On) UiLog.Verbose("UiKit.Drag: returns (line 360)"); return; }
             dragging = true; start = e.position; origin = new Vector2(target.layout.x, target.layout.y);   // placed by right %: take the laid-out position
             target.style.right = StyleKeyword.Auto;                                                        // from now on placed by left / top
             handle.CapturePointer(e.pointerId);
         });
         handle.RegisterCallback<PointerMoveEvent>(e =>
         {
-            if (!dragging) return;
+            if (!dragging) { if (UiLog.On) UiLog.Verbose("UiKit.Drag: returns (line 367)"); return; }
             var p = origin + (Vector2)e.position - start;
             var parent = target.parent;
             float maxX = parent != null ? parent.resolvedStyle.width - 80f : 2000f, maxY = parent != null ? parent.resolvedStyle.height - 40f : 2000f;
@@ -357,10 +373,10 @@ public static class UiKit
         });
         handle.RegisterCallback<PointerUpEvent>(e =>
         {
-            if (!dragging) return;
+            if (!dragging) { if (UiLog.On) UiLog.Verbose("UiKit.Drag: returns (line 376)"); return; }
             dragging = false;
             handle.ReleasePointer(e.pointerId);
-            UiLog.Verbose("UiKit: window moved to " + target.resolvedStyle.left.ToString("0") + ", " + target.resolvedStyle.top.ToString("0"));
+            UiLog.Verbose($"UiKit: window moved to {target.resolvedStyle.left.ToString("0")}, {target.resolvedStyle.top.ToString("0")}");
         });
     }
 }
