@@ -47,6 +47,13 @@ abstract class KydlCore.Common.KyCommand
 static class KydlCore.Common.KyCommands
   field KydlCore.Common.KyCommands::KydlToolsGuid : System.String = com.kydldev.KydlTools
   method System.Boolean KydlCore.Common.KyCommands::Add(KydlCore.Common.KyCommand)
+sealed class KydlCore.Common.KyKeyHint
+  field KydlCore.Common.KyKeyHint::Button : System.String
+  field KydlCore.Common.KyKeyHint::Hint : System.String
+  field KydlCore.Common.KyKeyHint::Key : BepInEx.Configuration.ConfigEntry`1<UnityEngine.KeyCode>
+  method System.Void KydlCore.Common.KyKeyHint::.ctor()
+static class KydlCore.Common.KyKeyHints
+  method System.Boolean KydlCore.Common.KyKeyHints::Add(System.String,KydlCore.Common.KyKeyHint[])
 static class KydlCore.Common.KyNetwork
   method BepInEx.Configuration.ConfigEntry`1<T> KydlCore.Common.KyNetwork::Share(KydlCore.ServerSync.ConfigSync,BepInEx.Configuration.ConfigEntry`1<T>)
   method KydlCore.ServerSync.ConfigSync KydlCore.Common.KyNetwork::Register(System.String,System.String,System.String,KydlCore.Common.KyNetworkLevel)
