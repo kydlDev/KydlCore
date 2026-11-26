@@ -83,6 +83,7 @@ static class KydlCore.Common.KyPrefabs
   event KydlCore.Common.KyPrefabs::PrefabsRegistered : System.Action
   event KydlCore.Common.KyPrefabs::VanillaPrefabsAvailable : System.Action
   method System.Boolean KydlCore.Common.KyPrefabs::Add(UnityEngine.GameObject)
+  method System.Boolean KydlCore.Common.KyPrefabs::WhenVanillaAvailable(System.Action)
   method System.Boolean KydlCore.Common.KyPrefabs::get_VanillaAvailable()
   method System.Void KydlCore.Common.KyPrefabs::add_PrefabsRegistered(System.Action)
   method System.Void KydlCore.Common.KyPrefabs::add_VanillaPrefabsAvailable(System.Action)

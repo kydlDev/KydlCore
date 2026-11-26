@@ -29,6 +29,31 @@ public static class KyPrefabs
     /// <summary>True once the game's ObjectDB has been copied in the main menu at least once.</summary>
     public static bool VanillaAvailable { get; private set; }
 
+    /// <summary>
+    /// Runs <paramref name="action"/> as soon as vanilla prefabs can be cloned: NOW when they already can (a feature switched on in game - T-119:
+    /// WhipItUp's items never appeared when it was enabled after the event, because a plain event does not replay), else on the next
+    /// <see cref="VanillaPrefabsAvailable"/>; like the event it also runs on every later ObjectDB copy, so the action must be safe to repeat.
+    /// Expected outcome: true when it ran now, false when it waits (or there was no action / it threw - logged).
+    /// </summary>
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public static bool WhenVanillaAvailable(Action action)
+    {
+        if (action == null) { ModLog.Warn("KyPrefabs.WhenVanillaAvailable: no action given - returns false"); return false; }
+        VanillaPrefabsAvailable += action;
+        if (!VanillaAvailable) { ModLog.Verbose("KyPrefabs.WhenVanillaAvailable: vanilla prefabs not loaded yet - runs on the next ObjectDB copy (returns false)"); return false; }
+        try
+        {
+            action();
+        }
+        catch (Exception e)
+        {
+            ModLog.Error("KyPrefabs.WhenVanillaAvailable: the action failed now (" + e.GetType().FullName + ": " + e.Message + ") - it stays subscribed for the next copy, returns false");
+            return false;
+        }
+        ModLog.Verbose("KyPrefabs.WhenVanillaAvailable: vanilla prefabs already available - ran now (returns true)");
+        return true;
+    }
+
     /// <summary>The inactive object every template lives under (made on first use, kept across scene loads).</summary>
     public static Transform Holder
     {
