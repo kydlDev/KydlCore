@@ -37,6 +37,16 @@ sealed class KydlCore.Common.ExpectedWarning
 static class KydlCore.Common.KyCategory
   field KydlCore.Common.KyCategory::Name : System.String = KY-Items
   method System.String KydlCore.Common.KyCategory::For(System.String)
+abstract class KydlCore.Common.KyCommand
+  method System.Boolean KydlCore.Common.KyCommand::get_IsCheat()
+  method System.Collections.Generic.List`1<System.String> KydlCore.Common.KyCommand::Options()
+  method System.String KydlCore.Common.KyCommand::get_Help()
+  method System.String KydlCore.Common.KyCommand::get_Name()
+  method System.Void KydlCore.Common.KyCommand::.ctor()
+  method System.Void KydlCore.Common.KyCommand::Run(System.String[])
+static class KydlCore.Common.KyCommands
+  field KydlCore.Common.KyCommands::KydlToolsGuid : System.String = com.kydldev.KydlTools
+  method System.Boolean KydlCore.Common.KyCommands::Add(KydlCore.Common.KyCommand)
 static class KydlCore.Common.KyNetwork
   method BepInEx.Configuration.ConfigEntry`1<T> KydlCore.Common.KyNetwork::Share(KydlCore.ServerSync.ConfigSync,BepInEx.Configuration.ConfigEntry`1<T>)
   method KydlCore.ServerSync.ConfigSync KydlCore.Common.KyNetwork::Register(System.String,System.String,System.String,KydlCore.Common.KyNetworkLevel)
@@ -60,6 +70,8 @@ static class KydlCore.Common.KyPrefabs
   method UnityEngine.GameObject KydlCore.Common.KyPrefabs::CreateEmpty(System.String,System.Boolean)
   method UnityEngine.GameObject KydlCore.Common.KyPrefabs::Get(System.String)
   method UnityEngine.Transform KydlCore.Common.KyPrefabs::get_Holder()
+static class KydlCore.Common.KySkills
+  method Skills/SkillType KydlCore.Common.KySkills::Add(System.String,System.String,System.String,UnityEngine.Sprite,System.Single)
 static class KydlCore.Common.KyStatusEffects
   method System.Boolean KydlCore.Common.KyStatusEffects::Add(StatusEffect)
 static class KydlCore.Common.Loc
@@ -181,6 +193,8 @@ static class KydlCore.Core.KyNetworkRules
   method System.Boolean KydlCore.Core.KyNetworkRules::IsAdminOnly(System.Collections.Generic.IEnumerable`1<System.Object>)
   method System.Boolean KydlCore.Core.KyNetworkRules::ModRequired(System.Enum)
   method System.Boolean KydlCore.Core.KyNetworkRules::ModRequired(System.Int32)
+static class KydlCore.Core.KySkillRules
+  method System.Int32 KydlCore.Core.KySkillRules::TypeNumber(System.String)
 sealed class KydlCore.Core.ManualClock
   method System.Boolean KydlCore.Core.ManualClock::Advance(System.Single)
   method System.Single KydlCore.Core.ManualClock::get_Now()
