@@ -76,7 +76,7 @@ public class ArchitectureRulesTests
     }
 
     // KydlCore itself: it IS the shared runtime (compiles the UI kit, no KydlUseCore, no dependency on itself) and joins servers without it
-    [Test] public void KydlCore_CompilesTheKit_VersionCheckOnlyExact_NoEnableAll()
+    [Test] public void KydlCore_CompilesTheKit_ClientOnlyExactVersion_NoEnableAll()
     {
         string plugin = File.ReadAllText(Path.Combine(Src, "Bootstrap", "Plugin.cs"));
         string proj = File.ReadAllText(Directory.GetFiles(TestPaths.ModDir, "*.csproj").Single());
@@ -86,7 +86,8 @@ public class ArchitectureRulesTests
             Assert.That(Directory.Exists(Path.Combine(Src, "Shared", "Ui")), Is.True, "the UI kit is compiled from src/Shared/Ui (D-089)");
         }
         Assert.That(proj, Does.Not.Match(@"shared\\Kydl\.(Core|Common|Ui)\b"), "no shared source is linked from Claude\\shared any more");
-        Assert.That(plugin, Does.Contain("[NetworkCompatibility(CompatibilityLevel.VersionCheckOnly, VersionStrictness.Patch)]"), "MIGRATION_DECISIONS: KydlCore = VersionCheckOnly + Patch");
+        Assert.That(plugin, Does.Contain("KyNetwork.Register(ModGuid, ModName, ModVersion, KyNetworkLevel.ClientOnly)"), "D-104: KydlCore = client-only level with equal versions through its own ServerSync (was Jotunn VersionCheckOnly + Patch)");
+        Assert.That(plugin, Does.Not.Contain("NetworkCompatibility"), "D-104: no Jotunn network attribute");
         string settings = File.ReadAllText(Path.Combine(Src, "Configuration", "ModSettings.cs"));
         Assert.That(Regex.IsMatch(settings, @"Bind\(\s*""General""\s*,\s*""EnableAll"""), Is.False, "MIGRATION_DECISIONS B12: KydlCore can never be switched off");
     }

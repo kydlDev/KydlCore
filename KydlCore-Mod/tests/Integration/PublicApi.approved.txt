@@ -13,6 +13,23 @@ static class KydlCore.Common.ConfigTools
   method System.Int32 KydlCore.Common.ConfigTools::ApplyCommaFix(BepInEx.Configuration.ConfigFile,System.String[])
   method System.Int32 KydlCore.Common.ConfigTools::DropRemoved(BepInEx.Configuration.ConfigFile)
   method System.String[] KydlCore.Common.ConfigTools::Capture(BepInEx.Configuration.ConfigFile)
+sealed class KydlCore.Common.ConfigurationManagerAttributes
+  field KydlCore.Common.ConfigurationManagerAttributes::Browsable : System.Nullable`1<System.Boolean>
+  field KydlCore.Common.ConfigurationManagerAttributes::Category : System.String
+  field KydlCore.Common.ConfigurationManagerAttributes::CustomDrawer : System.Action`1<BepInEx.Configuration.ConfigEntryBase>
+  field KydlCore.Common.ConfigurationManagerAttributes::DefaultValue : System.Object
+  field KydlCore.Common.ConfigurationManagerAttributes::Description : System.String
+  field KydlCore.Common.ConfigurationManagerAttributes::DispName : System.String
+  field KydlCore.Common.ConfigurationManagerAttributes::HideDefaultButton : System.Nullable`1<System.Boolean>
+  field KydlCore.Common.ConfigurationManagerAttributes::HideSettingName : System.Nullable`1<System.Boolean>
+  field KydlCore.Common.ConfigurationManagerAttributes::IsAdminOnly : System.Nullable`1<System.Boolean>
+  field KydlCore.Common.ConfigurationManagerAttributes::IsAdvanced : System.Nullable`1<System.Boolean>
+  field KydlCore.Common.ConfigurationManagerAttributes::ObjToStr : System.Func`2<System.Object,System.String>
+  field KydlCore.Common.ConfigurationManagerAttributes::Order : System.Nullable`1<System.Int32>
+  field KydlCore.Common.ConfigurationManagerAttributes::ReadOnly : System.Nullable`1<System.Boolean>
+  field KydlCore.Common.ConfigurationManagerAttributes::ShowRangeAsPercent : System.Nullable`1<System.Boolean>
+  field KydlCore.Common.ConfigurationManagerAttributes::StrToObj : System.Func`2<System.String,System.Object>
+  method System.Void KydlCore.Common.ConfigurationManagerAttributes::.ctor()
 sealed class KydlCore.Common.ExpectedWarning
   method System.Int32 KydlCore.Common.ExpectedWarning::get_Count()
   method System.String KydlCore.Common.ExpectedWarning::get_Text()
@@ -20,6 +37,14 @@ sealed class KydlCore.Common.ExpectedWarning
 static class KydlCore.Common.KyCategory
   field KydlCore.Common.KyCategory::Name : System.String = KY-Items
   method System.String KydlCore.Common.KyCategory::For(System.String)
+static class KydlCore.Common.KyNetwork
+  method BepInEx.Configuration.ConfigEntry`1<T> KydlCore.Common.KyNetwork::Share(KydlCore.ServerSync.ConfigSync,BepInEx.Configuration.ConfigEntry`1<T>)
+  method KydlCore.ServerSync.ConfigSync KydlCore.Common.KyNetwork::Register(System.String,System.String,System.String,KydlCore.Common.KyNetworkLevel)
+  method System.Int32 KydlCore.Common.KyNetwork::ShareAdminOnly(KydlCore.ServerSync.ConfigSync,BepInEx.Configuration.ConfigFile)
+enum KydlCore.Common.KyNetworkLevel
+  field KydlCore.Common.KyNetworkLevel::ClientOnly : KydlCore.Common.KyNetworkLevel = 0
+  field KydlCore.Common.KyNetworkLevel::EveryoneMustHave : KydlCore.Common.KyNetworkLevel = 1
+  field KydlCore.Common.KyNetworkLevel::value__ : System.Int32
 static class KydlCore.Common.Loc
   method System.Boolean KydlCore.Common.Loc::Register(System.Collections.Generic.Dictionary`2<System.String,System.String>)
   method System.Boolean KydlCore.Common.Loc::Register(System.Collections.Generic.Dictionary`2<System.String,System.String>,System.Collections.Generic.Dictionary`2<System.String,System.String>)
@@ -135,6 +160,10 @@ interface KydlCore.Core.IOperationStep`2
 interface KydlCore.Core.IOwnership
   method System.Boolean KydlCore.Core.IOwnership::get_IsOwner()
   method System.Int64 KydlCore.Core.IOwnership::get_OwnerId()
+static class KydlCore.Core.KyNetworkRules
+  method System.Boolean KydlCore.Core.KyNetworkRules::IsAdminOnly(System.Collections.Generic.IEnumerable`1<System.Object>)
+  method System.Boolean KydlCore.Core.KyNetworkRules::ModRequired(System.Enum)
+  method System.Boolean KydlCore.Core.KyNetworkRules::ModRequired(System.Int32)
 sealed class KydlCore.Core.ManualClock
   method System.Boolean KydlCore.Core.ManualClock::Advance(System.Single)
   method System.Single KydlCore.Core.ManualClock::get_Now()

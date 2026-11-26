@@ -52,6 +52,14 @@ public static class ModContexts
     /// Test support: the context that has been initialised (its session line was written); null when none.
     internal static ModContext AnyInitialisedForTests() { lock (Gate) { foreach (var c in ByAssembly.Values) if (c.SessionStarted) return c; return null; } }
 
+    /// Every mod's registered English text table (Loc.Register), for the game's localization (Integrations/Valheim/GameText). Expected outcome: one list entry per mod that registered texts.
+    internal static List<KeyValuePair<string, Dictionary<string, string>>> EnglishTables()
+    {
+        var tables = new List<KeyValuePair<string, Dictionary<string, string>>>();
+        lock (Gate) { foreach (var c in ByAssembly.Values) if (c.English != null && c.English.Count > 0) tables.Add(new KeyValuePair<string, Dictionary<string, string>>(c.Name, c.English)); }
+        return tables;
+    }
+
     /// Test support: the names of all contexts created so far.
     internal static string[] Names() { lock (Gate) { var n = new List<string>(); foreach (var c in ByAssembly.Values) n.Add(c.Name); return n.ToArray(); } }
 

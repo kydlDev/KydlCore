@@ -2,7 +2,6 @@ using System.IO;
 using System.Reflection;
 using BepInEx;
 using HarmonyLib;
-using Jotunn.Utils;
 using KydlCore.Common;
 using KydlCore.Configuration;
 using KydlCore.Features.Diagnostics.Infrastructure;
@@ -19,9 +18,6 @@ namespace KydlCore.Bootstrap;
 /// </summary>
 [BepInPlugin(ModGuid, ModName, ModVersion)]
 [BepInDependency(Jotunn.Main.ModGuid)]
-// MIGRATION_DECISIONS "Network compatibility": VersionCheckOnly + Patch - a client with only client-only mods + KydlCore joins a server without
-// KydlCore; when both sides have it the versions must match exactly (a server running a gameplay mod always has KydlCore).
-[NetworkCompatibility(CompatibilityLevel.VersionCheckOnly, VersionStrictness.Patch)]
 public class Plugin : BaseUnityPlugin
 {
     // ModGuid never changes after the first release. ModVersion = manifest.json version_number = newest CHANGELOG heading (tests check it).
@@ -57,6 +53,11 @@ public class Plugin : BaseUnityPlugin
         global::KydlCore.Ui.UiKit.Owner = UiOwner;               // the one UI panel object is called Kydl_UI_Root
 
         ModSettings.Bind(Config);
+        // Network (D-104, no Jotunn): client-only level - a player with only client-only mods + KydlCore joins a server without KydlCore; when both
+        // sides have it the versions must be equal (a server running a gameplay mod always has KydlCore). Admin-only settings are decided by the server.
+        var sync = KyNetwork.Register(ModGuid, ModName, ModVersion, KyNetworkLevel.ClientOnly);
+        int shared = KyNetwork.ShareAdminOnly(sync, Config);
+        Loc.GameSink = Integrations.Valheim.GameText.AddIfLoaded;    // mod texts go into the game's own localization (no Jotunn)
         _cfgWatcher = new ConfigReloader(Config);
         Loc.Register(Ui.UiText.En);       // Ui. = KydlCore.Ui (no using: its sort position depends on the mod name, dotnet format IMPORTS)
 
@@ -66,7 +67,7 @@ public class Plugin : BaseUnityPlugin
         bool installed = _installer.Install();
         ModLog.Verbose($"Plugin: UI owner '{(global::KydlCore.Ui.UiKit.Owner)}' (root object Kydl_UI_{(global::KydlCore.Ui.UiKit.Owner)}), input lock {(UiInputLock.Install(ModGuid) ? "installed" : "NOT installed")} (the character does not move while a Core window is open)");
         new Harmony(ModGuid).PatchAll(Assembly.GetExecutingAssembly());
-        ModLog.Verbose($"Plugin: Awake finished (architecture {Core.Architecture.Tag}, Harmony patches applied, features {(installed ? "started" : "had failures")}, bundle {(Bundle != null ? "loaded" : "none")})");
+        ModLog.Verbose($"Plugin: Awake finished (architecture {Core.Architecture.Tag}, {shared} admin-only setting(s) shared, Harmony patches applied, features {(installed ? "started" : "had failures")}, bundle {(Bundle != null ? "loaded" : "none")})");
     }
 
     // 1) embedded in the DLL (Kydl.Mod.targets embeds Assets\<bundle>; read fully into memory: LoadFromStream breaks once the stream
