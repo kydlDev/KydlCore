@@ -68,8 +68,10 @@ public class Plugin : BaseUnityPlugin
         _installer = new ModInstaller();
         bool installed = _installer.Install();
         ModLog.Verbose($"Plugin: UI owner '{(global::KydlCore.Ui.UiKit.Owner)}' (root object Kydl_UI_{(global::KydlCore.Ui.UiKit.Owner)}), input lock {(UiInputLock.Install(ModGuid) ? "installed" : "NOT installed")} (the character does not move while a Core window is open)");
-        new Harmony(ModGuid).PatchAll(Assembly.GetExecutingAssembly());
-        ModLog.Verbose($"Plugin: Awake finished (architecture {Core.Architecture.Tag}, {shared} admin-only setting(s) shared, Harmony patches applied, features {(installed ? "started" : "had failures")}, bundle {(Bundle != null ? "loaded" : "none")})");
+        var harmony = new Harmony(ModGuid);
+        harmony.PatchAll(Assembly.GetExecutingAssembly());
+        int categoryPatches = Integrations.Harmony.BuildCategoryPatchInfo.Install(harmony);     // only without Jotunn (D-106)
+        ModLog.Verbose($"Plugin: Awake finished (architecture {Core.Architecture.Tag}, {shared} admin-only setting(s) shared, Harmony patches applied (+{categoryPatches} build-category patches), features {(installed ? "started" : "had failures")}, bundle {(Bundle != null ? "loaded" : "none")})");
     }
 
     // 1) embedded in the DLL (Kydl.Mod.targets embeds Assets\<bundle>; read fully into memory: LoadFromStream breaks once the stream

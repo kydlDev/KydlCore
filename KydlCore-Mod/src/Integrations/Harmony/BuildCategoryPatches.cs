@@ -11,37 +11,53 @@ namespace KydlCore.Integrations.Harmony;
 
 /// <summary>
 /// The game patches behind KyBuildCategory (custom Hammer categories without Jotunn, D-106; ported from Jotunn 2.30.2 PieceManager.Patches).
-/// Every class has Prepare = KyBuildCategory.OwnPatches: when Jotunn is installed it already patches the same methods, so these stay off.
+/// Applied by hand (BuildCategoryPatchInfo.Install) only when Jotunn is not installed: Jotunn already patches the same methods.
 /// Written against Valheim 1.0.21; the targets are in PatchTargetsTests (run game-api-diff after every game update).
 /// </summary>
 internal static class BuildCategoryPatchInfo
 {
-    internal static bool Prepare(string what)
+    /// <summary>
+    /// Applied by hand from Plugin.Awake (not [HarmonyPatch]) so they exist only when KydlCore makes the categories itself: with Jotunn installed it already
+    /// patches the same methods (and GameProbe's B06 would expect attribute patches that are off on purpose). Expected outcome: the number of methods patched.
+    /// </summary>
+    internal static int Install(HarmonyLib.Harmony harmony)
     {
-        bool on = KyBuildCategory.OwnPatches;
-        ModLog.Verbose($"BuildCategoryPatches: {what} {(on ? "patched by KydlCore" : "left to Jotunn (installed)")}");
-        return on;
+        if (!KyBuildCategory.OwnPatches) { ModLog.Verbose("BuildCategoryPatches: not applied - Jotunn is installed and makes the build categories"); return 0; }
+        int done = 0;
+        done += Patch(harmony, AccessTools.Method(typeof(Enum), nameof(Enum.GetValues)), typeof(EnumGetValuesCategories), post: true);
+        done += Patch(harmony, AccessTools.Method(typeof(Enum), nameof(Enum.GetNames)), typeof(EnumGetNamesCategories), post: true);
+        done += Patch(harmony, AccessTools.Method(typeof(PieceTable), nameof(PieceTable.UpdateAvailable)), typeof(PieceTableUpdateAvailableCategories), pre: true, post: true, trans: true);
+        done += Patch(harmony, AccessTools.Method(typeof(ByUsagePieceList), nameof(ByUsagePieceList.UpdateAvailableTags)), typeof(ByUsageUpdateTags), post: true);
+        done += Patch(harmony, AccessTools.Method(typeof(ByUsagePieceList), nameof(ByUsagePieceList.GetTagDisplayName)), typeof(ByUsageTagName), pre: true);
+        done += Patch(harmony, AccessTools.Method(typeof(ByUsagePieceList), nameof(ByUsagePieceList.GetAvailablePiecesWithTag)), typeof(ByUsagePiecesWithTag), post: true, trans: true);
+        done += Patch(harmony, AccessTools.Method(typeof(ByUsagePieceList), "GetTagById"), typeof(ByUsageGetTagById), pre: true);
+        foreach (MethodBase m in HudCategoryRefresh.Targets()) done += Patch(harmony, m, typeof(HudCategoryRefresh), post: true);
+        ModLog.Verbose($"BuildCategoryPatches: {done} game method(s) patched by KydlCore (no Jotunn installed)");
+        return done;
+    }
+
+    static int Patch(HarmonyLib.Harmony harmony, MethodBase target, Type patches, bool pre = false, bool post = false, bool trans = false)
+    {
+        if (target == null) { ModLog.Warn($"BuildCategoryPatches: a target of {patches.Name} is missing (game update?) - the KY-Items tab may not show"); return 0; }
+        HarmonyMethod Hm(string name) => new HarmonyMethod(AccessTools.Method(patches, name));
+        harmony.Patch(target, pre ? Hm("Prefix") : null, post ? Hm("Postfix") : null, trans ? Hm("Transpiler") : null);
+        if (CoreLog.On) ModLog.Verbose($"BuildCategoryPatches.Patch: {target.DeclaringType?.Name}.{target.Name} <- {patches.Name}");
+        return 1;
     }
 }
 
-[HarmonyPatch(typeof(Enum), nameof(Enum.GetValues))]
 internal static class EnumGetValuesCategories
 {
-    static bool Prepare() => BuildCategoryPatchInfo.Prepare("Enum.GetValues");
     static void Postfix(Type enumType, ref Array __result) { if (CoreLog.Due("EnumGetValuesCategories", 5d)) ModLog.Every("EnumGetValuesCategories", 5d, $"EnumGetValuesCategories: {enumType?.Name} ({__result?.Length} values)"); if (enumType == typeof(Piece.PieceCategory)) __result = KyBuildCategory.WithOwnValues(__result); }
 }
 
-[HarmonyPatch(typeof(Enum), nameof(Enum.GetNames))]
 internal static class EnumGetNamesCategories
 {
-    static bool Prepare() => BuildCategoryPatchInfo.Prepare("Enum.GetNames");
     static void Postfix(Type enumType, ref string[] __result) { if (CoreLog.Due("EnumGetNamesCategories", 5d)) ModLog.Every("EnumGetNamesCategories", 5d, $"EnumGetNamesCategories: {enumType?.Name} ({__result?.Length} names)"); if (enumType == typeof(Piece.PieceCategory)) __result = KyBuildCategory.WithOwnNames(__result); }
 }
 
-[HarmonyPatch(typeof(PieceTable), nameof(PieceTable.UpdateAvailable))]
 internal static class PieceTableUpdateAvailableCategories
 {
-    static bool Prepare() => BuildCategoryPatchInfo.Prepare("PieceTable.UpdateAvailable");
     static void Prefix(PieceTable __instance) { int added = KyBuildCategory.ExpandAvailable(__instance); if (CoreLog.Due("PieceTableUpdateAvailableCategories.Prefix", 5d)) ModLog.Every("PieceTableUpdateAvailableCategories.Prefix", 5d, $"PieceTableUpdateAvailableCategories: {__instance?.name} - {added} list(s) added"); }
     static void Postfix(PieceTable __instance) { int size = KyBuildCategory.ResizeSelection(__instance); if (CoreLog.Due("PieceTableUpdateAvailableCategories.Postfix", 5d)) ModLog.Every("PieceTableUpdateAvailableCategories.Postfix", 5d, $"PieceTableUpdateAvailableCategories: {__instance?.name} - selection size {size}"); }
 
@@ -64,17 +80,13 @@ internal static class PieceTableUpdateAvailableCategories
     }
 }
 
-[HarmonyPatch(typeof(ByUsagePieceList), nameof(ByUsagePieceList.UpdateAvailableTags))]
 internal static class ByUsageUpdateTags
 {
-    static bool Prepare() => BuildCategoryPatchInfo.Prepare("ByUsagePieceList.UpdateAvailableTags");
     static void Postfix(ByUsagePieceList __instance, PieceTable pieceTable) { int added = KyBuildCategory.AddUsageTags(__instance, pieceTable); if (CoreLog.Due("ByUsageUpdateTags", 5d)) ModLog.Every("ByUsageUpdateTags", 5d, $"ByUsageUpdateTags: {added} custom tag(s) for {pieceTable?.name}"); }
 }
 
-[HarmonyPatch(typeof(ByUsagePieceList), nameof(ByUsagePieceList.GetTagDisplayName))]
 internal static class ByUsageTagName
 {
-    static bool Prepare() => BuildCategoryPatchInfo.Prepare("ByUsagePieceList.GetTagDisplayName");
     static bool Prefix(ByUsagePieceList __instance, int index, ref string __result)
     {
         string name = KyBuildCategory.TagName(__instance, index);
@@ -85,10 +97,8 @@ internal static class ByUsageTagName
     }
 }
 
-[HarmonyPatch(typeof(ByUsagePieceList), nameof(ByUsagePieceList.GetAvailablePiecesWithTag))]
 internal static class ByUsagePiecesWithTag
 {
-    static bool Prepare() => BuildCategoryPatchInfo.Prepare("ByUsagePieceList.GetAvailablePiecesWithTag");
     static void Postfix(ByUsagePieceList __instance, int tagId, PieceTable pieceTable, IList<Piece> resultOut) { int added = KyBuildCategory.PiecesWithTag(__instance, tagId, pieceTable, resultOut); if (CoreLog.Due("ByUsagePiecesWithTag.Postfix", 5d)) ModLog.Every("ByUsagePiecesWithTag.Postfix", 5d, $"ByUsagePiecesWithTag: tag {tagId} - {added} custom piece(s), {resultOut?.Count} total"); }
 
     /// The game reads its usage-tag array with the tag id; a custom id is past its end: GetTagById is replaced by a bounds-checked copy.
@@ -106,10 +116,8 @@ internal static class ByUsagePiecesWithTag
     }
 }
 
-[HarmonyPatch(typeof(ByUsagePieceList), "GetTagById")]
 internal static class ByUsageGetTagById
 {
-    static bool Prepare() => BuildCategoryPatchInfo.Prepare("ByUsagePieceList.GetTagById");
     static bool Prefix(ByUsagePieceList __instance, int id, ref Piece.UsageTagFlags __result)
     {
         bool runGame = !KyBuildCategory.IsCustomTagId(__instance, id);
@@ -119,12 +127,10 @@ internal static class ByUsageGetTagById
     }
 }
 
-[HarmonyPatch]
 internal static class HudCategoryRefresh
 {
-    static bool Prepare() => BuildCategoryPatchInfo.Prepare("Hud / Player category refresh");
 
-    static IEnumerable<MethodBase> TargetMethods()
+    internal static IEnumerable<MethodBase> Targets()
     {
         ModLog.Verbose($"HudCategoryRefresh: targets Hud.Awake, Hud.UpdateBuild, Player.SetPlaceMode (custom categories={KyBuildCategory.MaxCategory()})");
         yield return AccessTools.Method(typeof(Hud), "Awake");

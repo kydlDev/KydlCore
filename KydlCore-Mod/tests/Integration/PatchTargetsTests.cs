@@ -22,7 +22,7 @@ public class PatchTargetsTests
 {
     /// "Namespace.Type:Method" (nested types "Outer/Inner") of assembly_valheim methods the mod patches by hand (harmony.Patch in code)
     /// or through TargetMethod(s), e.g. "Player:Update", "ItemDrop/ItemData:GetTooltip".
-    static readonly string[] ManualTargets = { };
+    static readonly string[] ManualTargets = { "PieceTable:UpdateAvailable", "ByUsagePieceList:UpdateAvailableTags", "ByUsagePieceList:GetTagDisplayName", "ByUsagePieceList:GetAvailablePiecesWithTag", "ByUsagePieceList:GetTagById", "Hud:Awake", "Hud:UpdateBuild", "Player:SetPlaceMode" };   // BuildCategoryPatches (D-106), applied by hand without Jotunn
 
     static readonly string[] PatchNames = { "Prefix", "Postfix", "Transpiler", "Finalizer", "ILManipulator" };
     static readonly string[] Injected = { "__instance", "__result", "__resultRef", "__state", "__args", "__originalMethod", "__runOriginal", "__exception" };
