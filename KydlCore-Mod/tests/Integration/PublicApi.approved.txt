@@ -4,6 +4,11 @@ class KydlCore.Bootstrap.Plugin
   field KydlCore.Bootstrap.Plugin::ModName : System.String = KydlCore
   field KydlCore.Bootstrap.Plugin::ModVersion : System.String
   method System.Void KydlCore.Bootstrap.Plugin::.ctor()
+static class KydlCore.Common.ConfigOrder
+  field KydlCore.Common.ConfigOrder::FirstOrder : System.Int32 = 1000
+  field KydlCore.Common.ConfigOrder::LastOrder : System.Int32 = -1000
+  method BepInEx.Configuration.ConfigDescription KydlCore.Common.ConfigOrder::First(System.String,BepInEx.Configuration.AcceptableValueBase)
+  method BepInEx.Configuration.ConfigDescription KydlCore.Common.ConfigOrder::Last(System.String,BepInEx.Configuration.AcceptableValueBase)
 sealed class KydlCore.Common.ConfigReloader
   method System.Boolean KydlCore.Common.ConfigReloader::Tick()
   method System.Boolean KydlCore.Common.ConfigReloader::get_Watching()
@@ -193,6 +198,8 @@ sealed class KydlCore.Core.FeatureRegistry
   method System.Collections.Generic.IReadOnlyList`1<KydlCore.Core.IFeature> KydlCore.Core.FeatureRegistry::get_All()
   method System.Int32 KydlCore.Core.FeatureRegistry::get_Count()
   method System.Void KydlCore.Core.FeatureRegistry::.ctor(System.Action`1<System.String>)
+static class KydlCore.Core.FeatureRules
+  method System.Boolean KydlCore.Core.FeatureRules::IsOn(System.Boolean,System.Boolean)
 interface KydlCore.Core.IClock
   method System.Single KydlCore.Core.IClock::get_Now()
 interface KydlCore.Core.ICommandHandler`2
@@ -447,6 +454,9 @@ sealed class KydlCore.Features.Items.Contracts.KyResult
   method System.String KydlCore.Features.Items.Contracts.KyResult::ToString()
   method System.String KydlCore.Features.Items.Contracts.KyResult::get_Id()
   method System.String KydlCore.Features.Items.Contracts.KyResult::get_Reason()
+sealed class KydlCore.Integrations.Valheim.GameClock
+  method System.Single KydlCore.Integrations.Valheim.GameClock::get_Now()
+  method System.Void KydlCore.Integrations.Valheim.GameClock::.ctor()
 class KydlCore.ServerSync.ConfigSync
   event KydlCore.ServerSync.ConfigSync::SourceOfTruthChanged : System.Action`1<System.Boolean>
   field KydlCore.ServerSync.ConfigSync::AnnounceVersion : System.Boolean
