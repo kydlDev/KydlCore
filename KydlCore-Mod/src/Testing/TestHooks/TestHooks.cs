@@ -45,6 +45,40 @@ internal static class TestHooks
         return $"{(KydlCore.Presentation.Hub.Registration.KyItemsTab.Grid ? "grid" : "list")}, cards {cards}, entries {entries}, one card each {(cards == entries)}, button {(button != null ? button.text : "none")}";
     }
 
+    /// <summary>
+    /// Rule 42 (visual in-game check of icons): lists only the KY-Items of one mod (guid) on the KY-Items page, "" = all mods again, so a GameProbe
+    /// shot of the grid shows exactly that mod's icons. Returns how many entries of that mod the page lists (non-material).
+    /// </summary>
+    [TestHook("kc.kyItemsFilter")]
+    static int KyItemsFilter(string mod)
+    {
+        KydlCore.Presentation.Hub.Registration.KyItemsTab.ModFilter = mod ?? "";
+        return string.IsNullOrEmpty(mod) ? KyItems.All.Count(e => e.Kind != KyKind.Material) : KyItems.ByMod(mod).Count(e => e.Kind != KyKind.Material);
+    }
+
+    /// <summary>
+    /// Rule 42: the icons of one mod's KY-Items entries (non-material): "entries E, with icon I, smallest WxH, below MIN B" (B = icons whose shorter side is
+    /// under minPx; a missing icon counts as below). The numeric limit lives here because min on a hook step is ignored by the lab.
+    /// </summary>
+    [TestHook("kc.itemsIcons")]
+    static string ItemsIcons(string mod, int minPx)
+    {
+        int entries = 0, withIcon = 0, below = 0;
+        float smallest = float.MaxValue, smallestOther = 0f;
+        foreach (var e in KyItems.ByMod(mod).Where(x => x.Kind != KyKind.Material))
+        {
+            entries++;
+            var icon = e.Icon;
+            if (icon == null) { below++; continue; }
+            withIcon++;
+            float w = icon.rect.width, h = icon.rect.height, side = w < h ? w : h;
+            if (side < smallest) { smallest = side; smallestOther = w < h ? h : w; }
+            if (side < minPx) below++;
+        }
+
+        return $"entries {entries}, with icon {withIcon}, smallest {(withIcon > 0 ? smallest.ToString("0") + "x" + smallestOther.ToString("0") : "none")}, below {minPx} {below}";
+    }
+
     [TestHook("kc.hubIsOpen")]
     static bool HubIsOpen() { return KyHub.IsOpen; }
 

@@ -52,11 +52,14 @@ internal static class KyItemsTab
     }
 
     // The page: the user's prefabs grouped by mod, text at the settings page size (D-061).
+    /// <summary>Test / visual-check aid (rule 42): only the entries of this mod guid are listed ("" = all mods). Set by the test hook kc.kyItemsFilter.</summary>
+    internal static string ModFilter = "";
+
     static VisualElement Build(System.Func<KyEntry, bool> wanted, string id)
     {
         var page = new VisualElement { name = "kydl-kyitems-page" };
         page.style.flexShrink = 0;
-        var shown = KyItems.All.Where(wanted).ToList();
+        var shown = KyItems.All.Where(wanted).Where(e => string.IsNullOrEmpty(ModFilter) || e.ModGuid == ModFilter).ToList();
         var groups = shown.GroupBy(e => string.IsNullOrEmpty(e.ModName) ? e.ModGuid : e.ModName).ToList();
         bool grid = Grid;
         page.Add(Header(UiControls.Note(shown.Count + " prefab(s) of " + groups.Count + " source(s). " + (id == MaterialsId
