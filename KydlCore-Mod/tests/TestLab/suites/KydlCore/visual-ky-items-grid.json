@@ -1,5 +1,5 @@
 {
-  "name": "ky-items-grid",
+  "name": "visual-ky-items-grid",
   "description": "D-096 (user 2026-11-19): the KY-Items page has a second view, a grid of big square icons (4 per row) with the name and the prefab name under each; the button at the top right of the page switches between list and grid, and the choice is the [General] KY-Items View setting.",
   "timeout": 60,
   "steps": [

@@ -48,7 +48,8 @@ public static class KyCommands
 
     static bool Register(KyCommand command)
     {
-        new Terminal.ConsoleCommand(command.Name, command.Help, args => Run(command, args), command.IsCheat, optionsFetcher: () => command.Options());
+        // The game's ConsoleCommand adds itself to Terminal.commands in its constructor; the object itself is not needed afterwards.
+        _ = new Terminal.ConsoleCommand(command.Name, command.Help, args => Run(command, args), command.IsCheat, optionsFetcher: () => command.Options());
         var list = typeof(Terminal).GetField("commands", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public)?.GetValue(null) as System.Collections.IDictionary;
         bool known = list != null && list.Contains(command.Name.ToLowerInvariant());
         if (CoreLog.On) ModLog.Verbose($"KyCommands.Register: '{command.Name}' in the game's list={known}");
