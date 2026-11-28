@@ -18,6 +18,7 @@
 - New for mod authors: `ModLog.ExpectWarning` marks warnings a test provokes on purpose, so they do not count as failures.
 - New for mod authors' TestLab suites: the start-of-test arena cleanup removes dropped items, creatures, and logs, stumps and pieces that were not in the world template, and puts back terrain a test changed.
 - Changed for mod authors: `KyPage.Sections` and `KySection.Rows` are read-only lists; sections and rows are added with `Section(...)`, `Value(...)`, `Slider(...)` and the other builder methods as before. A mod that reads them must be rebuilt against this version.
+- Fixed: mods that look up a game item prefab right when the game is ready (`KyPrefabs.WhenVanillaAvailable` / `VanillaPrefabsAvailable`) found nothing at game start, because KydlCore sent the signal before the game had filled its item list. It now comes after. GunPowdered's musket could not make its bullet because of this.
 - Changed: every method logs on entry and on each return when the debug log is on; per-frame lines are throttled, so a log stays readable. Less log spam overall (the flight recorder's echo and repeated network lines are throttled).
 - Fixed: Valheim could hang at start because the log listener wrote log lines about itself without end.
 - Fixed: logged values stay on one line, and a logged value containing the text "CHECK OFF" no longer counts as a failed check.

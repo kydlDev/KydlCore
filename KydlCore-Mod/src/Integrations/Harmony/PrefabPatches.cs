@@ -15,15 +15,19 @@ internal static class ZNetSceneAwakePrefabs
     }
 }
 
-/// <summary>The main menu copies the game's ObjectDB (FejdStartup): vanilla prefabs can be cloned from now on (Jotunn's OnVanillaPrefabsAvailable).</summary>
+/// <summary>
+/// The main menu copied the game's ObjectDB (FejdStartup): vanilla prefabs can be cloned from now on (Jotunn's OnVanillaPrefabsAvailable). This is a
+/// POSTFIX, last in line: as a prefix the signal came before the menu ObjectDB held any item, so a listener that looked up a vanilla item prefab
+/// (GunPowdered's "BoltIron") found nothing (2026-11-28, GameProbe B04 in every session) and a "create once" listener never got a second chance.
+/// </summary>
 [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.CopyOtherDB))]
 internal static class ObjectDBCopyVanilla
 {
     [HarmonyPriority(Priority.Last)]
-    static void Prefix(ObjectDB other)
+    static void Postfix(ObjectDB __instance)
     {
         bool available = KyPrefabs.MarkVanillaAvailable();
-        ModLog.Verbose($"ObjectDBCopyVanilla: menu ObjectDB copied (items={(other == null ? 0 : other.m_items.Count)}) - vanilla available={available}");
+        ModLog.Verbose($"ObjectDBCopyVanilla: menu ObjectDB copied (items={(__instance == null ? 0 : __instance.m_items.Count)}, instance is ObjectDB.instance={ObjectDB.instance == __instance}) - vanilla available={available}");
     }
 }
 
